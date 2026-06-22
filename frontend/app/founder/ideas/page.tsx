@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { PostIdeaModal } from "@/components/post-idea-modal"
 import { Search, Plus, Filter, Eye, MessageSquare, Heart, Edit, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { PostIdeaModal } from "@/components/post-idea-modal"
+import { PageHeader } from "@/components/page-header"
+
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
@@ -44,55 +46,229 @@ interface IdeaFormData {
   isDraft: boolean
 }
 
+// ---------- Mock Data for Offline Fallback ----------
+const MOCK_YOUR_IDEAS: Idea[] = [
+  {
+    id: "y1",
+    title: "Edge Vision Kit",
+    author: "You",
+    desc: "Low‑power on‑device vision kit with local models. Shipping v0 sensors to early adopters.",
+    description: "Low‑power on‑device vision kit with local models. Shipping v0 sensors to early adopters. This system enables real-time computer vision processing without cloud dependency, perfect for robotics and IoT applications.",
+    tags: ["Edge AI", "Robotics", "Hardware"],
+    stage: "mvp",
+    funding: "$8,000 raised",
+    likes: 24,
+    comments: 8,
+    views: 156,
+    isYours: true,
+    lookingFor: ["Hardware engineer", "Go-to-market lead"],
+    isDraft: false,
+    createdAt: "2026-06-18",
+  },
+  {
+    id: "y2",
+    title: "Local‑first Creator Analytics",
+    author: "You",
+    desc: "Privacy‑first analytics with CRDT sync across devices. No data leaves your control.",
+    description: "Privacy‑first analytics with CRDT sync across devices. No data leaves your control. Built for creators who want to understand their audience without compromising privacy.",
+    tags: ["Creator infra", "Privacy", "Local‑first"],
+    stage: "prototype",
+    funding: "$4,400 / $12,000",
+    likes: 18,
+    comments: 12,
+    views: 89,
+    isYours: true,
+    lookingFor: ["Frontend developer", "Marketing advisor"],
+    isDraft: false,
+    createdAt: "2026-06-15",
+  }
+]
+
+const MOCK_DISCOVER_IDEAS: Idea[] = [
+  {
+    id: "d1",
+    title: "Neurotech IDE",
+    author: "Sam K.",
+    desc: "Local‑only IDE and toolchain for neural interfaces. Privacy‑first development environment.",
+    description: "Local‑only IDE and toolchain for neural interfaces. Privacy‑first development environment for developers working on next-gen brain-computer interfaces.",
+    tags: ["Bio tooling", "Privacy", "Dev tools"],
+    stage: "prototype",
+    likes: 42,
+    comments: 15,
+    views: 234,
+    lookingFor: ["Frontend developer", "Neuroscientist"],
+    createdAt: "2026-06-10",
+  },
+  {
+    id: "d2",
+    title: "DePIN Sensor Mesh",
+    author: "Riley M.",
+    desc: "Community-powered sensor mesh with provable data lineage and token incentives.",
+    description: "Community-powered sensor mesh with provable data lineage and token incentives. Build local meshes and earn tokens for sharing high-fidelity environmental telemetry.",
+    tags: ["DePIN", "Edge AI", "Crypto"],
+    stage: "mvp",
+    funding: "Seeking $60k",
+    likes: 67,
+    comments: 23,
+    views: 445,
+    lookingFor: ["Blockchain developer", "Hardware engineer"],
+    createdAt: "2026-06-08",
+  }
+]
+
+function getLocalStorageItem<T>(key: string, defaultValue: T): T {
+  if (typeof window === "undefined") return defaultValue
+  const saved = localStorage.getItem(key)
+  return saved ? JSON.parse(saved) : defaultValue
+}
+
+function setLocalStorageItem<T>(key: string, value: T): void {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(key, JSON.stringify(value))
+  }
+}
+
 // ---------- API Service ----------
 const ideasAPI = {
   async fetchYourIdeas(): Promise<Idea[]> {
-    const token = localStorage.getItem("token")
-    if (!token) throw new Error("User not authenticated")
-    const response = await axios.get(`${API_BASE_URL}/ideas/user`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    return response.data
+    try {
+      const token = localStorage.getItem("token")
+      if (!token) throw new Error("User not authenticated")
+      const response = await axios.get(`${API_BASE_URL}/ideas/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      return response.data
+    } catch (error) {
+      console.error("fetchYourIdeas failed, using mock data", error)
+      return getLocalStorageItem<Idea[]>("founder_your_ideas", MOCK_YOUR_IDEAS)
+    }
   },
 
   async fetchDiscoverIdeas(): Promise<Idea[]> {
-    const response = await axios.get(`${API_BASE_URL}/ideas/discover`)
-    return response.data
+    try {
+      const response = await axios.get(`${API_BASE_URL}/ideas/discover`)
+      return response.data
+    } catch (error) {
+      console.error("fetchDiscoverIdeas failed, using mock data", error)
+      return getLocalStorageItem<Idea[]>("founder_discover_ideas", MOCK_DISCOVER_IDEAS)
+    }
   },
 
   async createIdea(data: IdeaFormData): Promise<Idea> {
-    const token = localStorage.getItem("token")
-    if (!token) throw new Error("User not authenticated")
-    const response = await axios.post(`${API_BASE_URL}/ideas`, data, {
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    })
-    return response.data
+    try {
+      const token = localStorage.getItem("token")
+      if (!token) throw new Error("User not authenticated")
+      const response = await axios.post(`${API_BASE_URL}/ideas`, data, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      })
+      return response.data
+    } catch (error) {
+      console.warn("createIdea failed, mocking locally", error)
+      const list = getLocalStorageItem<Idea[]>("founder_your_ideas", MOCK_YOUR_IDEAS)
+      const newIdea: Idea = {
+        id: `mock-${Date.now()}`,
+        title: data.title,
+        author: "You",
+        desc: data.description.slice(0, 120) + (data.description.length > 120 ? "..." : ""),
+        description: data.description,
+        tags: data.tags,
+        stage: data.stage,
+        likes: 0,
+        comments: 0,
+        views: 1,
+        isYours: true,
+        lookingFor: data.lookingFor,
+        isDraft: data.isDraft,
+        createdAt: new Date().toISOString().split("T")[0],
+      }
+      setLocalStorageItem("founder_your_ideas", [newIdea, ...list])
+      return newIdea
+    }
   },
 
   async updateIdea(id: string, data: IdeaFormData): Promise<Idea> {
-    const token = localStorage.getItem("token")
-    if (!token) throw new Error("User not authenticated")
-    const response = await axios.put(`${API_BASE_URL}/ideas/${id}`, data, {
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    })
-    return response.data
+    try {
+      const token = localStorage.getItem("token")
+      if (!token) throw new Error("User not authenticated")
+      const response = await axios.put(`${API_BASE_URL}/ideas/${id}`, data, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      })
+      return response.data
+    } catch (error) {
+      console.warn("updateIdea failed, mocking locally", error)
+      const list = getLocalStorageItem<Idea[]>("founder_your_ideas", MOCK_YOUR_IDEAS)
+      let updatedIdea: Idea | null = null
+      const updatedList = list.map((idea) => {
+        if (idea.id === id) {
+          updatedIdea = {
+            ...idea,
+            title: data.title,
+            desc: data.description.slice(0, 120) + (data.description.length > 120 ? "..." : ""),
+            description: data.description,
+            tags: data.tags,
+            stage: data.stage,
+            lookingFor: data.lookingFor,
+            isDraft: data.isDraft,
+          }
+          return updatedIdea
+        }
+        return idea
+      })
+      if (!updatedIdea) {
+        throw new Error("Idea not found for update")
+      }
+      setLocalStorageItem("founder_your_ideas", updatedList)
+      return updatedIdea
+    }
   },
 
   async deleteIdea(id: string): Promise<void> {
-    const token = localStorage.getItem("token")
-    if (!token) throw new Error("User not authenticated")
-    await axios.delete(`${API_BASE_URL}/ideas/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+    try {
+      const token = localStorage.getItem("token")
+      if (!token) throw new Error("User not authenticated")
+      await axios.delete(`${API_BASE_URL}/ideas/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+    } catch (error) {
+      console.warn("deleteIdea failed, mocking locally", error)
+      const list = getLocalStorageItem<Idea[]>("founder_your_ideas", MOCK_YOUR_IDEAS)
+      setLocalStorageItem("founder_your_ideas", list.filter((idea) => idea.id !== id))
+    }
   },
 
   async likeIdea(id: string): Promise<void> {
-    const token = localStorage.getItem("token")
-    if (!token) throw new Error("User not authenticated")
-    await axios.post(`${API_BASE_URL}/ideas/${id}/like`, {}, { headers: { Authorization: `Bearer ${token}` } })
+    try {
+      const token = localStorage.getItem("token")
+      if (!token) throw new Error("User not authenticated")
+      await axios.post(`${API_BASE_URL}/ideas/${id}/like`, {}, { headers: { Authorization: `Bearer ${token}` } })
+    } catch (error) {
+      console.warn("likeIdea failed, mocking locally", error)
+      // Increment like in local stores
+      const yourList = getLocalStorageItem<Idea[]>("founder_your_ideas", MOCK_YOUR_IDEAS)
+      setLocalStorageItem(
+        "founder_your_ideas",
+        yourList.map((idea) => (idea.id === id ? { ...idea, likes: idea.likes + 1 } : idea))
+      )
+      const discoverList = getLocalStorageItem<Idea[]>("founder_discover_ideas", MOCK_DISCOVER_IDEAS)
+      setLocalStorageItem(
+        "founder_discover_ideas",
+        discoverList.map((idea) => (idea.id === id ? { ...idea, likes: idea.likes + 1 } : idea))
+      )
+    }
   },
 
   async getIdeaById(id: string): Promise<Idea> {
-    const response = await axios.get(`${API_BASE_URL}/ideas/${id}`)
-    return response.data
+    try {
+      const response = await axios.get(`${API_BASE_URL}/ideas/${id}`)
+      return response.data
+    } catch (error) {
+      console.warn("getIdeaById failed, mocking locally", error)
+      const allIdeas = [
+        ...getLocalStorageItem<Idea[]>("founder_your_ideas", MOCK_YOUR_IDEAS),
+        ...getLocalStorageItem<Idea[]>("founder_discover_ideas", MOCK_DISCOVER_IDEAS)
+      ]
+      const found = allIdeas.find((idea) => idea.id === id)
+      if (found) return found
+      throw new Error("Idea not found")
+    }
   },
 }
 
@@ -102,11 +278,24 @@ export default function FounderIdeasPage() {
   const [query, setQuery] = useState("")
   const [yourIdeas, setYourIdeas] = useState<Idea[]>([])
   const [discoverIdeas, setDiscoverIdeas] = useState<Idea[]>([])
-  const [editingIdea, setEditingIdea] = useState<Idea | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showFilters, setShowFilters] = useState(false)
+  const [stageFilter, setStageFilter] = useState<"all" | Stage>("all")
+  const [sortBy, setSortBy] = useState<"newest" | "likes" | "views">("newest")
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingIdea, setEditingIdea] = useState<Idea | null>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get("new") === "true") {
+        setIsModalOpen(true)
+        router.replace("/founder/ideas")
+      }
+    }
+  }, [router])
 
   const loadIdeas = useCallback(async () => {
     setIsLoading(true)
@@ -131,13 +320,43 @@ export default function FounderIdeasPage() {
     loadIdeas()
   }, [loadIdeas])
 
+  // Sync state if localStorage updates
+  useEffect(() => {
+    const handleStorageChange = () => {
+      loadIdeas()
+    }
+    window.addEventListener("storage", handleStorageChange)
+    return () => {
+      window.removeEventListener("storage", handleStorageChange)
+    }
+  }, [loadIdeas])
+
   const ideas = tab === "yours" ? yourIdeas : discoverIdeas
-  const filtered = ideas.filter(
-    (idea) =>
-      idea.title.toLowerCase().includes(query.toLowerCase()) ||
-      idea.desc?.toLowerCase().includes(query.toLowerCase()) ||
-      idea.tags.some((tag) => tag.toLowerCase().includes(query.toLowerCase()))
-  )
+  const filtered = ideas
+    .filter((idea) => {
+      const matchesQuery =
+        idea.title.toLowerCase().includes(query.toLowerCase()) ||
+        idea.desc?.toLowerCase().includes(query.toLowerCase()) ||
+        idea.description?.toLowerCase().includes(query.toLowerCase()) ||
+        idea.tags.some((tag) => tag.toLowerCase().includes(query.toLowerCase())) ||
+        idea.author.toLowerCase().includes(query.toLowerCase())
+
+      const matchesStage = stageFilter === "all" || idea.stage === stageFilter
+
+      return matchesQuery && matchesStage
+    })
+    .sort((a, b) => {
+      if (sortBy === "likes") return b.likes - a.likes
+      if (sortBy === "views") return b.views - a.views
+      const dateA = a.createdAt || ""
+      const dateB = b.createdAt || ""
+      return dateB.localeCompare(dateA)
+    })
+
+  function handleEditClick(idea: Idea) {
+    setEditingIdea(idea)
+    setIsModalOpen(true)
+  }
 
   async function handleIdeaSubmit(data: IdeaFormData) {
     try {
@@ -146,7 +365,7 @@ export default function FounderIdeasPage() {
       setIsModalOpen(false)
     } catch (err) {
       console.error("Failed to create idea:", err)
-      alert("Failed to create idea. Please try again.")
+      setError("Failed to create idea. Please try again.")
     }
   }
 
@@ -159,43 +378,29 @@ export default function FounderIdeasPage() {
       setIsModalOpen(false)
     } catch (err) {
       console.error("Failed to update idea:", err)
-      alert("Failed to update idea. Please try again.")
+      setError("Failed to update idea. Please try again.")
     }
   }
 
   function handleModalSubmit(data: IdeaFormData) {
-   if (editingIdea) {
-  handleIdeaUpdate(data)
-} else {
-  handleIdeaSubmit(data)
-}
+    if (editingIdea) {
+      handleIdeaUpdate(data)
+    } else {
+      handleIdeaSubmit(data)
+    }
   }
 
   async function handleModalDelete() {
     if (!editingIdea) return
-    await handleIdeaDelete(editingIdea.id)
-  }
-
-  async function handleIdeaDelete(id: string) {
     try {
-      await ideasAPI.deleteIdea(id)
-      setYourIdeas((prev) => prev.filter((idea) => idea.id !== id))
+      await ideasAPI.deleteIdea(editingIdea.id)
+      setYourIdeas((prev) => prev.filter((idea) => idea.id !== editingIdea.id))
       setEditingIdea(null)
       setIsModalOpen(false)
     } catch (err) {
       console.error("Failed to delete idea:", err)
-      alert("Failed to delete idea. Please try again.")
+      setError("Failed to delete idea. Please try again.")
     }
-  }
-
-  function handleEditClick(idea: Idea) {
-    setEditingIdea(idea)
-    setIsModalOpen(true)
-  }
-
-  function handleCloseModal() {
-    setEditingIdea(null)
-    setIsModalOpen(false)
   }
 
   function handleViewClick(idea: Idea) {
@@ -220,113 +425,117 @@ export default function FounderIdeasPage() {
   }
 
   function IdeaCard({ idea }: { idea: Idea }) {
+    const stageColors = {
+      launched: { text: "text-[#34D399]", bg: "bg-[#34D399]/10", border: "border-[#34D399]/20", hover: "hover:border-[#34D399]/20 group-hover:shadow-[0_0_30px_rgba(52,211,153,0.03)]" },
+      mvp: { text: "text-[#F472B6]", bg: "bg-[#F472B6]/10", border: "border-[#F472B6]/20", hover: "hover:border-[#F472B6]/20 group-hover:shadow-[0_0_30px_rgba(244,114,182,0.03)]" },
+      prototype: { text: "text-[#E3C27A]", bg: "bg-[#E3C27A]/10", border: "border-[#E3C27A]/20", hover: "hover:border-[#E3C27A]/20 group-hover:shadow-[0_0_30px_rgba(227,194,122,0.03)]" },
+      concept: { text: "text-white/60", bg: "bg-white/5", border: "border-white/10", hover: "hover:border-white/20 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.02)]" }
+    }[idea.stage] ?? { text: "text-white/60", bg: "bg-white/5", border: "border-white/10", hover: "hover:border-white/20 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.02)]" }
+
     return (
-      <Card className="bg-[#101113] border-[#1a1b1e] hover:bg-[#101113]/80 transition-colors">
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between gap-2 mb-3">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-medium text-base leading-tight">{idea.title}</h3>
-                {idea.isDraft && (
-                  <Badge variant="outline" className="border-yellow-500/50 text-yellow-400 text-xs">
-                    Draft
-                  </Badge>
+      <Card className={cn(
+        "group relative overflow-hidden bg-white/[0.01] border-white/5 transition-all duration-300 rounded-2xl flex flex-col h-full justify-between",
+        stageColors.hover
+      )}>
+        <CardContent className="p-6 flex flex-col h-full justify-between gap-5">
+          <div className="space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-base leading-snug tracking-tight text-white group-hover:text-white transition-colors">
+                    {idea.title}
+                  </h3>
+                  {idea.isDraft && (
+                    <Badge className="bg-[#E3C27A]/10 text-[#E3C27A] border-[#E3C27A]/20 text-[9px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full border">
+                      Draft
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-[11px] font-mono text-white/35">by {idea.author}</p>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <Badge
+                  className={cn(
+                    "text-[9px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full border",
+                    stageColors.text, stageColors.bg, stageColors.border
+                  )}
+                >
+                  {idea.stage.toUpperCase()}
+                </Badge>
+                {idea.isYours && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleEditClick(idea)}
+                    className="h-7 w-7 text-white/40 hover:text-white hover:bg-white/5 rounded-full"
+                  >
+                    <Edit className="h-3.5 w-3.5" />
+                  </Button>
                 )}
               </div>
-              <p className="text-xs text-white/60">by {idea.author}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge
-                variant="secondary"
-                className={cn(
-                  "text-xs shrink-0",
-                  idea.stage === "launched"
-                    ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
-                    : idea.stage === "mvp"
-                      ? "bg-blue-500/10 text-blue-300 border-blue-500/20"
-                      : idea.stage === "prototype"
-                        ? "bg-yellow-500/10 text-yellow-300 border-yellow-500/20"
-                        : "bg-white/[0.04] text-white border-white/10"
-                )}
-              >
-                {idea.stage.toUpperCase()}
-              </Badge>
-              {idea.isYours && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleEditClick(idea)}
-                  className="h-7 w-7 text-white/60 hover:text-white"
-                >
-                  <Edit className="h-3.5 w-3.5" />
-                </Button>
+
+            <p className="text-xs text-white/50 leading-relaxed line-clamp-3 font-sans">{idea.desc || idea.description}</p>
+
+            <div className="flex flex-wrap gap-1">
+              {idea.tags.slice(0, 3).map((tag) => (
+                <Badge key={tag} className="bg-white/[0.02] text-white/40 border-white/5 text-[9px] font-mono rounded-md py-0.5 px-2">
+                  #{tag}
+                </Badge>
+              ))}
+              {idea.tags.length > 3 && (
+                <Badge className="bg-white/[0.02] text-white/40 border-white/5 text-[9px] font-mono rounded-md py-0.5 px-2">
+                  +{idea.tags.length - 3}
+                </Badge>
               )}
             </div>
-          </div>
 
-          <p className="text-sm text-white/70 mb-3 line-clamp-3">{idea.desc || idea.description}</p>
-
-          <div className="flex flex-wrap gap-1 mb-3">
-            {idea.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="secondary" className="bg-white/[0.04] text-white border-white/10 text-xs">
-                {tag}
-              </Badge>
-            ))}
-            {idea.tags.length > 3 && (
-              <Badge variant="secondary" className="bg-white/[0.04] text-white border-white/10 text-xs">
-                +{idea.tags.length - 3}
-              </Badge>
+            {idea.lookingFor && idea.lookingFor.length > 0 && (
+              <div className="pt-3 border-t border-white/5">
+                <div className="text-[9px] text-white/30 font-semibold uppercase tracking-widest mb-1.5 font-mono">Looking for:</div>
+                <div className="flex flex-wrap gap-1">
+                  {idea.lookingFor.slice(0, 2).map((item) => (
+                    <Badge
+                      key={item}
+                      className="bg-white/[0.01] text-white/60 border-white/5 text-[9px] rounded px-1.5 py-0.5"
+                    >
+                      {item}
+                    </Badge>
+                  ))}
+                  {idea.lookingFor.length > 2 && (
+                    <Badge className="bg-white/[0.01] text-white/60 border-white/5 text-[9px] rounded px-1.5 py-0.5">
+                      +{idea.lookingFor.length - 2}
+                    </Badge>
+                  )}
+                </div>
+              </div>
             )}
           </div>
 
-          {idea.lookingFor && idea.lookingFor.length > 0 && (
-            <div className="mb-3">
-              <div className="text-xs text-white/60 mb-1">Looking for:</div>
-              <div className="flex flex-wrap gap-1">
-                {idea.lookingFor.slice(0, 2).map((item) => (
-                  <Badge
-                    key={item}
-                    variant="secondary"
-                    className="bg-white/[0.02] text-white/80 border-white/5 text-xs"
-                  >
-                    {item}
-                  </Badge>
-                ))}
-                {idea.lookingFor.length > 2 && (
-                  <Badge variant="secondary" className="bg-white/[0.02] text-white/80 border-white/5 text-xs">
-                    +{idea.lookingFor.length - 2}
-                  </Badge>
-                )}
-              </div>
-            </div>
-          )}
-
-          {idea.funding && <div className="text-xs text-white/60 mb-3">{idea.funding}</div>}
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 text-xs text-white/60">
+          <div className="pt-4 border-t border-white/5 flex items-center justify-between mt-auto">
+            <div className="flex items-center gap-3.5 text-[11px] font-mono text-white/30">
               <button
                 onClick={() => handleLikeIdea(idea.id)}
-                className="flex items-center gap-1 hover:text-white transition-colors"
+                className="flex items-center gap-1.5 hover:text-[#F472B6] transition-colors"
               >
                 <Heart className="h-3.5 w-3.5" />
-                {idea.likes}
+                <span>{idea.likes}</span>
               </button>
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1.5">
                 <MessageSquare className="h-3.5 w-3.5" />
-                {idea.comments}
+                <span>{idea.comments}</span>
               </span>
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1.5">
                 <Eye className="h-3.5 w-3.5" />
-                {idea.views}
+                <span>{idea.views}</span>
               </span>
             </div>
             <Button
               variant="outline"
               onClick={() => handleViewClick(idea)}
-              className="h-7 text-xs border-[#1a1b1e] text-white hover:bg-white/[0.06] bg-transparent"
+              className="h-7 text-[10px] font-semibold rounded-full border-white/10 text-white/80 hover:bg-white/10 hover:text-white transition-all px-4"
             >
-              {idea.isYours ? "Share" : "View"}
+              {idea.isYours ? "Share" : "Explore"}
             </Button>
           </div>
         </CardContent>
@@ -335,28 +544,28 @@ export default function FounderIdeasPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[1400px] space-y-6">
-      <div className="rounded-xl bg-[#101113] p-4">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-          <div className="flex-1">
-            <h1 className="text-xl font-semibold">Ideas</h1>
-            <p className="text-sm text-white/70 mt-1">Share your concepts and discover what others are building.</p>
-          </div>
-          <Button onClick={() => setIsModalOpen(true)} className="rounded-md bg-white text-[#0b0b0c] hover:bg-white/90">
-            <Plus className="mr-2 h-4 w-4" />
-            Post new idea
+    <div className="mx-auto max-w-6xl space-y-8 pt-4 pb-20">
+      <PageHeader
+        category="Ideas Workspace"
+        title="Ideas & Projects"
+        description="Share your concepts, manage active drafts, and discover what other builders are working on in the cohort."
+        accentColor="emerald"
+        action={
+          <Button onClick={() => { setEditingIdea(null); setIsModalOpen(true); }} className="rounded-full text-xs font-semibold px-6 py-2.5 bg-white text-[#0a0a0c] hover:bg-[#34D399] hover:text-[#0a0a0c] transition-all duration-300 active:scale-[0.98] cursor-pointer">
+            <Plus className="mr-1.5 h-3.5 w-3.5" /> Post new idea
           </Button>
-        </div>
-      </div>
+        }
+      />
 
-      <div className="rounded-xl bg-[#101113] p-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex rounded-lg border border-[#1a1b1e] bg-[#0f1012] p-1">
+      {/* Tabs and search */}
+      <div className="rounded-2xl border border-white/5 bg-white/[0.01] backdrop-blur-xl p-4 shadow-lg">
+        <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+          <div className="flex rounded-lg border border-white/5 bg-black/40 p-1 shrink-0">
             <button
               onClick={() => setTab("yours")}
               className={cn(
-                "px-3 py-1.5 text-sm rounded-md transition",
-                tab === "yours" ? "bg-white text-[#0b0b0c]" : "text-white/80 hover:text-white"
+                "px-4 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 cursor-pointer",
+                tab === "yours" ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"
               )}
             >
               Your ideas ({yourIdeas.length})
@@ -364,53 +573,115 @@ export default function FounderIdeasPage() {
             <button
               onClick={() => setTab("discover")}
               className={cn(
-                "px-3 py-1.5 text-sm rounded-md transition",
-                tab === "discover" ? "bg-white text-[#0b0b0c]" : "text-white/80 hover:text-white"
+                "px-4 py-1.5 text-xs font-semibold rounded-md transition-all duration-200 cursor-pointer",
+                tab === "discover" ? "bg-white text-black shadow-lg" : "text-white/50 hover:text-white"
               )}
             >
               Discover
             </button>
           </div>
 
-          <div className="flex gap-2 flex-1">
+          <div className="flex gap-2 flex-1 items-center">
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
               <Input
                 placeholder="Search ideas, tags, authors…"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="pl-8 bg-[#0f1012] border-[#1a1b1e] text-white placeholder:text-white/40"
+                className="pl-9 h-9 bg-black/40 border-white/5 text-white placeholder:text-white/30 rounded-lg focus-visible:ring-[#34D399] focus-visible:border-[#34D399]/20"
               />
             </div>
-            <Button variant="outline" className="border-[#1a1b1e] text-white hover:bg-white/[0.06] bg-transparent">
-              <Filter className="mr-2 h-4 w-4" />
+            <Button
+              onClick={() => setShowFilters(!showFilters)}
+              variant="outline"
+              className={cn(
+                "h-9 border-white/10 text-white/80 hover:bg-white/5 hover:text-white rounded-lg px-4 text-xs font-semibold bg-transparent transition-all",
+                showFilters && "bg-white/10 border-white/20 text-white"
+              )}
+            >
+              <Filter className="mr-2 h-4 w-4 text-white/40" />
               Filter
             </Button>
           </div>
         </div>
+
+        {/* Collapsible Filter Panel */}
+        {showFilters && (
+          <div className="border-t border-white/5 mt-4 pt-4 space-y-4 transition-all duration-300">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Stage Filter */}
+              <div className="space-y-2">
+                <span className="text-[10px] uppercase tracking-wider text-white/40 font-semibold font-mono block">Project Stage</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {["all", "concept", "prototype", "mvp", "launched"].map((stageOpt) => (
+                    <button
+                      key={stageOpt}
+                      onClick={() => setStageFilter(stageOpt as any)}
+                      className={cn(
+                        "px-3 py-1 rounded-lg border text-xs font-medium transition-all capitalize",
+                        stageFilter === stageOpt
+                          ? "border-[#34D399]/30 bg-[#34D399]/10 text-[#34D399]"
+                          : "border-white/5 bg-transparent text-white/50 hover:bg-white/5"
+                      )}
+                    >
+                      {stageOpt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sorting Filter */}
+              <div className="space-y-2">
+                <span className="text-[10px] uppercase tracking-wider text-white/40 font-semibold font-mono block">Sort Criteria</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { key: "newest", label: "Newest Releases" },
+                    { key: "likes", label: "Most Conviction (Likes)" },
+                    { key: "views", label: "Most Viewed" },
+                  ].map((sortOpt) => (
+                    <button
+                      key={sortOpt.key}
+                      onClick={() => setSortBy(sortOpt.key as any)}
+                      className={cn(
+                        "px-3 py-1 rounded-lg border text-xs font-medium transition-all",
+                        sortBy === sortOpt.key
+                          ? "border-[#34D399]/30 bg-[#34D399]/10 text-[#34D399]"
+                          : "border-white/5 bg-transparent text-white/50 hover:bg-white/5"
+                      )}
+                    >
+                      {sortOpt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
+      {/* Error message */}
       {error && (
-        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-4">
-          <p className="text-red-400 text-sm">{error}</p>
+        <div className="rounded-2xl bg-red-500/10 border border-red-500/20 p-4">
+          <p className="text-red-400 text-xs font-medium">{error}</p>
         </div>
       )}
 
+      {/* Grid rendering */}
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-6 w-6 animate-spin text-white/20" />
         </div>
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((idea) => (
               <IdeaCard key={idea.id} idea={idea} />
             ))}
           </div>
 
           {filtered.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-white/60">No ideas found matching your search.</div>
+            <div className="text-center py-20 rounded-2xl border border-dashed border-white/5 bg-white/[0.005]">
+              <div className="text-white/30 text-xs">No ideas found matching your search.</div>
             </div>
           )}
         </>
@@ -418,7 +689,10 @@ export default function FounderIdeasPage() {
 
       <PostIdeaModal
         isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        onClose={() => {
+          setIsModalOpen(false)
+          setEditingIdea(null)
+        }}
         onSubmit={handleModalSubmit}
         onDelete={editingIdea ? handleModalDelete : undefined}
         editingIdea={editingIdea}
