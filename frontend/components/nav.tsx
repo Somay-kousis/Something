@@ -12,11 +12,11 @@ export function Nav() {
   return (
     <header className="sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-black/30 bg-black/30 border-b border-white/5">
       <div className="mx-auto max-w-6xl px-6 sm:px-8 h-16 flex items-center justify-between">
-        <Link href="#" className="flex items-center gap-2" aria-label="Mutiny home">
+        <Link href="#" className="flex items-center gap-2" aria-label="Something home">
           <div className="h-7 w-7 rounded-sm bg-gradient-to-br from-[#e0c27a] via-[#c6a15b] to-[#8a6a2c] ring-1 ring-white/20 shadow-sm" />
           <div className="leading-tight">
-            <div className="text-lg font-semibold tracking-wide">Mutiny</div>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-white/60">{"Mut • Iny"}</div>
+            <div className="text-lg font-semibold tracking-wide">Something</div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-white/60">{"Nothing • Something"}</div>
           </div>
         </Link>
 
