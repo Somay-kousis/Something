@@ -15,10 +15,10 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import Image from "next/image"
 import { Home, Search, Coins, MessageSquareText, UserRound, Settings, ChevronDown } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarMenuAction } from "@/components/ui/sidebar"
-import { LogoSquare } from "./LogoSquare"
 
 const NAV = [
   { title: "Overview", url: "/investor", icon: Home },
@@ -41,19 +41,29 @@ export function AppInvestorSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton className="justify-between h-14">
                   <div className="flex items-center gap-2">
-                    <LogoSquare />
+                    <div className="relative h-5 w-5 shrink-0 overflow-hidden flex items-center justify-center">
+                      <Image
+                        src="/TheThing.png"
+                        alt="Something Logo"
+                        fill
+                        className="object-contain"
+                        sizes="20px"
+                      />
+                    </div>
 
-                    <span>Mutiny • Investor</span>
+                    <span>Something • Investor</span>
                   </div>
                   <ChevronDown className="opacity-60" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               
-<DropdownMenuContent className="w-(--radix-popper-anchor-width)">
-  <DropdownMenuItem asChild>
-    <Link href="/founder">Switch to Founder Dashboard</Link>
-  </DropdownMenuItem>
-</DropdownMenuContent>
+              <DropdownMenuContent className="w-(--radix-popper-anchor-width) bg-[#0b0b0c] border border-white/5 text-white shadow-xl rounded-xl">
+                <DropdownMenuItem asChild className="hover:bg-white/10 cursor-pointer text-xs rounded-lg py-2">
+                  <Link href="/founder" className="w-full flex items-center">
+                    Switch to Founder
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
 
             </DropdownMenu>
           </SidebarMenuItem>
