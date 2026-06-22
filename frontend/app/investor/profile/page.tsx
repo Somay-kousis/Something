@@ -488,7 +488,7 @@ export default function InvestorProfilePage() {
                   />
                 </div>
                 <div className="text-xs text-white/60">
-                  Profile URL: <span className="text-white">mutiny.to/{handle}</span>
+                  Profile URL: <span className="text-white">something.to/{handle}</span>
                 </div>
               </div>
               <div className="grid gap-2">
