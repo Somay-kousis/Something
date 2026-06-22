@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Sparkles } from "lucide-react"
 
-type Persona = "mut" | "iny" | "blend"
+type Persona = "nothing" | "something" | "combined"
 
 function respond(persona: Persona, text: string) {
   const t = text.toLowerCase()
@@ -41,8 +41,8 @@ function respond(persona: Persona, text: string) {
       : "Prove trust before cash. 5 champions, weekly cadence, visible progress.",
   ]
 
-  if (persona === "mut") return mut
-  if (persona === "iny") return iny
+  if (persona === "nothing") return mut
+  if (persona === "something") return iny
   return [
     mut[0],
     iny[0],
@@ -53,7 +53,7 @@ function respond(persona: Persona, text: string) {
 }
 
 export function DuoSynth() {
-  const [persona, setPersona] = useState<Persona>("blend")
+  const [persona, setPersona] = useState<Persona>("combined")
   const [idea, setIdea] = useState(
     "A marketplace connecting climate founders with hardware engineers; community-funded with milestone releases.",
   )
@@ -75,9 +75,9 @@ export function DuoSynth() {
   return (
     <section id="duo">
       <div className="mb-6">
-        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">The duo, unfiltered</h2>
+        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-outfit, sans-serif)" }}>The duo, unfiltered</h2>
         <p className="text-white/70 text-sm sm:text-base mt-2 max-w-2xl">
-          Mut challenges viability; Iny champions people and purpose. Pick a voice or blend both.
+          Nothing challenges viability. Something champions people and purpose. Pick a voice or combine both.
         </p>
       </div>
 
@@ -85,36 +85,36 @@ export function DuoSynth() {
         <div className="rounded-2xl border border-white/10 bg-black/40 p-4 sm:p-6">
           <div className="flex flex-wrap gap-2 mb-3">
             <button
-              onClick={() => setPersona("mut")}
-              aria-pressed={persona === "mut"}
+              onClick={() => setPersona("nothing")}
+              aria-pressed={persona === "nothing"}
               className={cn(
                 "text-xs rounded-full px-3 py-1.5 border transition",
-                persona === "mut" ? "border-[#e3c27a] bg-[#e3c27a]/10 text-white" : "border-white/15 text-white/80",
+                persona === "nothing" ? "border-[#e3c27a] bg-[#e3c27a]/10 text-white" : "border-white/15 text-white/80",
               )}
             >
-              Mut • Investor
+              Nothing • Investor
             </button>
             <button
-              onClick={() => setPersona("iny")}
-              aria-pressed={persona === "iny"}
+              onClick={() => setPersona("something")}
+              aria-pressed={persona === "something"}
               className={cn(
                 "text-xs rounded-full px-3 py-1.5 border transition",
-                persona === "iny"
+                persona === "something"
                   ? "border-emerald-400/60 bg-emerald-400/10 text-white"
                   : "border-white/15 text-white/80",
               )}
             >
-              Iny • CEO
+              Something • Builder
             </button>
             <button
-              onClick={() => setPersona("blend")}
-              aria-pressed={persona === "blend"}
+              onClick={() => setPersona("combined")}
+              aria-pressed={persona === "combined"}
               className={cn(
                 "text-xs rounded-full px-3 py-1.5 border transition",
-                persona === "blend" ? "border-white/40 bg-white/10 text-white" : "border-white/15 text-white/80",
+                persona === "combined" ? "border-white/40 bg-white/10 text-white" : "border-white/15 text-white/80",
               )}
             >
-              Blend
+              Combined
             </button>
           </div>
 
