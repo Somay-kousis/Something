@@ -2,75 +2,7 @@
   <br/>
 
   <!-- Animated brand logo -->
-  <svg width="220" height="220" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <style>
-      @keyframes pulse {
-        0%, 100% { opacity: 0.25; transform: scale(1); }
-        50% { opacity: 0.45; transform: scale(1.06); }
-      }
-      @keyframes rotate {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-      @keyframes core-pulse {
-        0%, 100% { opacity: 0.75; }
-        50% { opacity: 1; }
-      }
-      .glow-layer {
-        transform-origin: 120px 120px;
-        animation: pulse 8s ease-in-out infinite;
-      }
-      .orbit-line {
-        transform-origin: 120px 120px;
-        animation: rotate 28s linear infinite;
-      }
-      .core-element {
-        animation: core-pulse 3.5s ease-in-out infinite;
-      }
-    </style>
-    
-    <!-- Glowing backdrop meshes -->
-    <g class="glow-layer">
-      <circle cx="120" cy="120" r="85" fill="url(#glowGradient)" filter="url(#blurFilter)" />
-    </g>
-
-    <!-- Rotating orbit marker -->
-    <g class="orbit-line">
-      <circle cx="120" cy="120" r="75" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
-      <circle cx="45" cy="120" r="3" fill="#8B5CF6" />
-      <circle cx="195" cy="120" r="3.5" fill="#34D399" />
-    </g>
-
-    <!-- Doubt / Nothing - Amber ring (dashed) -->
-    <circle cx="95" cy="120" r="48" stroke="#F59E0B" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.65" />
-    
-    <!-- Belief / Something - Emerald ring (solid) -->
-    <circle cx="145" cy="120" r="48" stroke="#34D399" stroke-width="1.5" opacity="0.85" />
-    
-    <!-- Intersection area gradient overlay -->
-    <path d="M 120 78 A 48 48 0 0 1 120 162 A 48 48 0 0 1 120 78 Z" fill="url(#intersectionGradient)" opacity="0.5" />
-    
-    <!-- Balanced core alignment glyph -->
-    <g class="core-element">
-      <path d="M120 95 L120 145" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M110 120 L130 120" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
-    </g>
-
-    <defs>
-      <filter id="blurFilter" x="-30" y="-30" width="300" height="300" filterUnits="userSpaceOnUse">
-        <feGaussianBlur stdDeviation="25" />
-      </filter>
-      <radialGradient id="glowGradient" cx="120" cy="120" r="90" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#8B5CF6" />
-        <stop offset="50%" stop-color="#34D399" stop-opacity="0.15" />
-        <stop offset="100%" stop-color="#000000" stop-opacity="0" />
-      </radialGradient>
-      <linearGradient id="intersectionGradient" x1="120" y1="78" x2="120" y2="162" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stop-color="#34D399" />
-        <stop offset="100%" stop-color="#F59E0B" />
-      </linearGradient>
-    </defs>
-  </svg>
+  <img src="logo.svg" width="220" height="220" alt="something logo" />
 
   <h1 style="font-size: 30px; font-weight: 500; letter-spacing: -0.04em; color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin-top: 10px; border-bottom: none; margin-bottom: 0;">something</h1>
   <p style="font-size: 10.5px; font-family: monospace; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-top: 6px; margin-bottom: 30px;">ideas find their people • capital finds its purpose</p>
