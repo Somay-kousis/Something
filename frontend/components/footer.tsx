@@ -6,7 +6,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-6 sm:px-8 py-12">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-sm">
           <div className="space-y-2">
-            <div className="font-semibold">Mutiny</div>
+            <div className="font-semibold">Something</div>
             <p className="text-white/60">Two AIs. One mission: align people and capital around real ideas.</p>
           </div>
           <div>
@@ -46,7 +46,7 @@ export function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-8 text-xs text-white/50">© {new Date().getFullYear()} Mutiny. All rights reserved.</div>
+        <div className="mt-8 text-xs text-white/50">© {new Date().getFullYear()} Something. All rights reserved.</div>
       </div>
     </footer>
   )
