@@ -531,7 +531,7 @@ export default function FounderChatsPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6">
+    <div className="mx-auto w-full max-w-5xl space-y-6">
       {/* Sleek inline header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div className="flex flex-col gap-1">
@@ -561,7 +561,7 @@ export default function FounderChatsPage() {
       <div className="grid lg:grid-cols-[340px_minmax(0,1fr)] gap-4 lg:gap-6">
         {/* Left Side: Threads panel */}
         <section className={cn("lg:block", showOnlyChatOnMobile ? "hidden" : "block")}>
-          <div className="rounded-xl border border-white/5 bg-white/[0.01] backdrop-blur-xl p-4 flex flex-col h-[600px] lg:h-[700px]">
+          <div className="rounded-xl border border-white/5 bg-black/20 p-4 flex flex-col h-[600px] lg:h-[700px]">
             <div className="flex flex-col gap-2 mb-4">
               <div className="relative">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/30" />
@@ -569,13 +569,13 @@ export default function FounderChatsPage() {
                   placeholder="Search chats..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="h-9 w-full pl-9 bg-black/40 border-white/5 text-white placeholder:text-white/30 rounded-lg focus-visible:ring-[#34D399] focus-visible:border-[#34D399]/20"
+                  className="h-9 w-full pl-9 bg-black/40 border-white/5 text-white placeholder:text-white/30 rounded-lg focus-visible:ring-brand-accent focus-visible:border-brand-accent/20"
                 />
               </div>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as Category)}
-                className="h-9 rounded-lg bg-black/40 border border-white/5 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#34D399] cursor-pointer"
+                className="h-9 rounded-lg bg-black/40 border border-white/5 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-brand-accent cursor-pointer"
                 aria-label="Filter conversations"
               >
                 <option value="all" className="bg-[#0c0d0f]">All Conversations</option>
@@ -588,7 +588,7 @@ export default function FounderChatsPage() {
             <div className="flex-1 overflow-y-auto space-y-1 pr-1" style={{ scrollbarWidth: "thin" }}>
               {isLoadingThreads && (
                 <div className="p-8 text-center flex flex-col items-center justify-center gap-2">
-                  <Loader2 className="h-6 w-6 animate-spin text-[#34D399]" />
+                  <Loader2 className="h-6 w-6 animate-spin text-brand-accent" />
                   <span className="text-xs text-white/40">Loading workspace threads...</span>
                 </div>
               )}
@@ -607,27 +607,27 @@ export default function FounderChatsPage() {
                       className={cn(
                         "w-full rounded-lg px-3 py-3 text-left transition-all duration-300 relative group flex gap-3 items-start border border-transparent",
                         active
-                          ? "bg-white/[0.05] border-white/10 shadow-lg"
-                          : "hover:bg-white/[0.01] hover:border-white/[0.02]"
+                          ? "bg-white/[0.04] border-white/5"
+                          : "hover:bg-white/[0.01]"
                       )}
                       aria-pressed={active}
                     >
                       {active && (
-                        <div className="absolute left-0 top-3 bottom-3 w-1 bg-violet-500 rounded-r-full shadow-[0_0_8px_rgba(167,139,250,0.6)]" />
+                        <div className="absolute left-0 top-3 bottom-3 w-[2px] bg-brand-accent rounded-r-full" />
                       )}
                       <div className="relative shrink-0">
                         <div
                           className={cn(
                             "grid size-10 place-items-center rounded-full text-xs font-semibold tracking-wider font-mono",
                             active
-                              ? "bg-violet-500/20 text-violet-300"
+                              ? "bg-brand-accent/10 text-brand-accent"
                               : "bg-white/5 text-white/70 group-hover:bg-white/10"
                           )}
                         >
                           {initials(t.name)}
                         </div>
                         {t.isOnline && (
-                          <div className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-[#34D399] border border-black shadow-[0_0_6px_#34D399]" />
+                          <div className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-brand-accent border border-black" />
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -645,7 +645,7 @@ export default function FounderChatsPage() {
                             #{t.category}
                           </span>
                           {t.unread > 0 && (
-                            <span className="flex items-center justify-center h-4.5 min-w-[18px] px-1.5 text-[9px] font-bold bg-violet-600 text-white rounded-full shadow-[0_0_8px_rgba(139,92,246,0.4)]">
+                            <span className="flex items-center justify-center h-4.5 min-w-[18px] px-1.5 text-[9px] font-bold bg-brand-accent text-black rounded-full">
                               {t.unread}
                             </span>
                           )}
@@ -660,7 +660,7 @@ export default function FounderChatsPage() {
 
         {/* Right Side: Message pane */}
         <section className={cn("lg:block", showOnlyListOnMobile ? "hidden" : "block")}>
-          <div className="rounded-xl border border-white/5 bg-white/[0.01] backdrop-blur-xl overflow-hidden flex flex-col h-[600px] lg:h-[700px]">
+          <div className="rounded-xl border border-white/5 bg-black/20 overflow-hidden flex flex-col h-[600px] lg:h-[700px]">
             {/* Thread Header */}
             <div className="flex h-14 items-center gap-3 px-4 border-b border-white/5 bg-black/25">
               <button
@@ -673,11 +673,11 @@ export default function FounderChatsPage() {
               {activeThread ? (
                 <>
                   <div className="relative">
-                    <div className="grid size-9 place-items-center rounded-full bg-violet-500/15 text-violet-300 text-xs font-semibold tracking-wider font-mono">
+                    <div className="grid size-9 place-items-center rounded-full bg-white/5 text-white/70 text-xs font-semibold tracking-wider font-mono">
                       {initials(activeThread.name)}
                     </div>
                     {activeThread.isOnline && (
-                      <div className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-[#34D399] border border-black shadow-[0_0_6px_#34D399]" />
+                      <div className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-brand-accent border border-black" />
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -687,7 +687,7 @@ export default function FounderChatsPage() {
                     <div className="flex items-center gap-1.5 text-[10px] text-white/40 mt-0.5">
                       {activeThread.isOnline ? (
                         <>
-                          <span className="size-1.5 rounded-full bg-[#34D399] shadow-[0_0_4px_#34D399]" />
+                          <span className="size-1.5 rounded-full bg-brand-accent" />
                           <span>Connected</span>
                         </>
                       ) : (
@@ -744,10 +744,10 @@ export default function FounderChatsPage() {
                       <div className="max-w-[85%] sm:max-w-[70%] space-y-1.5">
                         <div
                           className={cn(
-                            "rounded-2xl px-4 py-3 text-[13px] sm:text-sm leading-relaxed shadow-md border",
+                            "rounded-xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed border",
                             isYou
-                              ? "bg-violet-950/45 text-white border-violet-500/25 rounded-br-none"
-                              : "bg-zinc-900/90 text-zinc-100 border-white/10 rounded-bl-none"
+                              ? "bg-brand-accent/5 text-white border-brand-accent/15 rounded-br-none"
+                              : "bg-white/[0.02] text-white/80 border-white/5 rounded-bl-none"
                           )}
                         >
                           <div className="whitespace-pre-wrap break-words">{m.text}</div>
@@ -761,8 +761,8 @@ export default function FounderChatsPage() {
                           <span>{formatTime(m.when)}</span>
                           {showDeliveryStatus && (
                             <span className="flex items-center">
-                              {m.seen ? (
-                                <CheckCheck className="h-3.5 w-3.5 text-violet-400" />
+                           {m.seen ? (
+                                <CheckCheck className="h-3.5 w-3.5 text-brand-accent" />
                               ) : (
                                 <CheckCheck className="h-3.5 w-3.5 text-white/30" />
                               )}
@@ -797,7 +797,7 @@ export default function FounderChatsPage() {
                   disabled={!activeThread}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  className="w-full min-h-[42px] max-h-[120px] h-[42px] py-3 px-4 pr-4 rounded-xl bg-black/50 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-violet-500 focus:border-violet-500/40 resize-none overflow-y-auto text-sm leading-relaxed"
+                  className="w-full min-h-[42px] max-h-[120px] h-[42px] py-3 px-4 pr-4 rounded-xl bg-black/50 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-brand-accent focus:border-brand-accent/20 resize-none overflow-y-auto text-sm leading-relaxed"
                   rows={1}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
@@ -811,10 +811,10 @@ export default function FounderChatsPage() {
                   size="icon"
                   disabled={!activeThread || text.trim().length === 0}
                   className={cn(
-                    "size-10 rounded-full transition-all duration-300 flex-shrink-0 cursor-pointer",
+                    "size-10 rounded-full transition-all flex-shrink-0 cursor-pointer",
                     text.trim().length > 0
-                      ? "bg-violet-600 text-white hover:bg-violet-500 hover:scale-[1.02] shadow-lg shadow-violet-600/15"
-                      : "bg-white/5 text-white/30 cursor-not-allowed border border-white/5"
+                      ? "bg-white text-black hover:bg-brand-accent hover:text-black"
+                      : "bg-white/5 text-white/35 cursor-not-allowed border border-white/5"
                   )}
                   aria-label="Send message"
                 >

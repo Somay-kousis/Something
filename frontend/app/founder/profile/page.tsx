@@ -24,7 +24,7 @@ import {
   Globe,
   Briefcase,
   GraduationCap,
-  Sparkles,
+  Compass,
   Loader2,
   AlertTriangle,
   CheckCircle,
@@ -118,52 +118,52 @@ const MOCK_PROFILE: ProfileData = {
 // Accent palette configurations (matched with settings)
 const ACCENTS = {
   emerald: {
-    name: "Emerald Green",
-    text: "text-emerald-400",
-    bg: "bg-emerald-500",
-    border: "border-emerald-500/20",
-    glow: "shadow-[0_0_15px_rgba(52,211,153,0.15)]",
-    borderHighlight: "border-emerald-500",
-    textHighlight: "text-emerald-400",
-    btnBg: "bg-emerald-500 text-black hover:bg-emerald-600",
-    ring: "focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40",
-    color: "#34D399",
+    name: "Console Sage",
+    text: "text-[#8EA38E]",
+    bg: "bg-[#8EA38E]",
+    border: "border-[#8EA38E]/25",
+    glow: "",
+    borderHighlight: "border-[#8EA38E]",
+    textHighlight: "text-[#8EA38E]",
+    btnBg: "bg-[#8EA38E] text-black hover:bg-[#8EA38E]/90",
+    ring: "focus-visible:ring-[#8EA38E]/20 focus-visible:border-[#8EA38E]/30",
+    color: "#8EA38E",
   },
   indigo: {
-    name: "Indigo Blue",
-    text: "text-indigo-400",
-    bg: "bg-indigo-500",
-    border: "border-indigo-500/20",
-    glow: "shadow-[0_0_15px_rgba(99,102,241,0.15)]",
-    borderHighlight: "border-indigo-500",
-    textHighlight: "text-indigo-400",
-    btnBg: "bg-indigo-500 text-white hover:bg-indigo-600",
-    ring: "focus-visible:ring-indigo-500/20 focus-visible:border-indigo-500/40",
-    color: "#6366F1",
+    name: "Tactile Chalk",
+    text: "text-[#E2DFD5]",
+    bg: "bg-[#E2DFD5]",
+    border: "border-[#E2DFD5]/25",
+    glow: "",
+    borderHighlight: "border-[#E2DFD5]",
+    textHighlight: "text-[#E2DFD5]",
+    btnBg: "bg-[#E2DFD5] text-black hover:bg-[#E2DFD5]/90",
+    ring: "focus-visible:ring-[#E2DFD5]/20 focus-visible:border-[#E2DFD5]/30",
+    color: "#E2DFD5",
   },
   violet: {
-    name: "Cyber Violet",
-    text: "text-violet-400",
-    bg: "bg-violet-500",
-    border: "border-violet-500/20",
-    glow: "shadow-[0_0_15px_rgba(139,92,246,0.15)]",
-    borderHighlight: "border-violet-500",
-    textHighlight: "text-violet-400",
-    btnBg: "bg-violet-500 text-white hover:bg-violet-600",
-    ring: "focus-visible:ring-violet-500/20 focus-visible:border-violet-500/40",
-    color: "#8B5CF6",
+    name: "Anodized Steel",
+    text: "text-[#8293A4]",
+    bg: "bg-[#8293A4]",
+    border: "border-[#8293A4]/25",
+    glow: "",
+    borderHighlight: "border-[#8293A4]",
+    textHighlight: "text-[#8293A4]",
+    btnBg: "bg-[#8293A4] text-black hover:bg-[#8293A4]/90",
+    ring: "focus-visible:ring-[#8293A4]/20 focus-visible:border-[#8293A4]/30",
+    color: "#8293A4",
   },
   amber: {
-    name: "Amber Gold",
-    text: "text-amber-400",
-    bg: "bg-amber-500",
-    border: "border-amber-500/20",
-    glow: "shadow-[0_0_15px_rgba(245,158,11,0.15)]",
-    borderHighlight: "border-amber-500",
-    textHighlight: "text-amber-400",
-    btnBg: "bg-amber-500 text-black hover:bg-amber-600",
-    ring: "focus-visible:ring-amber-500/20 focus-visible:border-amber-500/40",
-    color: "#F59E0B",
+    name: "Earthy Copper",
+    text: "text-[#C88E72]",
+    bg: "bg-[#C88E72]",
+    border: "border-[#C88E72]/25",
+    glow: "",
+    borderHighlight: "border-[#C88E72]",
+    textHighlight: "text-[#C88E72]",
+    btnBg: "bg-[#C88E72] text-black hover:bg-[#C88E72]/90",
+    ring: "focus-visible:ring-[#C88E72]/20 focus-visible:border-[#C88E72]/30",
+    color: "#C88E72",
   },
 }
 
@@ -292,6 +292,9 @@ export default function FounderProfilePage() {
     }
     setProfile(finalData)
     localStorage.setItem("founder_profile_data", JSON.stringify(finalData))
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("founder-profile-update"))
+    }
   }
 
   // Open Dialog Editors
@@ -554,7 +557,7 @@ export default function FounderProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 pt-4 pb-20 relative">
+    <div className="mx-auto max-w-4xl space-y-12 pt-4 pb-20 relative">
       
       {/* Toast Alert container */}
       <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none">
@@ -569,7 +572,7 @@ export default function FounderProfilePage() {
               {t.type === "success" && <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400" />}
               {t.type === "warning" && <AlertTriangle className="h-4.5 w-4.5 text-amber-400" />}
               {t.type === "error" && <AlertTriangle className="h-4.5 w-4.5 text-red-500" />}
-              {t.type === "info" && <Sparkles className="h-4.5 w-4.5 text-blue-400" />}
+              {t.type === "info" && <CheckCircle2 className="h-4.5 w-4.5 text-blue-400" />}
             </div>
             <div className="flex-1 space-y-0.5">
               <h5 className="text-xs font-bold text-white font-mono uppercase tracking-wider">{t.title}</h5>
@@ -597,6 +600,9 @@ export default function FounderProfilePage() {
             if (confirm("Reset profile credentials to defaults?")) {
               localStorage.setItem("founder_profile_data", JSON.stringify(MOCK_PROFILE))
               fetchLocalProfile()
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new Event("founder-profile-update"))
+              }
               addToast("Database Reset", "Founder details reverted to mock defaults.", "info")
             }
           }}
@@ -611,92 +617,90 @@ export default function FounderProfilePage() {
         {/* Profile left blocks (2 cols) */}
         <div className="space-y-6 md:col-span-2">
           
-          {/* 1. Header Profile details Card */}
-          <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl hover:border-white/10 transition-all duration-300 shadow-xl rounded-2xl overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
-                  {/* Glowing Avatar representation */}
-                  <div className="size-20 rounded-full overflow-hidden border-2 border-white/10 shrink-0 bg-white/5 flex items-center justify-center relative shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
-                    {profile.avatarUrl ? (
-                      profile.avatarUrl.startsWith("linear-gradient") ? (
-                        <div className="size-full animate-pulse" style={{ background: profile.avatarUrl }} />
-                      ) : (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={profile.avatarUrl} alt="Avatar" className="size-full object-cover" />
-                      )
+          {/* 1. Header Profile details Cardless */}
+          <div className="py-6 border-b border-white/5">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
+                {/* Glowing Avatar representation */}
+                <div className="size-20 rounded-full overflow-hidden border-2 border-white/10 shrink-0 bg-white/5 flex items-center justify-center relative shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
+                  {profile.avatarUrl ? (
+                    profile.avatarUrl.startsWith("linear-gradient") ? (
+                      <div className="size-full animate-pulse" style={{ background: profile.avatarUrl }} />
                     ) : (
-                      <span className="text-2xl font-bold font-mono text-white/60">{getInitials(profile.name)}</span>
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={profile.avatarUrl} alt="Avatar" className="size-full object-cover" />
+                    )
+                  ) : (
+                    <span className="text-2xl font-bold font-mono text-white/60">{getInitials(profile.name)}</span>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+                    <h1 className="text-2xl font-bold tracking-tight text-white font-outfit">
+                      {profile.name}
+                    </h1>
+                    {profile.isVerified && (
+                      <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[9px] font-mono font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full border">
+                        Verified Cohort Member
+                      </Badge>
                     )}
                   </div>
-
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-                      <h1 className="text-2xl font-bold tracking-tight text-white font-outfit">
-                        {profile.name}
-                      </h1>
-                      {profile.isVerified && (
-                        <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[9px] font-mono font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full border">
-                          Verified Cohort Member
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-white/80 text-sm font-sans">{profile.headline}</p>
-                    <div className="flex items-center justify-center sm:justify-start gap-1.5 text-xs text-white/45 font-mono pt-0.5">
-                      <MapPin className="h-3.5 w-3.5" style={{ color: activeAccent.color }} />
-                      <span>{profile.location}</span>
-                    </div>
+                  <p className="text-white/80 text-sm font-sans">{profile.headline}</p>
+                  <div className="flex items-center justify-center sm:justify-start gap-1.5 text-xs text-white/45 font-mono pt-0.5">
+                    <MapPin className="h-3.5 w-3.5" style={{ color: activeAccent.color }} />
+                    <span>{profile.location}</span>
                   </div>
                 </div>
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="border border-white/5 text-white/50 hover:bg-white/5 hover:text-white rounded-full h-8 w-8 shrink-0 cursor-pointer"
-                  aria-label="Edit Profile Header"
-                  onClick={() => openEditModal("header")}
-                >
-                  <Pencil className="h-3.5 w-3.5" />
-                </Button>
               </div>
 
-              {/* Social items and status footer */}
-              <div className="mt-6 pt-4.5 border-t border-white/5 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-1.5 text-xs text-white/40 font-sans">
-                  <CheckCircle className="h-4 w-4" style={{ color: activeAccent.color }} />
-                  <span>Available for match connections & escrow pooling</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  {profile.socials.linkedin && (
-                    <a href={profile.socials.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn Profile">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/5 rounded-full">
-                        <Linkedin className="h-4 w-4" />
-                      </Button>
-                    </a>
-                  )}
-                  {profile.socials.twitter && (
-                    <a href={profile.socials.twitter} target="_blank" rel="noreferrer" aria-label="Twitter Profile">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/5 rounded-full">
-                        <Twitter className="h-4 w-4" />
-                      </Button>
-                    </a>
-                  )}
-                  {profile.socials.website && (
-                    <a href={profile.socials.website} target="_blank" rel="noreferrer" aria-label="Personal Website">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/5 rounded-full">
-                        <Globe className="h-4 w-4" />
-                      </Button>
-                    </a>
-                  )}
-                </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="border border-white/5 text-white/50 hover:bg-white/5 hover:text-white rounded-full h-8 w-8 shrink-0 cursor-pointer"
+                aria-label="Edit Profile Header"
+                onClick={() => openEditModal("header")}
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+
+            {/* Social items and status footer */}
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 pt-2">
+              <div className="flex items-center gap-1.5 text-xs text-white/40 font-sans">
+                <CheckCircle className="h-4 w-4" style={{ color: activeAccent.color }} />
+                <span>Available for match connections & escrow pooling</span>
               </div>
-            </CardContent>
-          </Card>
+              <div className="flex items-center gap-1">
+                {profile.socials.linkedin && (
+                  <a href={profile.socials.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn Profile">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/5 rounded-full">
+                      <Linkedin className="h-4 w-4" />
+                    </Button>
+                  </a>
+                )}
+                {profile.socials.twitter && (
+                  <a href={profile.socials.twitter} target="_blank" rel="noreferrer" aria-label="Twitter Profile">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/5 rounded-full">
+                      <Twitter className="h-4 w-4" />
+                    </Button>
+                  </a>
+                )}
+                {profile.socials.website && (
+                  <a href={profile.socials.website} target="_blank" rel="noreferrer" aria-label="Personal Website">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/5 rounded-full">
+                      <Globe className="h-4 w-4" />
+                    </Button>
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
 
           {/* 2. Biography Synopsis */}
-          <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl hover:border-white/10 transition-all">
-            <CardHeader className="flex flex-row items-center justify-between border-b border-white/5 pb-3 p-6">
-              <CardTitle className="text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">Biography Synopsis</CardTitle>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b border-white/5 pb-3">
+              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">Biography Synopsis</h3>
               <Button
                 variant="ghost"
                 size="icon"
@@ -706,19 +710,19 @@ export default function FounderProfilePage() {
               >
                 <Pencil className="h-3.5 w-3.5" />
               </Button>
-            </CardHeader>
-            <CardContent className="pt-5 p-6">
-              <p className="text-white/70 text-sm leading-relaxed font-sans">{profile.about || "No biography info entered yet. Complete profile settings to connect with prospective investors."}</p>
-            </CardContent>
-          </Card>
+            </div>
+            <p className="text-white/60 text-sm leading-relaxed font-sans pt-1">
+              {profile.about || "No biography info entered yet. Complete profile settings to connect with prospective investors."}
+            </p>
+          </div>
 
           {/* 3. Skill tags component manager */}
-          <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl hover:border-white/10 transition-all">
-            <CardHeader className="border-b border-white/5 pb-3.5 p-6">
-              <CardTitle className="text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">Expertise Tags</CardTitle>
-              <CardDescription className="text-white/35 text-[10px] pt-1">Type core expertise tag below and press Enter or comma to append</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-5 p-6 space-y-4">
+          <div className="space-y-4">
+            <div className="border-b border-white/5 pb-3">
+              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">Expertise Tags</h3>
+              <p className="text-white/35 text-[9px] font-mono uppercase tracking-wider pt-1">Type core expertise tag below and press Enter or comma to append</p>
+            </div>
+            <div className="space-y-4 pt-1">
               {/* Flex Tags list */}
               <div className="flex flex-wrap gap-2">
                 {(profile.skills || []).map((skill) => (
@@ -749,15 +753,15 @@ export default function FounderProfilePage() {
                 onKeyDown={handleAddSkill}
                 className={cn("bg-black/40 border-white/5 text-xs text-white rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
               />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* 4. Experience Timeline */}
-          <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl hover:border-white/10 transition-all">
-            <CardHeader className="flex flex-row items-center justify-between border-b border-white/5 pb-3.5 p-6">
-              <CardTitle className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b border-white/5 pb-3">
+              <h3 className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">
                 <Briefcase className="h-3.5 w-3.5" style={{ color: activeAccent.color }} /> Professional Track Record
-              </CardTitle>
+              </h3>
               <Button
                 variant="outline"
                 size="sm"
@@ -766,19 +770,19 @@ export default function FounderProfilePage() {
               >
                 <Plus className="h-3.5 w-3.5" /> Add Role
               </Button>
-            </CardHeader>
-            <CardContent className="pt-6 p-6 space-y-6 relative">
+            </div>
+            <div className="space-y-6 relative pt-2">
               {(profile.experience || []).length > 0 ? (
                 <>
                   {/* Visual timeline connector line */}
-                  <div className="absolute left-[33px] top-8 bottom-10 w-[2px] bg-white/5 pointer-events-none" />
+                  <div className="absolute left-[11px] top-4 bottom-4 w-[1px] bg-white/5 pointer-events-none" />
 
                   {(profile.experience || []).map((exp, index) => (
                     <div key={index} className="flex gap-4 relative group/item">
-                      <div className="size-6 rounded-full bg-white/5 border border-white/10 text-white/70 grid place-items-center z-10 text-[9px] shrink-0 mt-1 font-mono font-semibold">
+                      <div className="size-6 rounded-full bg-[#0a0a0c] border border-white/15 text-white/60 grid place-items-center z-10 text-[9px] shrink-0 mt-1 font-mono font-semibold">
                         {index + 1}
                       </div>
-                      <div className="space-y-1.5 flex-1 min-w-0 bg-white/[0.005] border border-white/[0.02] hover:border-white/5 hover:bg-white/[0.015] p-3 rounded-xl transition duration-300">
+                      <div className="space-y-1.5 flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div className="space-y-0.5">
                             <h3 className="font-semibold text-sm text-white font-outfit leading-tight">{exp.role}</h3>
@@ -795,7 +799,7 @@ export default function FounderProfilePage() {
                               className="h-6 w-6 text-white/30 hover:text-white hover:bg-white/5 rounded"
                               aria-label={`Edit role at ${exp.company}`}
                             >
-                              <Pencil className="h-3 w-3" />
+                              <Pencil className="h-3.5 w-3.5" />
                             </Button>
                             <Button
                               variant="ghost"
@@ -804,11 +808,11 @@ export default function FounderProfilePage() {
                               className="h-6 w-6 text-red-500/50 hover:text-red-400 hover:bg-red-500/5 rounded"
                               aria-label={`Delete role at ${exp.company}`}
                             >
-                              <Trash2 className="h-3 w-3" />
+                              <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           </div>
                         </div>
-                        <p className="text-xs text-white/50 leading-relaxed font-sans">{exp.description}</p>
+                        <p className="text-sm text-white/60 leading-relaxed font-sans">{exp.description}</p>
                       </div>
                     </div>
                   ))}
@@ -818,15 +822,16 @@ export default function FounderProfilePage() {
                   No professional history listed. Complete credentials to index your profile.
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* 5. Education Academics */}
-          <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl hover:border-white/10 transition-all">
-            <CardHeader className="flex flex-row items-center justify-between border-b border-white/5 pb-3.5 p-6">
-              <CardTitle className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">
+          {/* 5. Education Academics */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b border-white/5 pb-3">
+              <h3 className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">
                 <GraduationCap className="h-3.5 w-3.5" style={{ color: activeAccent.color }} /> Academic Background
-              </CardTitle>
+              </h3>
               <Button
                 variant="outline"
                 size="sm"
@@ -835,14 +840,14 @@ export default function FounderProfilePage() {
               >
                 <Plus className="h-3.5 w-3.5" /> Add Academic
               </Button>
-            </CardHeader>
-            <CardContent className="pt-5 p-6 space-y-4">
+            </div>
+            <div className="space-y-4 pt-2">
               {(profile.education || []).length > 0 ? (
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-2">
                   {(profile.education || []).map((edu, index) => (
                     <div
                       key={index}
-                      className="flex items-start gap-4 p-3 rounded-xl border border-white/[0.02] bg-white/[0.005] hover:border-white/5 hover:bg-white/[0.015] transition duration-300"
+                      className="flex items-start gap-4 p-3.5 rounded-xl border border-white/5 bg-black/20 hover:border-white/10 transition duration-300"
                     >
                       <div className="size-8 rounded-lg bg-white/5 border border-white/10 text-white/60 grid place-items-center shrink-0 shadow">
                         <GraduationCap className="h-4 w-4" style={{ color: activeAccent.color }} />
@@ -880,18 +885,19 @@ export default function FounderProfilePage() {
                   No academic credentials verified.
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* 6. Fields of Interest */}
-          <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl hover:border-white/10 transition-all">
-            <CardHeader className="border-b border-white/5 pb-3.5 p-6">
-              <CardTitle className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">
-                <Sparkles className="h-3.5 w-3.5" style={{ color: activeAccent.color }} /> Core Interests & Fields
-              </CardTitle>
-              <CardDescription className="text-white/35 text-[10px] pt-1">Type fields of interest below and press Enter or comma to append</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-5 p-6 space-y-4">
+          {/* 6. Fields of Interest */}
+          <div className="space-y-4">
+            <div className="border-b border-white/5 pb-3">
+              <h3 className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">
+                <Compass className="h-3.5 w-3.5" style={{ color: activeAccent.color }} /> Core Interests & Fields
+              </h3>
+              <p className="text-white/35 text-[9px] font-mono uppercase tracking-wider pt-1">Type fields of interest below and press Enter or comma to append</p>
+            </div>
+            <div className="space-y-4 pt-1">
               <div className="flex flex-wrap gap-2">
                 {(profile.interests || []).map((interest) => (
                   <Badge
@@ -920,23 +926,23 @@ export default function FounderProfilePage() {
                 onKeyDown={handleAddInterest}
                 className={cn("bg-black/40 border-white/5 text-xs text-white rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
               />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
         </div>
 
         {/* Sidebar right blocks (1 col) */}
         <div className="space-y-6 md:col-span-1 md:sticky md:top-6">
           
-          {/* Profile Completion Card */}
-          <Card className="bg-white/[0.015] border border-white/[0.06] hover:border-white/10 backdrop-blur-xl shadow-xl rounded-2xl overflow-hidden transition-all duration-300">
-            <CardHeader className="pb-3.5 p-6 border-b border-white/5">
-              <CardTitle className="text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">Completeness Score</CardTitle>
-              <CardDescription className="text-white/40 text-[11px] pt-1 leading-relaxed">
+          {/* Profile Completion Panel */}
+          <div className="space-y-4">
+            <div className="border-b border-white/5 pb-3">
+              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">Completeness Score</h3>
+              <p className="text-white/40 text-[11px] pt-1 leading-relaxed">
                 Connect missing nodes and complete data blocks to verify developer index status.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-5 p-6 space-y-5">
+              </p>
+            </div>
+            <div className="space-y-5 pt-1">
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs font-semibold font-mono">
                   <span className="text-white/40 uppercase tracking-wider">Scoring Index</span>
@@ -947,7 +953,7 @@ export default function FounderProfilePage() {
 
               {/* Completion checklist tasks */}
               <div className="space-y-2 border-t border-white/5 pt-4">
-                <span className="text-[9px] font-mono uppercase tracking-wider text-white/30">Quick completion checklist</span>
+                <span className="text-[9px] font-mono uppercase tracking-wider text-white/35">Quick checklist</span>
                 <div className="space-y-1">
                   {[
                     { text: "Add biography description", done: !!(profile.about && profile.about.trim().length > 10) },
@@ -971,22 +977,22 @@ export default function FounderProfilePage() {
                       {task.done ? (
                         <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
                       ) : (
-                        <ChevronRight className="h-3.5 w-3.5 opacity-30 shrink-0 group-hover:translate-x-0.5 transition" />
+                        <ChevronRight className="h-3.5 w-3.5 opacity-35 shrink-0 group-hover:translate-x-0.5 transition" />
                       )}
                     </button>
                   ))}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          {/* Verification connections card */}
-          <Card className="bg-white/[0.015] border border-white/[0.06] hover:border-white/10 backdrop-blur-xl shadow-xl rounded-2xl overflow-hidden transition-all duration-300">
-            <CardHeader className="pb-3.5 p-6 border-b border-white/5">
-              <CardTitle className="text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">Simulated Verification Nodes</CardTitle>
-              <CardDescription className="text-white/40 text-[11px] pt-1">Verify third-party authentication certificates</CardDescription>
-            </CardHeader>
-            <CardContent className="pt-5 p-6 space-y-3.5">
+          {/* Verification connections panel */}
+          <div className="space-y-4">
+            <div className="border-b border-white/5 pb-3">
+              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">Verification Nodes</h3>
+              <p className="text-white/40 text-[11px] pt-1">Verify third-party authentication certificates</p>
+            </div>
+            <div className="space-y-3.5 pt-1">
               
               {/* GitHub Link State */}
               <div className="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-black/20">
@@ -1038,8 +1044,8 @@ export default function FounderProfilePage() {
                 )}
               </div>
 
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
         </div>
       </div>

@@ -4,13 +4,13 @@ import React, { useState, useEffect } from "react"
 import { MutinyResponse, Person, Investor, Idea, Patent } from "@/lib/mock-mutiny"
 import { logFeedback } from "@/lib/mutiny-feedback"
 import { toast } from "@/components/ui/use-toast"
-import { Sparkles, User, Building, FileText, Award } from "lucide-react"
+import { User, Building, FileText, Award } from "lucide-react"
 
 const ACCENTS = {
-  emerald: { color: "#34D399", text: "text-emerald-400", hoverText: "hover:text-emerald-300" },
-  indigo: { color: "#6366F1", text: "text-indigo-400", hoverText: "hover:text-indigo-300" },
-  violet: { color: "#8B5CF6", text: "text-violet-400", hoverText: "hover:text-violet-300" },
-  amber: { color: "#F59E0B", text: "text-amber-400", hoverText: "hover:text-amber-300" },
+  emerald: { color: "#8EA38E", text: "text-[#8EA38E]", hoverText: "hover:text-[#8EA38E]/80" },
+  indigo: { color: "#E2DFD5", text: "text-[#E2DFD5]", hoverText: "hover:text-[#E2DFD5]/80" },
+  violet: { color: "#8293A4", text: "text-[#8293A4]", hoverText: "hover:text-[#8293A4]/80" },
+  amber: { color: "#C88E72", text: "text-[#C88E72]", hoverText: "hover:text-[#C88E72]/80" },
 }
 
 export default function MutinyResults({

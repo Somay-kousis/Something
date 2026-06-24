@@ -132,9 +132,9 @@ export default function IdeaDetailsPage() {
   if (!idea) return null
 
   const stageInfo = {
-    launched: { text: "text-[#34D399]", bg: "bg-[#34D399]/10", border: "border-[#34D399]/20" },
+    launched: { text: "text-brand-accent", bg: "bg-brand-accent/10", border: "border-brand-accent/20" },
     mvp: { text: "text-[#F472B6]", bg: "bg-[#F472B6]/10", border: "border-[#F472B6]/20" },
-    prototype: { text: "text-[#E3C27A]", bg: "bg-[#E3C27A]/10", border: "border-[#E3C27A]/20" },
+    prototype: { text: "text-[#C88E72]", bg: "bg-[#C88E72]/10", border: "border-[#C88E72]/20" },
     concept: { text: "text-white/60", bg: "bg-white/5", border: "border-white/10" }
   }[idea.stage] ?? { text: "text-white/60", bg: "bg-white/5", border: "border-white/10" }
 
@@ -150,7 +150,7 @@ export default function IdeaDetailsPage() {
       {/* Idea Card */}
       <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.01] shadow-2xl">
         {/* Glow backdrop */}
-        <div className="absolute -top-32 -right-32 w-64 h-64 rounded-full bg-[#34D399]/5 blur-3xl pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-64 h-64 rounded-full bg-brand-accent/3 blur-3xl pointer-events-none" />
         
         <div className="p-8">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
@@ -229,7 +229,7 @@ export default function IdeaDetailsPage() {
                 <MessageSquare className="mr-2 h-4 w-4 text-white/40" /> Comment ({idea.commentsCount})
               </Button>
             </div>
-            <Button className="h-9 rounded-full bg-white text-[#0a0a0c] hover:bg-[#34D399] hover:text-[#0a0a0c] text-xs font-semibold px-5 transition-all duration-300">Collaborate</Button>
+            <Button className="h-9 rounded-full bg-white text-[#0a0a0c] hover:bg-brand-accent hover:text-[#0a0a0c] text-xs font-semibold px-5 transition-all duration-300">Collaborate</Button>
           </CardContent>
         </Card>
       </div>

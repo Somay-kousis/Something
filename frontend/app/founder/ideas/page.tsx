@@ -424,141 +424,126 @@ export default function FounderIdeasPage() {
     }
   }
 
-  function IdeaCard({ idea }: { idea: Idea }) {
+  function IdeaRow({ idea }: { idea: Idea }) {
     const stageColors = {
-      launched: { text: "text-[#34D399]", bg: "bg-[#34D399]/10", border: "border-[#34D399]/20", hover: "hover:border-[#34D399]/20 group-hover:shadow-[0_0_30px_rgba(52,211,153,0.03)]" },
-      mvp: { text: "text-[#F472B6]", bg: "bg-[#F472B6]/10", border: "border-[#F472B6]/20", hover: "hover:border-[#F472B6]/20 group-hover:shadow-[0_0_30px_rgba(244,114,182,0.03)]" },
-      prototype: { text: "text-[#E3C27A]", bg: "bg-[#E3C27A]/10", border: "border-[#E3C27A]/20", hover: "hover:border-[#E3C27A]/20 group-hover:shadow-[0_0_30px_rgba(227,194,122,0.03)]" },
-      concept: { text: "text-white/60", bg: "bg-white/5", border: "border-white/10", hover: "hover:border-white/20 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.02)]" }
-    }[idea.stage] ?? { text: "text-white/60", bg: "bg-white/5", border: "border-white/10", hover: "hover:border-white/20 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.02)]" }
+      launched: { text: "text-brand-accent", bg: "bg-brand-accent/10", border: "border-brand-accent/20" },
+      mvp: { text: "text-[#F472B6]", bg: "bg-[#F472B6]/10", border: "border-[#F472B6]/20" },
+      prototype: { text: "text-[#C88E72]", bg: "bg-[#C88E72]/10", border: "border-[#C88E72]/20" },
+      concept: { text: "text-white/60", bg: "bg-white/5", border: "border-white/10" }
+    }[idea.stage] ?? { text: "text-white/60", bg: "bg-white/5", border: "border-white/10" }
 
     return (
-      <Card className={cn(
-        "group relative overflow-hidden bg-white/[0.01] border-white/5 transition-all duration-300 rounded-2xl flex flex-col h-full justify-between",
-        stageColors.hover
-      )}>
-        <CardContent className="p-6 flex flex-col h-full justify-between gap-5">
-          <div className="space-y-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-base leading-snug tracking-tight text-white group-hover:text-white transition-colors">
-                    {idea.title}
-                  </h3>
-                  {idea.isDraft && (
-                    <Badge className="bg-[#E3C27A]/10 text-[#E3C27A] border-[#E3C27A]/20 text-[9px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full border">
-                      Draft
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-[11px] font-mono text-white/35">by {idea.author}</p>
-              </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <Badge
-                  className={cn(
-                    "text-[9px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full border",
-                    stageColors.text, stageColors.bg, stageColors.border
-                  )}
-                >
-                  {idea.stage.toUpperCase()}
-                </Badge>
-                {idea.isYours && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleEditClick(idea)}
-                    className="h-7 w-7 text-white/40 hover:text-white hover:bg-white/5 rounded-full"
-                  >
-                    <Edit className="h-3.5 w-3.5" />
-                  </Button>
+      <div className="py-8 transition-colors group flex flex-col justify-between gap-4 first:pt-0 last:pb-0">
+        <div className="space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h3 className="font-semibold text-base leading-snug tracking-tight text-white group-hover:text-brand-accent transition-colors">
+                  {idea.title}
+                </h3>
+                {idea.isDraft && (
+                  <Badge className="bg-[#C88E72]/10 text-[#C88E72] border-[#C88E72]/20 text-[9px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full border">
+                    Draft
+                  </Badge>
                 )}
               </div>
+              <p className="text-[11px] font-mono text-white/35">by {idea.author}</p>
             </div>
-
-            <p className="text-xs text-white/50 leading-relaxed line-clamp-3 font-sans">{idea.desc || idea.description}</p>
-
-            <div className="flex flex-wrap gap-1">
-              {idea.tags.slice(0, 3).map((tag) => (
-                <Badge key={tag} className="bg-white/[0.02] text-white/40 border-white/5 text-[9px] font-mono rounded-md py-0.5 px-2">
-                  #{tag}
-                </Badge>
-              ))}
-              {idea.tags.length > 3 && (
-                <Badge className="bg-white/[0.02] text-white/40 border-white/5 text-[9px] font-mono rounded-md py-0.5 px-2">
-                  +{idea.tags.length - 3}
-                </Badge>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Badge
+                className={cn(
+                  "text-[9px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full border",
+                  stageColors.text, stageColors.bg, stageColors.border
+                )}
+              >
+                {idea.stage.toUpperCase()}
+              </Badge>
+              {idea.isYours && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleEditClick(idea)}
+                  className="h-7 w-7 text-white/40 hover:text-white hover:bg-white/5 rounded-full"
+                >
+                  <Edit className="h-3.5 w-3.5" />
+                </Button>
               )}
             </div>
+          </div>
 
-            {idea.lookingFor && idea.lookingFor.length > 0 && (
-              <div className="pt-3 border-t border-white/5">
-                <div className="text-[9px] text-white/30 font-semibold uppercase tracking-widest mb-1.5 font-mono">Looking for:</div>
-                <div className="flex flex-wrap gap-1">
-                  {idea.lookingFor.slice(0, 2).map((item) => (
-                    <Badge
-                      key={item}
-                      className="bg-white/[0.01] text-white/60 border-white/5 text-[9px] rounded px-1.5 py-0.5"
-                    >
-                      {item}
-                    </Badge>
-                  ))}
-                  {idea.lookingFor.length > 2 && (
-                    <Badge className="bg-white/[0.01] text-white/60 border-white/5 text-[9px] rounded px-1.5 py-0.5">
-                      +{idea.lookingFor.length - 2}
-                    </Badge>
-                  )}
-                </div>
+          <p className="text-sm text-white/60 leading-relaxed font-sans">{idea.desc || idea.description}</p>
+
+          <div className="flex flex-wrap gap-2 pt-1">
+            {idea.tags.map((tag) => (
+              <Badge key={tag} className="bg-white/[0.02] text-white/40 border-white/5 text-[9px] font-mono rounded-md py-0.5 px-2">
+                #{tag}
+              </Badge>
+            ))}
+          </div>
+
+          {idea.lookingFor && idea.lookingFor.length > 0 && (
+            <div className="flex items-center gap-2 pt-2">
+              <span className="text-[9px] text-white/30 font-semibold uppercase tracking-widest font-mono">Looking for:</span>
+              <div className="flex flex-wrap gap-1.5">
+                {idea.lookingFor.map((item) => (
+                  <Badge
+                    key={item}
+                    className="bg-white/[0.01] text-white/60 border-white/5 text-[9px] rounded px-1.5 py-0.5"
+                  >
+                    {item}
+                  </Badge>
+                ))}
               </div>
-            )}
-          </div>
-
-          <div className="pt-4 border-t border-white/5 flex items-center justify-between mt-auto">
-            <div className="flex items-center gap-3.5 text-[11px] font-mono text-white/30">
-              <button
-                onClick={() => handleLikeIdea(idea.id)}
-                className="flex items-center gap-1.5 hover:text-[#F472B6] transition-colors"
-              >
-                <Heart className="h-3.5 w-3.5" />
-                <span>{idea.likes}</span>
-              </button>
-              <span className="flex items-center gap-1.5">
-                <MessageSquare className="h-3.5 w-3.5" />
-                <span>{idea.comments}</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Eye className="h-3.5 w-3.5" />
-                <span>{idea.views}</span>
-              </span>
             </div>
-            <Button
-              variant="outline"
-              onClick={() => handleViewClick(idea)}
-              className="h-7 text-[10px] font-semibold rounded-full border-white/10 text-white/80 hover:bg-white/10 hover:text-white transition-all px-4"
+          )}
+        </div>
+
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center gap-4 text-xs font-mono text-white/35">
+            <button
+              onClick={() => handleLikeIdea(idea.id)}
+              className="flex items-center gap-1.5 hover:text-[#F472B6] transition-colors"
             >
-              {idea.isYours ? "Share" : "Explore"}
-            </Button>
+              <Heart className="h-3.5 w-3.5" />
+              <span>{idea.likes}</span>
+            </button>
+            <span className="flex items-center gap-1.5">
+              <MessageSquare className="h-3.5 w-3.5" />
+              <span>{idea.comments}</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Eye className="h-3.5 w-3.5" />
+              <span>{idea.views}</span>
+            </span>
           </div>
-        </CardContent>
-      </Card>
+          <Button
+            variant="outline"
+            onClick={() => handleViewClick(idea)}
+            className="h-7 text-[10px] font-semibold rounded-full border-white/10 text-white/80 hover:bg-white/10 hover:text-white transition-all px-4"
+          >
+            {idea.isYours ? "Share" : "Explore"}
+          </Button>
+        </div>
+      </div>
     )
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 pt-4 pb-20">
+    <div className="mx-auto max-w-4xl space-y-12 pt-4 pb-20">
       <PageHeader
         category="Ideas Workspace"
         title="Ideas & Projects"
         description="Share your concepts, manage active drafts, and discover what other builders are working on in the cohort."
         accentColor="emerald"
         action={
-          <Button onClick={() => { setEditingIdea(null); setIsModalOpen(true); }} className="rounded-full text-xs font-semibold px-6 py-2.5 bg-white text-[#0a0a0c] hover:bg-[#34D399] hover:text-[#0a0a0c] transition-all duration-300 active:scale-[0.98] cursor-pointer">
+          <Button onClick={() => { setEditingIdea(null); setIsModalOpen(true); }} className="rounded-full text-xs font-semibold px-6 py-2.5 bg-white text-[#0a0a0c] hover:bg-brand-accent hover:text-[#0a0a0c] transition-all duration-300 active:scale-[0.98] cursor-pointer">
             <Plus className="mr-1.5 h-3.5 w-3.5" /> Post new idea
           </Button>
         }
       />
 
       {/* Tabs and search */}
-      <div className="rounded-2xl border border-white/5 bg-white/[0.01] backdrop-blur-xl p-4 shadow-lg">
+      <div className="py-6 border-y border-white/5">
         <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
           <div className="flex rounded-lg border border-white/5 bg-black/40 p-1 shrink-0">
             <button
@@ -588,7 +573,7 @@ export default function FounderIdeasPage() {
                 placeholder="Search ideas, tags, authors…"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="pl-9 h-9 bg-black/40 border-white/5 text-white placeholder:text-white/30 rounded-lg focus-visible:ring-[#34D399] focus-visible:border-[#34D399]/20"
+                className="pl-9 h-9 bg-black/40 border-white/5 text-white placeholder:text-white/30 rounded-lg focus-visible:ring-brand-accent focus-visible:border-brand-accent/20"
               />
             </div>
             <Button
@@ -620,7 +605,7 @@ export default function FounderIdeasPage() {
                       className={cn(
                         "px-3 py-1 rounded-lg border text-xs font-medium transition-all capitalize",
                         stageFilter === stageOpt
-                          ? "border-[#34D399]/30 bg-[#34D399]/10 text-[#34D399]"
+                          ? "border-brand-accent/30 bg-brand-accent/10 text-brand-accent"
                           : "border-white/5 bg-transparent text-white/50 hover:bg-white/5"
                       )}
                     >
@@ -645,7 +630,7 @@ export default function FounderIdeasPage() {
                       className={cn(
                         "px-3 py-1 rounded-lg border text-xs font-medium transition-all",
                         sortBy === sortOpt.key
-                          ? "border-[#34D399]/30 bg-[#34D399]/10 text-[#34D399]"
+                          ? "border-brand-accent/30 bg-brand-accent/10 text-brand-accent"
                           : "border-white/5 bg-transparent text-white/50 hover:bg-white/5"
                       )}
                     >
@@ -673,9 +658,9 @@ export default function FounderIdeasPage() {
         </div>
       ) : (
         <>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="divide-y divide-white/5">
             {filtered.map((idea) => (
-              <IdeaCard key={idea.id} idea={idea} />
+              <IdeaRow key={idea.id} idea={idea} />
             ))}
           </div>
 

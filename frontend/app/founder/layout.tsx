@@ -21,7 +21,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/components/auth-provider"
-import { LandingBg } from "@/components/landing-bg"
 
 import RequireAuth from "@/components/require-auth"
 
@@ -60,8 +59,33 @@ export default function FounderLayout({ children }: { children: React.ReactNode 
     // Event listener to sync settings changes in multiple tabs
     const handleStorageChange = () => fetchProfileData()
     window.addEventListener("storage", handleStorageChange)
-    return () => window.removeEventListener("storage", handleStorageChange)
+    window.addEventListener("founder-profile-update", handleStorageChange)
+    return () => {
+      window.removeEventListener("storage", handleStorageChange)
+      window.removeEventListener("founder-profile-update", handleStorageChange)
+    }
   }, [])
+
+  useEffect(() => {
+    const hex = {
+      emerald: "#8EA38E", // Console Sage
+      indigo: "#E2DFD5",  // Tactile Chalk
+      violet: "#8293A4",  // Anodized Steel
+      amber: "#C88E72"    // Earthy Copper
+    }[accentKey as "emerald" | "indigo" | "violet" | "amber"] || "#8EA38E"
+    
+    const bgHex = {
+      emerald: "#0b0d0b", // Olive Coal
+      indigo: "#0e0d0c",  // Sand Coal
+      violet: "#0b0d0f",  // Slate Coal
+      amber: "#100c0b"    // Clay Coal
+    }[accentKey as "emerald" | "indigo" | "violet" | "amber"] || "#0b0d0b"
+    
+    if (typeof window !== "undefined") {
+      document.documentElement.style.setProperty("--brand-accent", hex)
+      document.documentElement.style.setProperty("--background-color", bgHex)
+    }
+  }, [accentKey])
 
   const getInitials = (n: string) => {
     if (!n) return "A"
@@ -84,34 +108,33 @@ export default function FounderLayout({ children }: { children: React.ReactNode 
       settings: "Settings",
     }[seg ?? ""] ?? "Overview"
 
-  // Accent styling mappings
+  // Accent styling mappings with new premium hardware palette
   const accentStyles = {
     emerald: {
-      ring: "focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40",
-      avatarGlow: "shadow-[0_0_12px_rgba(52,211,153,0.12)] border-[#34D399]/40",
+      ring: "focus-visible:ring-[#8EA38E]/20 focus-visible:border-[#8EA38E]/30",
+      avatarGlow: "border-[#8EA38E]/45",
     },
     indigo: {
-      ring: "focus-visible:ring-indigo-500/20 focus-visible:border-indigo-500/40",
-      avatarGlow: "shadow-[0_0_12px_rgba(99,102,241,0.12)] border-[#6366F1]/40",
+      ring: "focus-visible:ring-[#E2DFD5]/20 focus-visible:border-[#E2DFD5]/30",
+      avatarGlow: "border-[#E2DFD5]/45",
     },
     violet: {
-      ring: "focus-visible:ring-violet-500/20 focus-visible:border-violet-500/40",
-      avatarGlow: "shadow-[0_0_12px_rgba(139,92,246,0.12)] border-[#8B5CF6]/40",
+      ring: "focus-visible:ring-[#8293A4]/20 focus-visible:border-[#8293A4]/30",
+      avatarGlow: "border-[#8293A4]/45",
     },
     amber: {
-      ring: "focus-visible:ring-amber-500/20 focus-visible:border-amber-500/40",
-      avatarGlow: "shadow-[0_0_12px_rgba(245,158,11,0.12)] border-[#F59E0B]/40",
+      ring: "focus-visible:ring-[#C88E72]/20 focus-visible:border-[#C88E72]/30",
+      avatarGlow: "border-[#C88E72]/45",
     },
   }[accentKey as "emerald" | "indigo" | "violet" | "amber"] || {
-    ring: "focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/40",
-    avatarGlow: "shadow-[0_0_12px_rgba(52,211,153,0.12)] border-[#34D399]/40",
+    ring: "focus-visible:ring-[#8EA38E]/20 focus-visible:border-[#8EA38E]/30",
+    avatarGlow: "border-[#8EA38E]/45",
   }
 
   return (
     <SidebarProvider>
       <AppFounderSidebar />
-      <SidebarInset className="bg-[#0b0b0c] text-white relative overflow-x-hidden">
-        <LandingBg />
+      <SidebarInset className="bg-[var(--background-color)] text-white relative overflow-x-hidden">
         <Suspense fallback={<div className="p-4">Loading...</div>}>
           <header className="flex h-16 shrink-0 items-center gap-4 border-b border-white/5 bg-black/40 px-6 backdrop-blur-md relative z-50">
             <SidebarTrigger className="-ml-1 text-white/80 hover:text-white transition-colors" />

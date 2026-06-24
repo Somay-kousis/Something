@@ -4,7 +4,7 @@ import { useMemo, useState } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Sparkles } from "lucide-react"
+import { BrainCircuit } from "lucide-react"
 
 type Persona = "nothing" | "something" | "combined"
 
@@ -141,7 +141,7 @@ export function DuoSynth() {
               disabled={disabled}
               className="ml-auto rounded-full bg-white text-black hover:bg-[#e3c27a] hover:text-black"
             >
-              <Sparkles className="h-4 w-4 mr-2" />
+              <BrainCircuit className="h-4 w-4 mr-2" />
               Synthesize
             </Button>
           </div>

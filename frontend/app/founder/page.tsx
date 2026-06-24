@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import {
-  Zap, TrendingUp, MessageCircle, ArrowUpRight, ArrowRight,
+  Zap, TrendingUp, ArrowUpRight, ArrowRight,
   Loader2, AlertTriangle, PenLine, CheckCircle2, Clock, Lock,
 } from "lucide-react"
 
@@ -108,7 +108,7 @@ export default function FounderOverviewPage() {
   const fundsRaw  = 84400
 
   return (
-    <div className="mx-auto max-w-6xl pt-4 pb-20 space-y-8">
+    <div className="mx-auto max-w-4xl pt-6 pb-24 space-y-16 px-4">
 
       <PageHeader
         category={`${greeting} — ${dateStr}`}
@@ -128,164 +128,169 @@ export default function FounderOverviewPage() {
       />
 
       {/* ── Action notice ── */}
-      <div className="relative overflow-hidden rounded-xl border border-white/5 bg-[#E3C27A]/[0.01] p-4">
+      <div className="relative overflow-hidden rounded-xl border border-white/5 bg-[#C88E72]/[0.02] p-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 relative z-10">
           <div className="flex items-center gap-2">
             <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E3C27A] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#E3C27A]"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C88E72] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#C88E72]"></span>
             </span>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#E3C27A] font-semibold">Action Required</span>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#C88E72] font-semibold">Action Required</span>
           </div>
-          <p className="flex-1 text-xs text-white/50 leading-relaxed font-sans">
-            <span className="text-[#E3C27A] font-medium">Milestone 2</span> is pending verification — submit proof to release{" "}
-            <span className="text-white font-medium tabular-nums">$40,000</span> from escrow.
+          <p className="flex-1 text-xs text-white/60 leading-relaxed font-sans">
+            <span className="text-white font-medium">Milestone 2</span> is pending verification — submit proof to release{" "}
+            <span className="text-[#C88E72] font-medium tabular-nums">$40,000</span> from escrow.
           </p>
-          <Link href="/founder/funding" className="shrink-0 text-xs font-semibold text-[#E3C27A] hover:text-[#E3C27A]/80 transition-colors flex items-center gap-1 self-start sm:self-auto group font-sans">
+          <Link href="/founder/funding" className="shrink-0 text-xs font-semibold text-[#C88E72] hover:text-[#C88E72]/80 transition-colors flex items-center gap-1 self-start sm:self-auto group font-sans">
             Request payout <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
       </div>
 
-      {/* ── 3-Column Desktop Grid Layout ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Left Columns (Milestone Pool, Your Ideas) */}
-        <div className="lg:col-span-2 space-y-8">
-          
-          {/* Milestone Escrow Pool */}
-          <div className="relative overflow-hidden rounded-xl border border-white/5 bg-white/[0.01] p-6 shadow-xl">
-            <div className="flex items-center justify-between mb-4">
-              <SectionLabel>Milestone Escrow Pool</SectionLabel>
-              <span className="text-xl font-bold text-[#34D399]" style={{ fontFamily: "var(--font-outfit)" }}>
-                {escrowPct}% Released
-              </span>
-            </div>
+      {/* ── KPI Stats Row ── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-8 border-y border-white/5">
+        <KpiStat label="Funds raised" rawValue={fundsRaw} isCurrency sub="+$4,400 this week" />
+        <KpiStat label="Active ideas" rawValue={2} sub="2 in progress" />
+        <KpiStat label="Team members" rawValue={3} sub="All active" />
+        <KpiStat label="Unread chats" rawValue={kpis.unreadChats} sub="1 new thread" />
+      </div>
 
-            <div className="flex items-baseline gap-2 mb-4">
-              <span className="text-2xl font-bold tracking-tight text-white" style={{ fontFamily: "var(--font-outfit)" }}>
-                ${escrow.raised.toLocaleString()}
-              </span>
-              <span className="text-xs font-mono text-white/30">/ ${escrow.goal.toLocaleString()}</span>
-            </div>
-
-            {/* Clean Emerald Progress Bar */}
-            <div className="h-1.5 w-full rounded-full bg-white/[0.05] overflow-hidden mb-6 relative">
-              <div
-                className="h-full rounded-full bg-[#34D399] transition-all duration-1000"
-                style={{ width: `${escrowPct}%` }}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-4 border-t border-white/5">
-              {[
-                { label: "Whitepaper & Specs",    amount: "$40K", done: true,  pending: false },
-                { label: "Alpha & Sync Engine",   amount: "$40K", done: false, pending: true  },
-                { label: "Security Audit & Beta", amount: "$40K", done: false, pending: false },
-                { label: "Mainnet Launch",        amount: "$80K", done: false, pending: false },
-              ].map((m, i) => (
-                <div key={i} className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <div className={cn(
-                      "size-5 rounded-full border grid place-items-center transition-all duration-300",
-                      m.done ? "bg-[#34D399]/10 border-[#34D399] text-[#34D399]" :
-                      m.pending ? "bg-[#E3C27A]/10 border-[#E3C27A] text-[#E3C27A] animate-pulse" :
-                      "bg-white/[0.01] border-white/10 text-white/10"
-                    )}>
-                      {m.done    ? <CheckCircle2 className="h-2.5 w-2.5" />
-                       : m.pending ? <Clock className="h-2.5 w-2.5" />
-                       : <Lock className="h-2.5 w-2.5" />}
-                    </div>
-                    <span className={cn("text-xs font-bold font-mono tracking-tight",
-                      m.done ? "text-white/80" : m.pending ? "text-[#E3C27A]" : "text-white/20"
-                    )}>{m.amount}</span>
-                  </div>
-                  <div>
-                    <p className={cn("text-[11px] font-medium leading-snug",
-                      m.done ? "text-white/70" : m.pending ? "text-white/50" : "text-white/25"
-                    )}>{m.label}</p>
-                    <p className={cn("text-[9px] font-mono uppercase tracking-widest mt-1",
-                      m.done ? "text-[#34D399]" : m.pending ? "text-[#E3C27A]" : "text-white/20"
-                    )}>
-                      {m.done ? "Released" : m.pending ? "Pending" : "Locked"}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+      {/* ── Milestone Escrow Pool ── */}
+      <div className="border-t border-white/5 pt-12">
+        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-white/5 pb-4 mb-6">
+          <div className="space-y-1">
+            <SectionLabel>Milestone Escrow Pool</SectionLabel>
+            <p className="text-xs text-white/40">Track funds held in secure multi-signature escrow.</p>
           </div>
-
-          {/* Your Ideas */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <SectionLabel>Your ideas</SectionLabel>
-              <Link href="/founder/ideas" className="text-[10px] font-mono uppercase tracking-widest text-[#34D399] hover:text-[#34D399]/85 transition-colors flex items-center gap-1 font-semibold">
-                All ideas <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-
-            <div className="space-y-3">
-              {ideas.map((idea) => (
-                <IdeaRow key={idea.id} idea={idea} />
-              ))}
-            </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-xs text-white/35">Released</span>
+            <span className="text-2xl font-bold font-outfit text-brand-accent" style={{ fontFamily: "var(--font-outfit)" }}>
+              {escrowPct}%
+            </span>
           </div>
-
         </div>
 
-        {/* Right Column (KPI Cards Stack, Team Sync, Recent Activity) */}
+        <div className="flex items-baseline gap-2 mb-6">
+          <span className="text-3xl font-bold tracking-tight text-white font-outfit" style={{ fontFamily: "var(--font-outfit)" }}>
+            ${escrow.raised.toLocaleString()}
+          </span>
+          <span className="text-xs font-mono text-white/30">/ ${escrow.goal.toLocaleString()} total project value</span>
+        </div>
+
+        {/* Clean Flat Progress Bar */}
+        <div className="h-1.5 w-full rounded-full bg-white/[0.04] overflow-hidden mb-8 relative">
+          <div
+            className="h-full rounded-full bg-brand-accent transition-all duration-1000"
+            style={{ width: `${escrowPct}%` }}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+          {[
+            { label: "Whitepaper & Specs",    amount: "$40K", done: true,  pending: false },
+            { label: "Alpha & Sync Engine",   amount: "$40K", done: false, pending: true  },
+            { label: "Security Audit & Beta", amount: "$40K", done: false, pending: false },
+            { label: "Mainnet Launch",        amount: "$80K", done: false, pending: false },
+          ].map((m, i) => (
+            <div key={i} className="space-y-2 py-3 px-2 hover:bg-white/[0.01] transition-all rounded-lg">
+              <div className="flex items-center gap-2">
+                <div className={cn(
+                  "size-5 rounded-full border grid place-items-center transition-all duration-300",
+                  m.done ? "bg-brand-accent/10 border-brand-accent text-brand-accent" :
+                  m.pending ? "bg-[#C88E72]/10 border-[#C88E72] text-[#C88E72] animate-pulse" :
+                  "bg-white/[0.02] border-white/10 text-white/10"
+                )}>
+                  {m.done    ? <CheckCircle2 className="h-2.5 w-2.5" />
+                   : m.pending ? <Clock className="h-2.5 w-2.5" />
+                   : <Lock className="h-2.5 w-2.5" />}
+                </div>
+                <span className={cn("text-xs font-bold font-mono tracking-tight",
+                  m.done ? "text-white/80" : m.pending ? "text-[#C88E72]" : "text-white/20"
+                )}>{m.amount}</span>
+              </div>
+              <div>
+                <p className={cn("text-xs font-medium leading-snug",
+                  m.done ? "text-white/70" : m.pending ? "text-white/50" : "text-white/25"
+                )}>{m.label}</p>
+                <p className={cn("text-[9px] font-mono uppercase tracking-widest mt-1",
+                  m.done ? "text-brand-accent" : m.pending ? "text-[#C88E72]" : "text-white/20"
+                )}>
+                  {m.done ? "Released" : m.pending ? "Pending Verification" : "Locked"}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Your Ideas ── */}
+      <div className="border-t border-white/5 pt-12">
+        <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-6">
+          <div className="space-y-1">
+            <SectionLabel>Your ideas</SectionLabel>
+            <p className="text-xs text-white/40">Review submission status and current funding tracking.</p>
+          </div>
+          <Link href="/founder/ideas" className="text-[10px] font-mono uppercase tracking-widest text-brand-accent hover:text-brand-accent/85 transition-colors flex items-center gap-1 font-semibold">
+            All ideas <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+
+        <div className="divide-y divide-white/5">
+          {ideas.map((idea) => (
+            <IdeaRow key={idea.id} idea={idea} />
+          ))}
+        </div>
+      </div>
+
+      {/* ── Team & Activity Log (Side by side) ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-white/5 pt-12">
+        
+        {/* Team Sync */}
         <div className="space-y-6">
-          
-          {/* KPI Cards Stack in a tight 2x2 grid */}
-          <div className="grid grid-cols-2 gap-4">
-            <KpiStat label="Funds raised" rawValue={fundsRaw} isCurrency sub="+$4,400 this week" />
-            <KpiStat label="Active ideas" rawValue={2} sub="2 in progress" />
-            <KpiStat label="Team members" rawValue={3} sub="All active" />
-            <KpiStat label="Unread chats" rawValue={kpis.unreadChats} sub="1 new thread" />
+          <div className="border-b border-white/5 pb-4">
+            <SectionLabel>Team synchronization</SectionLabel>
+            <p className="text-xs text-white/40 mt-1">Real-time presence and active roles.</p>
           </div>
-
-          {/* Team Sync */}
-          <div className="rounded-xl border border-white/5 bg-white/[0.01] p-5 shadow-xl">
-            <SectionLabel className="mb-4">Team synchronization</SectionLabel>
-            <div className="space-y-3.5">
-              {team.map((m, idx) => (
-                <div key={m.id} className="flex items-center gap-3 py-0.5">
-                  <div className="h-7 w-7 rounded-full bg-white/5 border border-white/10 text-white/70 text-[10px] font-bold grid place-items-center shrink-0 font-mono">
-                    {m.initials}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold text-white/80 truncate">{m.name}</div>
-                    <div className="text-[9px] text-white/40 font-mono mt-0.5 uppercase tracking-wide truncate">{m.role}</div>
-                  </div>
-                  <span className="text-[9px] font-mono text-white/30 shrink-0 bg-white/[0.02] border border-white/5 rounded px-2 py-0.5">{m.lastActive}</span>
+          <div className="space-y-4">
+            {team.map((m) => (
+              <div key={m.id} className="flex items-center gap-3 py-1 hover:px-2 rounded-lg -mx-2 hover:bg-white/[0.01] transition-all">
+                <div className="h-8 w-8 rounded-full bg-white/5 border border-white/10 text-white/70 text-[10px] font-bold grid place-items-center shrink-0 font-mono">
+                  {m.initials}
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="rounded-xl border border-white/5 bg-white/[0.01] p-5 shadow-xl">
-            <SectionLabel className="mb-4">Recent activity log</SectionLabel>
-            <div className="space-y-4">
-              {activity.map((item) => (
-                <div key={item.id} className="flex items-start gap-2.5 py-0.5">
-                  <span className={cn(
-                    "mt-2 h-1 w-1 rounded-full shrink-0", 
-                    item.important ? "bg-[#E3C27A]" : "bg-white/20"
-                  )} />
-                  <div className="flex-1 min-w-0">
-                    <p className={cn("text-xs leading-normal", item.important ? "text-white/80 font-medium" : "text-white/40")}>
-                      {item.text}
-                    </p>
-                  </div>
-                  <span className="text-[8px] font-mono text-white/30 shrink-0 mt-0.5 uppercase tracking-wider bg-white/[0.02] border border-white/5 rounded px-1.5 py-0.5">
-                    {item.timestamp}
-                  </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-semibold text-white/80 truncate">{m.name}</div>
+                  <div className="text-[9px] text-white/40 font-mono mt-0.5 uppercase tracking-wide truncate">{m.role}</div>
                 </div>
-              ))}
-            </div>
+                <span className="text-[9px] font-mono text-white/30 shrink-0 bg-white/[0.02] border border-white/5 rounded px-2 py-0.5">{m.lastActive}</span>
+              </div>
+            ))}
           </div>
+        </div>
 
+        {/* Recent Activity */}
+        <div className="space-y-6">
+          <div className="border-b border-white/5 pb-4">
+            <SectionLabel>Recent activity log</SectionLabel>
+            <p className="text-xs text-white/40 mt-1">System updates and external interactions.</p>
+          </div>
+          <div className="space-y-4">
+            {activity.map((item) => (
+              <div key={item.id} className="flex items-start gap-2.5 py-1 hover:px-2 rounded-lg -mx-2 hover:bg-white/[0.01] transition-all">
+                <span className={cn(
+                  "mt-2 h-1.5 w-1.5 rounded-full shrink-0", 
+                  item.important ? "bg-[#E3C27A]" : "bg-white/25"
+                )} />
+                <div className="flex-1 min-w-0">
+                  <p className={cn("text-xs leading-normal", item.important ? "text-white/85 font-medium" : "text-white/40")}>
+                    {item.text}
+                  </p>
+                </div>
+                <span className="text-[8px] font-mono text-white/35 shrink-0 mt-0.5 uppercase tracking-wider bg-white/[0.02] border border-white/5 rounded px-1.5 py-0.5">
+                  {item.timestamp}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>
@@ -297,7 +302,7 @@ export default function FounderOverviewPage() {
 // ─── Shared ───────────────────────────────────────────────────────────────────
 function SectionLabel({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <p className={cn("text-[10px] font-mono uppercase tracking-[0.2em] text-white/45", className)}>
+    <p className={cn("text-[10px] font-mono uppercase tracking-[0.2em] text-white/35", className)}>
       {children}
     </p>
   )
@@ -309,26 +314,26 @@ function KpiStat({ label, rawValue, isCurrency, sub }: {
   const count   = useCountUp(rawValue)
   const display = isCurrency ? `$${count.toLocaleString()}` : count.toString()
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-white/5 bg-white/[0.01] p-4 transition-all duration-300 hover:border-white/10 hover:bg-white/[0.02]">
-      <div className="text-2xl font-bold tracking-tight text-white tabular-nums" style={{ fontFamily: "var(--font-outfit)" }}>
+    <div className="group transition-all duration-300">
+      <div className="text-[10px] font-mono text-white/35 uppercase tracking-wider">{label}</div>
+      <div className="text-3xl font-bold tracking-tight text-white mt-1.5 font-outfit" style={{ fontFamily: "var(--font-outfit)" }}>
         {display}
       </div>
-      <div className="text-[11px] font-medium text-white/50 mt-1.5">{label}</div>
-      <div className="text-[9px] font-mono text-white/30 mt-0.5 uppercase tracking-wide">{sub}</div>
+      <div className="text-[9px] font-mono text-white/30 mt-1 uppercase tracking-wide">{sub}</div>
     </div>
   )
 }
 
 function IdeaRow({ idea }: { idea: Idea }) {
   const s = {
-    Funded:  { text: "text-[#34D399]", bg: "bg-[#34D399]/5", border: "border-[#34D399]/10" },
-    Seeking: { text: "text-[#E3C27A]",  bg: "bg-[#E3C27A]/5",  border: "border-[#E3C27A]/10" },
+    Funded:  { text: "text-brand-accent", bg: "bg-brand-accent/5", border: "border-brand-accent/10" },
+    Seeking: { text: "text-[#C88E72]",  bg: "bg-[#C88E72]/5",  border: "border-[#C88E72]/10" },
     Draft:   { text: "text-white/30",  bg: "bg-white/[0.01]",  border: "border-white/5" },
   }[idea.status]
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] p-4 transition-all duration-300 hover:border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div className="flex-1 space-y-2">
+    <div className="group relative py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-200 hover:px-2 rounded-lg -mx-2 hover:bg-white/[0.01]">
+      <div className="flex-1 space-y-1.5">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-semibold text-white/85 group-hover:text-white transition-colors duration-300">
             {idea.title}
@@ -336,11 +341,11 @@ function IdeaRow({ idea }: { idea: Idea }) {
           <Badge className={cn("text-[9px] font-semibold uppercase tracking-widest px-2 py-0.5 border rounded-full shrink-0", s.text, s.bg, s.border)}>
             {idea.status}
           </Badge>
-          <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest bg-white/5 border border-white/5 px-2 py-0.5 rounded">{idea.stage}</span>
+          <span className="text-[9px] font-mono text-white/35 uppercase tracking-widest bg-white/[0.03] border border-white/5 px-2 py-0.5 rounded">{idea.stage}</span>
         </div>
         
         {/* Tags */}
-        <div className="flex gap-1 flex-wrap">
+        <div className="flex gap-1.5 flex-wrap">
           {idea.tags.map((tag) => (
             <span key={tag} className="text-[9px] font-mono text-white/30 bg-white/[0.02] border border-white/[0.05] rounded px-1.5 py-0.5">
               #{tag}
@@ -351,14 +356,14 @@ function IdeaRow({ idea }: { idea: Idea }) {
 
       {/* Funding Progress */}
       <div className="w-full md:w-48 space-y-1.5 shrink-0">
-        <div className="flex justify-between text-[9px] font-mono text-white/30">
+        <div className="flex justify-between text-[9px] font-mono text-white/35">
           <span>{idea.funding}</span>
           <span className="font-semibold">{idea.fundedPct}%</span>
         </div>
-        <div className="h-1.5 w-full rounded-full bg-white/[0.05] overflow-hidden">
+        <div className="h-1 w-full rounded-full bg-white/[0.04] overflow-hidden">
           <div
             className={cn("h-full rounded-full transition-all duration-700",
-              idea.fundedPct === 100 ? "bg-[#34D399]" : "bg-white/20"
+              idea.fundedPct === 100 ? "bg-brand-accent" : "bg-white/20"
             )}
             style={{ width: `${idea.fundedPct}%` }}
           />

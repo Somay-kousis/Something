@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { Sparkles, ShieldCheck, Coins } from "lucide-react"
+import { BrainCircuit, ShieldCheck, Coins } from "lucide-react"
 
 type Persona = "mut" | "iny" | "together"
 
@@ -157,7 +157,7 @@ export function AIduoDemo() {
                 "shadow-[0_0_0_1px_rgba(255,255,255,0.18)_inset,0_10px_40px_rgba(255,255,255,0.08)]",
               )}
             >
-              <Sparkles className="h-4 w-4 mr-2" />
+              <BrainCircuit className="h-4 w-4 mr-2" />
               Get feedback
             </Button>
           </div>

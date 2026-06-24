@@ -36,7 +36,6 @@ import {
   Laptop,
   Terminal,
   Camera,
-  Sparkles,
   Palette,
   RefreshCw,
   X,
@@ -94,52 +93,52 @@ interface ToastItem {
 // Accent Color Configurations
 const ACCENTS = {
   emerald: {
-    name: "Emerald Green",
-    text: "text-emerald-400",
-    bg: "bg-emerald-500",
-    border: "border-emerald-500/20",
-    glow: "shadow-[0_0_15px_rgba(52,211,153,0.15)]",
-    borderHighlight: "border-emerald-500",
-    textHighlight: "text-emerald-400",
-    btnBg: "bg-emerald-500 text-black hover:bg-emerald-600",
-    toggleBg: "data-[state=checked]:bg-emerald-500",
-    color: "#34D399",
+    name: "Console Sage",
+    text: "text-[#8EA38E]",
+    bg: "bg-[#8EA38E]",
+    border: "border-[#8EA38E]/25",
+    glow: "",
+    borderHighlight: "border-[#8EA38E]",
+    textHighlight: "text-[#8EA38E]",
+    btnBg: "bg-[#8EA38E] text-black hover:bg-[#8EA38E]/90",
+    toggleBg: "data-[state=checked]:bg-[#8EA38E]",
+    color: "#8EA38E",
   },
   indigo: {
-    name: "Indigo Blue",
-    text: "text-indigo-400",
-    bg: "bg-indigo-500",
-    border: "border-indigo-500/20",
-    glow: "shadow-[0_0_15px_rgba(99,102,241,0.15)]",
-    borderHighlight: "border-indigo-500",
-    textHighlight: "text-indigo-400",
-    btnBg: "bg-indigo-500 text-white hover:bg-indigo-600",
-    toggleBg: "data-[state=checked]:bg-indigo-500",
-    color: "#6366F1",
+    name: "Tactile Chalk",
+    text: "text-[#E2DFD5]",
+    bg: "bg-[#E2DFD5]",
+    border: "border-[#E2DFD5]/25",
+    glow: "",
+    borderHighlight: "border-[#E2DFD5]",
+    textHighlight: "text-[#E2DFD5]",
+    btnBg: "bg-[#E2DFD5] text-black hover:bg-[#E2DFD5]/90",
+    toggleBg: "data-[state=checked]:bg-[#E2DFD5]",
+    color: "#E2DFD5",
   },
   violet: {
-    name: "Cyber Violet",
-    text: "text-violet-400",
-    bg: "bg-violet-500",
-    border: "border-violet-500/20",
-    glow: "shadow-[0_0_15px_rgba(139,92,246,0.15)]",
-    borderHighlight: "border-violet-500",
-    textHighlight: "text-violet-400",
-    btnBg: "bg-violet-500 text-white hover:bg-violet-600",
-    toggleBg: "data-[state=checked]:bg-violet-500",
-    color: "#8B5CF6",
+    name: "Anodized Steel",
+    text: "text-[#8293A4]",
+    bg: "bg-[#8293A4]",
+    border: "border-[#8293A4]/25",
+    glow: "",
+    borderHighlight: "border-[#8293A4]",
+    textHighlight: "text-[#8293A4]",
+    btnBg: "bg-[#8293A4] text-black hover:bg-[#8293A4]/90",
+    toggleBg: "data-[state=checked]:bg-[#8293A4]",
+    color: "#8293A4",
   },
   amber: {
-    name: "Amber Gold",
-    text: "text-amber-400",
-    bg: "bg-amber-500",
-    border: "border-amber-500/20",
-    glow: "shadow-[0_0_15px_rgba(245,158,11,0.15)]",
-    borderHighlight: "border-amber-500",
-    textHighlight: "text-amber-400",
-    btnBg: "bg-amber-500 text-black hover:bg-amber-600",
-    toggleBg: "data-[state=checked]:bg-amber-500",
-    color: "#F59E0B",
+    name: "Earthy Copper",
+    text: "text-[#C88E72]",
+    bg: "bg-[#C88E72]",
+    border: "border-[#C88E72]/25",
+    glow: "",
+    borderHighlight: "border-[#C88E72]",
+    textHighlight: "text-[#C88E72]",
+    btnBg: "bg-[#C88E72] text-black hover:bg-[#C88E72]/90",
+    toggleBg: "data-[state=checked]:bg-[#C88E72]",
+    color: "#C88E72",
   },
 }
 
@@ -242,6 +241,9 @@ export default function FounderSettingsPage() {
 
     setProfile(updatedProfile)
     localStorage.setItem("founder_profile_data", JSON.stringify(updatedProfile))
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("founder-profile-update"))
+    }
 
     // Trigger saving feedback
     const saveKey = nestedKey ? `${field}.${nestedKey}` : field
@@ -422,7 +424,7 @@ export default function FounderSettingsPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6 relative pb-20">
+    <div className="mx-auto w-full max-w-4xl space-y-12 relative pb-20">
       
       {/* Toast Notification Container */}
       <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none">
@@ -440,7 +442,7 @@ export default function FounderSettingsPage() {
               {t.type === "success" && <CheckCircle2 className="h-4.5 w-4.5 text-emerald-400" />}
               {t.type === "warning" && <AlertTriangle className="h-4.5 w-4.5 text-amber-400" />}
               {t.type === "error" && <AlertTriangle className="h-4.5 w-4.5 text-red-500" />}
-              {t.type === "info" && <Sparkles className="h-4.5 w-4.5 text-blue-400" />}
+              {t.type === "info" && <CheckCircle2 className="h-4.5 w-4.5 text-blue-400" />}
             </div>
             <div className="flex-1 space-y-0.5">
               <h5 className="text-xs font-bold text-white font-mono uppercase tracking-wider">{t.title}</h5>
@@ -466,33 +468,33 @@ export default function FounderSettingsPage() {
         
         {/* Left Side: Sidebar Control & Accent Choice */}
         <div className="lg:col-span-3 space-y-6">
-          <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden p-3.5 space-y-1">
+          <div className="space-y-1">
             {tabsList.map((t) => {
               const TabIcon = t.icon
               const isActive = activeTab === t.key
               return (
                 <button
-                  key={t.key}
-                  onClick={() => setActiveTab(t.key)}
-                  className={cn(
-                    "w-full rounded-xl px-4 py-3 text-left transition-all duration-300 relative flex items-center gap-3 border border-transparent text-xs font-semibold uppercase tracking-wider font-mono cursor-pointer",
-                    isActive
-                      ? "bg-white/[0.06] border-white/10 text-white shadow"
-                      : "text-white/40 hover:text-white/80 hover:bg-white/[0.01]"
-                  )}
+                   key={t.key}
+                   onClick={() => setActiveTab(t.key)}
+                   className={cn(
+                     "w-full rounded-xl px-4 py-3 text-left transition-all duration-300 relative flex items-center gap-3 border border-transparent text-xs font-semibold uppercase tracking-wider font-mono cursor-pointer",
+                     isActive
+                       ? "bg-white/[0.06] border-white/10 text-white shadow"
+                       : "text-white/40 hover:text-white/80 hover:bg-white/[0.01]"
+                   )}
                 >
                   {isActive && (
-                    <div className="absolute left-0 top-3 bottom-3 w-[3px] rounded-r-full shadow-lg" style={{ backgroundColor: activeAccent.color, boxShadow: `0 0 10px ${activeAccent.color}` }} />
+                    <div className="absolute left-0 top-3 bottom-3 w-[2px] bg-[#34D399] rounded-r-full" />
                   )}
-                  <TabIcon className={cn("h-4 w-4 shrink-0 transition-colors", isActive ? activeAccent.textHighlight : "text-white/30")} />
+                  <TabIcon className={cn("h-4 w-4 shrink-0 transition-colors", isActive ? "text-[#34D399]" : "text-white/30")} />
                   {t.label}
                 </button>
               )
             })}
-          </Card>
+          </div>
 
           {/* System Accent Selection widget */}
-          <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl shadow-xl p-4.5 space-y-4">
+          <div className="border-t border-white/5 pt-6 space-y-4">
             <div className="flex items-center gap-2">
               <Palette className="h-4 w-4 text-white/40" />
               <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-white/50">Palette Accent</span>
@@ -525,19 +527,18 @@ export default function FounderSettingsPage() {
             <p className="text-[9px] text-white/30 leading-normal font-mono uppercase tracking-wider">
               Selected: <span className="text-white/70">{activeAccent.name}</span>
             </p>
-          </Card>
+          </div>
         </div>
 
         {/* Right Side: Tab Contents Panel */}
-        <div className="lg:col-span-9">
+        <div className="lg:col-span-9 lg:border-l lg:border-white/5 lg:pl-8 min-h-[500px]">
           
-          {/* TAB 1: Profile & Privacy (Integrated with real-time Live Preview) */}
           {activeTab === "profile" && (
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 xl:divide-x xl:divide-white/5 items-start">
               
               {/* Profile Config Inputs */}
-              <div className="xl:col-span-7 space-y-6">
-                <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl shadow-xl p-6 space-y-6">
+              <div className="xl:col-span-7 space-y-12">
+                <div className="space-y-6">
                   <div className="border-b border-white/5 pb-4">
                     <h3 className="text-sm font-semibold tracking-tight text-white font-outfit flex items-center gap-2">
                       <User className="h-4.5 w-4.5" style={{ color: activeAccent.color }} />
@@ -695,10 +696,10 @@ export default function FounderSettingsPage() {
                       />
                     </div>
                   </div>
-                </Card>
+                </div>
 
                 {/* Profile Privacy Rules */}
-                <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl shadow-xl p-6 space-y-6">
+                <div className="space-y-6 pt-6 border-t border-white/5">
                   <div className="border-b border-white/5 pb-4">
                     <h3 className="text-sm font-semibold tracking-tight text-white font-outfit flex items-center gap-2">
                       <Shield className="h-4.5 w-4.5" style={{ color: activeAccent.color }} />
@@ -733,9 +734,9 @@ export default function FounderSettingsPage() {
                               type="button"
                               onClick={() => handlePrivacyChange(opt.value)}
                               className={cn(
-                                "flex flex-col items-center justify-center p-3.5 rounded-xl border text-center transition-all duration-300 w-full cursor-pointer relative",
+                                "flex flex-col items-center justify-center p-3.5 rounded-xl border text-center transition-all w-full cursor-pointer relative",
                                 isSelected
-                                  ? "bg-white/[0.04] border-white/25 shadow-md scale-[1.02]"
+                                  ? "bg-white/[0.04] border-white/20 shadow-md scale-[1.01]"
                                   : "bg-black/30 border-white/5 hover:border-white/10 hover:bg-white/[0.01]"
                               )}
                             >
@@ -771,69 +772,60 @@ export default function FounderSettingsPage() {
                       />
                     </div>
                   </div>
-                </Card>
+                </div>
               </div>
 
               {/* Dynamic Reactive Live Preview Card (xl:col-span-5) */}
-              <div className="xl:col-span-5 xl:sticky xl:top-6 space-y-4">
+              <div className="xl:col-span-5 xl:sticky xl:top-6 space-y-4 xl:pl-8">
                 <div className="text-[10px] font-mono font-semibold uppercase tracking-widest text-white/40 flex items-center gap-1.5 px-1.5">
-                  <Sparkles className="h-3.5 w-3.5 text-yellow-400" />
+                  <Eye className="h-3.5 w-3.5 text-white/40" />
                   Live Preview Mockup
                 </div>
                 
-                <Card 
-                  className="bg-black/80 border text-white rounded-2xl overflow-hidden transition-all duration-500 relative"
-                  style={{ 
-                    borderColor: profileVisibility === "public" ? `${activeAccent.color}35` : profileVisibility === "network" ? "#6366F135" : "#ec489935",
-                    boxShadow: profileVisibility === "public" 
-                      ? `0 0 25px ${activeAccent.color}12` 
-                      : profileVisibility === "network" 
-                        ? "0 0 25px rgba(99,102,241,0.08)" 
-                        : "0 0 25px rgba(236,72,153,0.08)"
-                  }}
+                <div 
+                  className="bg-[#0a0a0c] border border-white/5 text-white rounded-xl overflow-hidden relative"
                 >
-                  {/* Decorative glowing grid background */}
-                  <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none opacity-40" />
-                  
-                  {/* Status Ring overlay */}
-                  <div className="absolute top-4 right-4 flex gap-1.5 z-10">
-                    <Badge className={cn("text-[9px] font-mono font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full border border-white/5",
-                      profileVisibility === "public" ? "bg-emerald-500/10 text-emerald-400" :
-                      profileVisibility === "network" ? "bg-indigo-500/10 text-indigo-400" :
-                      "bg-pink-500/10 text-pink-400"
-                    )}>
-                      {profileVisibility === "public" && "Public Node"}
-                      {profileVisibility === "network" && "Network Restricted"}
-                      {profileVisibility === "private" && "Private Node"}
-                    </Badge>
-                  </div>
-
-                  <div className="p-6 space-y-5 relative">
-                    <div className="flex gap-4">
-                      {/* Avatar */}
-                      <div className="size-16 rounded-full overflow-hidden border border-white/10 shrink-0 bg-white/5 flex items-center justify-center relative shadow-md">
-                        {profile.avatarUrl ? (
-                          profile.avatarUrl.startsWith("linear-gradient") ? (
-                            <div className="size-full" style={{ background: profile.avatarUrl }} />
+                  <div className="p-6 space-y-5">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                      <div className="flex gap-4 min-w-0">
+                        {/* Avatar */}
+                        <div className="size-16 rounded-full overflow-hidden border border-white/10 shrink-0 bg-white/5 flex items-center justify-center relative shadow-md">
+                          {profile.avatarUrl ? (
+                            profile.avatarUrl.startsWith("linear-gradient") ? (
+                              <div className="size-full" style={{ background: profile.avatarUrl }} />
+                            ) : (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={profile.avatarUrl} alt="Preview Avatar" className="size-full object-cover" />
+                            )
                           ) : (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={profile.avatarUrl} alt="Preview Avatar" className="size-full object-cover" />
-                          )
-                        ) : (
-                          <span className="text-base font-bold font-mono text-white/50">{getInitials(profile.name)}</span>
-                        )}
+                            <span className="text-base font-bold font-mono text-white/50">{getInitials(profile.name)}</span>
+                          )}
+                        </div>
+
+                        {/* Header details */}
+                        <div className="space-y-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <h4 className="font-bold font-outfit text-sm truncate">{profile.name || "Unnamed Node"}</h4>
+                            <Badge className="bg-brand-accent/10 text-brand-accent border-brand-accent/20 text-[8px] tracking-wide rounded-full scale-90 origin-left shrink-0">
+                              Verified
+                            </Badge>
+                          </div>
+                          <p className="text-white/70 text-xs truncate leading-normal">{profile.headline || "No Headline Role"}</p>
+                          <p className="text-[9px] text-white/35 font-mono truncate">{profile.location || "No Location"}</p>
+                        </div>
                       </div>
 
-                      {/* Header details */}
-                      <div className="space-y-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <h4 className="font-bold font-outfit text-sm truncate">{profile.name || "Unnamed Node"}</h4>
-                          <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[8px] tracking-wide rounded-full scale-90 origin-left">
-                            Verified
-                          </Badge>
-                        </div>
-                        <p className="text-white/70 text-xs truncate leading-normal">{profile.headline || "No Headline Role"}</p>
-                        <p className="text-[9px] text-white/35 font-mono truncate">{profile.location || "No Location"}</p>
+                      {/* Status pill overlay container (aligned inline on top right) */}
+                      <div className="shrink-0 sm:pt-1">
+                        <Badge className={cn("text-[9px] font-mono font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full border border-white/5",
+                          profileVisibility === "public" ? "bg-brand-accent/10 text-brand-accent" :
+                          profileVisibility === "network" ? "bg-indigo-500/10 text-indigo-400" :
+                          "bg-pink-500/10 text-pink-400"
+                        )}>
+                          {profileVisibility === "public" && "Public Node"}
+                          {profileVisibility === "network" && "Network Restricted"}
+                          {profileVisibility === "private" && "Private Node"}
+                        </Badge>
                       </div>
                     </div>
 
@@ -847,7 +839,7 @@ export default function FounderSettingsPage() {
                       <div className="flex flex-wrap gap-1.5 pt-1">
                         {showEmail && (
                           <div className="flex items-center gap-1 bg-white/5 border border-white/5 px-2 py-0.5 rounded text-[8px] font-mono text-white/60">
-                            <Mail className="h-2.5 w-2.5 text-emerald-400" /> {email}
+                            <Mail className="h-2.5 w-2.5 text-brand-accent" /> {email}
                           </div>
                         )}
                         <div className="flex items-center gap-1 bg-white/5 border border-white/5 px-2 py-0.5 rounded text-[8px] font-mono text-white/60">
@@ -856,7 +848,7 @@ export default function FounderSettingsPage() {
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
               </div>
 
             </div>
@@ -864,7 +856,7 @@ export default function FounderSettingsPage() {
 
           {/* TAB 2: Notification Settings */}
           {activeTab === "notifications" && (
-            <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl shadow-xl p-6 space-y-6">
+            <div className="space-y-6">
               <div className="border-b border-white/5 pb-4">
                 <h3 className="text-sm font-semibold tracking-tight text-white font-outfit flex items-center gap-2">
                   <Bell className="h-4.5 w-4.5" style={{ color: activeAccent.color }} />
@@ -873,7 +865,7 @@ export default function FounderSettingsPage() {
                 <p className="text-white/40 text-[11px] mt-1 font-mono uppercase tracking-wider">Configure real-time notifications and weekly cohorts digests</p>
               </div>
 
-              <div className="space-y-3.5">
+              <div className="space-y-3.5 pt-1">
                 <AutoSaveRow
                   id="email-notifications"
                   label="Email System Alerts"
@@ -920,15 +912,15 @@ export default function FounderSettingsPage() {
                   activeAccent={activeAccent}
                 />
               </div>
-            </Card>
+            </div>
           )}
 
           {/* TAB 3: Credentials & Security (Strength indicators, audit log) */}
           {activeTab === "security" && (
-            <div className="space-y-6">
+            <div className="space-y-12">
               
               {/* Profile Verification & Primary Email */}
-              <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl shadow-xl p-6 space-y-6">
+              <div className="space-y-6">
                 <div className="border-b border-white/5 pb-4 flex justify-between items-center">
                   <div>
                     <h3 className="text-sm font-semibold tracking-tight text-white font-outfit flex items-center gap-2">
@@ -943,7 +935,7 @@ export default function FounderSettingsPage() {
                   </Badge>
                 </div>
 
-                <form onSubmit={handleUpdateEmailSubmit} className="flex gap-3 max-w-md items-end">
+                <form onSubmit={handleUpdateEmailSubmit} className="flex gap-3 max-w-md items-end pt-1">
                   <div className="flex-1 space-y-1.5">
                     <label htmlFor="sec-email" className="text-[10px] font-mono font-semibold uppercase tracking-wider text-white/50">Registered Email</label>
                     <Input
@@ -968,10 +960,10 @@ export default function FounderSettingsPage() {
                     {isUpdatingEmail ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Verify Identity"}
                   </Button>
                 </form>
-              </Card>
+              </div>
 
               {/* Password update & Strength Checker */}
-              <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl shadow-xl p-6 space-y-6">
+              <div className="space-y-6 pt-6 border-t border-white/5">
                 <div className="border-b border-white/5 pb-4">
                   <h3 className="text-sm font-semibold tracking-tight text-white font-outfit flex items-center gap-2">
                     <Key className="h-4.5 w-4.5" style={{ color: activeAccent.color }} />
@@ -980,7 +972,7 @@ export default function FounderSettingsPage() {
                   <p className="text-white/40 text-[11px] mt-1 font-mono uppercase tracking-wider">Change the secure keys protecting node configuration</p>
                 </div>
 
-                <form onSubmit={handleUpdatePasswordSubmit} className="space-y-5 max-w-lg">
+                <form onSubmit={handleUpdatePasswordSubmit} className="space-y-5 max-w-lg pt-1">
                   <div className="grid gap-4 sm:grid-cols-2">
                     {/* Current password */}
                     <div className="space-y-1.5">
@@ -1076,10 +1068,10 @@ export default function FounderSettingsPage() {
                     Update Password Key
                   </Button>
                 </form>
-              </Card>
+              </div>
 
               {/* Active Session Audit Trail */}
-              <Card className="bg-white/[0.015] border border-white/[0.06] backdrop-blur-xl rounded-2xl shadow-xl p-6 space-y-6">
+              <div className="space-y-6 pt-6 border-t border-white/5">
                 <div className="border-b border-white/5 pb-4">
                   <h3 className="text-sm font-semibold tracking-tight text-white font-outfit flex items-center gap-2">
                     <Laptop className="h-4.5 w-4.5" style={{ color: activeAccent.color }} />
@@ -1088,7 +1080,7 @@ export default function FounderSettingsPage() {
                   <p className="text-white/40 text-[11px] mt-1 font-mono uppercase tracking-wider">Review active sync credentials linked to this developer</p>
                 </div>
 
-                <div className="space-y-2.5">
+                <div className="space-y-2.5 pt-1">
                   {sessions.map((s) => (
                     <div
                       key={s.id}
@@ -1099,9 +1091,9 @@ export default function FounderSettingsPage() {
                     >
                       <div className="flex items-center gap-3.5 min-w-0">
                         <div className="size-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                          {s.device.includes("MacBook") && <Laptop className="h-4 w-4 text-white/60" />}
-                          {s.device.includes("iPhone") && <Smartphone className="h-4 w-4 text-white/60" />}
-                          {s.device.includes("Sync Node") && <Terminal className="h-4 w-4 text-white/60" />}
+                          {s.device.includes("MacBook") && <Laptop className="h-4.5 w-4.5 text-white/60" />}
+                          {s.device.includes("iPhone") && <Smartphone className="h-4.5 w-4.5 text-white/60" />}
+                          {s.device.includes("Sync Node") && <Terminal className="h-4.5 w-4.5 text-white/60" />}
                         </div>
                         <div className="min-w-0 space-y-0.5">
                           <div className="text-xs font-bold text-white flex items-center gap-1.5">
@@ -1135,14 +1127,14 @@ export default function FounderSettingsPage() {
                     <p className="text-[10px] text-white/20 font-mono text-center pt-2">No other active login nodes found.</p>
                   )}
                 </div>
-              </Card>
+              </div>
 
             </div>
           )}
 
           {/* TAB 4: Danger Zone */}
           {activeTab === "danger" && (
-            <Card className="bg-[#1c0f0f]/35 border border-red-500/20 backdrop-blur-xl rounded-2xl shadow-xl p-6 space-y-6">
+            <div className="space-y-6">
               <div className="border-b border-red-500/10 pb-4">
                 <h3 className="text-sm font-semibold tracking-tight text-red-400 font-outfit flex items-center gap-2">
                   <Trash2 className="h-4.5 w-4.5 text-red-400" />
@@ -1151,7 +1143,7 @@ export default function FounderSettingsPage() {
                 <p className="text-red-500/40 text-[11px] mt-1 font-mono uppercase tracking-wider">Wipe cryptographics secrets and disconnect cohort escrows</p>
               </div>
 
-              <div className="rounded-xl border border-red-500/10 bg-red-500/[0.01] p-4.5 space-y-4">
+              <div className="rounded-xl border border-red-500/10 bg-red-500/[0.01] p-4.5 space-y-4 pt-1">
                 <div className="space-y-1.5">
                   <div className="text-xs font-bold text-red-300 flex items-center gap-1.5">
                     <AlertTriangle className="h-4 w-4 shrink-0 text-red-400" />
@@ -1169,7 +1161,7 @@ export default function FounderSettingsPage() {
                   Initiate Deletion Protocol
                 </Button>
               </div>
-            </Card>
+            </div>
           )}
 
         </div>

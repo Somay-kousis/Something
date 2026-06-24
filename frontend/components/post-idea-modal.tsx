@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Plus, X, Trash2, Lightbulb, Cpu, Rocket, Globe, Sparkles, Check } from "lucide-react"
+import { Plus, X, Trash2, Lightbulb, Cpu, Rocket, Globe, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Stage = "concept" | "prototype" | "mvp" | "launched"

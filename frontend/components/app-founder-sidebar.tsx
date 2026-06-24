@@ -93,12 +93,12 @@ export function AppFounderSidebar() {
                     >
                       {/* active left bar */}
                       {active && (
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[2px] rounded-full bg-[#34D399] shadow-[0_0_8px_rgba(52,211,153,0.7)]" />
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-[2px] rounded-full bg-brand-accent" />
                       )}
                       <item.icon
                         className={cn(
                           "h-[15px] w-[15px] shrink-0 transition-colors",
-                          active ? "text-[#34D399]" : "text-white/40 group-hover:text-white/70"
+                          active ? "text-brand-accent" : "text-white/40 group-hover:text-white/70"
                         )}
                       />
                       <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
@@ -114,7 +114,7 @@ export function AppFounderSidebar() {
           <SidebarGroupContent>
             <Link
               href="/founder/ideas?new=true"
-              className="flex items-center justify-center gap-2 w-full h-8 rounded-lg bg-[#34D399]/10 border border-[#34D399]/20 text-[#34D399] text-xs font-medium hover:bg-[#34D399]/15 transition-colors"
+              className="flex items-center justify-center gap-2 w-full h-8 rounded-lg bg-brand-accent/10 border border-brand-accent/20 text-brand-accent text-xs font-medium hover:bg-brand-accent/15 transition-colors"
             >
               <PenLine className="h-3.5 w-3.5 shrink-0" />
               <span className="group-data-[collapsible=icon]:hidden">Post new idea</span>

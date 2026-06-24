@@ -38,6 +38,8 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   color-scheme: dark;
+  --brand-accent: #8ea38e;
+  --background-color: #0b0d0b;
 }
 
 .dark {
@@ -73,6 +75,8 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.15 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+  --brand-accent: #8ea38e;
+  --background-color: #0b0d0b;
 }
 
 @theme inline {
@@ -112,6 +116,8 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-brand-accent: var(--brand-accent);
+  --color-background-color: var(--background-color);
 }
 
 @layer base {
@@ -126,15 +132,20 @@
 /* Force dark mode and correct background color */
 html {
   color-scheme: dark !important;
-  background-color: #0a0a0c !important;
+  background-color: var(--background-color) !important;
 }
 
 html,
 body {
-  background-color: #0a0a0c !important;
+  background-color: var(--background-color) !important;
   height: 100%;
   margin: 0;
   padding: 0;
+}
+
+/* Add global smooth transitions for layout adjustments */
+html, body, [data-sidebar], .sidebar, main, header, .page-wrapper, .app-wrapper, [data-nextjs-scroll-focus-boundary], main > div {
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* append to globals.css */
@@ -169,7 +180,7 @@ body {
 body > div:first-child,
 body > main:first-of-type,
 [data-nextjs-scroll-focus-boundary] {
-  background-color: #0a0a0c !important;
+  background-color: var(--background-color) !important;
   border-radius: 0 !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -185,20 +196,20 @@ nav {
 /* Fix for any wrapper divs that might have padding/margins */
 .page-wrapper,
 .app-wrapper {
-  background-color: #0a0a0c !important;
+  background-color: var(--background-color) !important;
   padding: 0 !important;
   margin: 0 !important;
 }
 
 /* Force sidebar components to use dark theme */
 [data-sidebar] {
-  background-color: #0a0a0c !important;
+  background-color: var(--background-color) !important;
   color: white !important;
 }
 
 /* Override any light theme remnants */
 .sidebar {
-  background-color: #0a0a0c !important;
+  background-color: var(--background-color) !important;
   color: white !important;
 }
 
@@ -208,5 +219,5 @@ nav {
 
 /* Ensure the entire viewport is dark */
 :root {
-  background-color: #0a0a0c !important;
+  background-color: var(--background-color) !important;
 }

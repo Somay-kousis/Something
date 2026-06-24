@@ -25,70 +25,41 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   
-  // Theme colors mapping for background blurs & top indicator lines
+  // Custom Premium Theme color mappings (Chalk Bone, Console Mint, Silicon Copper, Industrial Cobalt)
   const theme = {
     emerald: {
-      bulletBg: "bg-[#34D399]",
-      textAccent: "text-[#34D399]",
-      glowColor: "before:via-[#34D399]/40",
-      radialBg: "radial-gradient(circle, #34D399, transparent)",
-      blurOpacity: "opacity-[0.15] sm:opacity-[0.2]",
+      bulletBg: "bg-[#86EFAC]",
+      textAccent: "text-[#86EFAC]",
     },
     amber: {
-      bulletBg: "bg-[#E3C27A]",
-      textAccent: "text-[#E3C27A]",
-      glowColor: "before:via-[#E3C27A]/40",
-      radialBg: "radial-gradient(circle, #E3C27A, transparent)",
-      blurOpacity: "opacity-[0.12] sm:opacity-[0.18]",
+      bulletBg: "bg-[#E59866]",
+      textAccent: "text-[#E59866]",
     },
     indigo: {
-      bulletBg: "bg-[#818CF8]",
-      textAccent: "text-[#818CF8]",
-      glowColor: "before:via-[#818CF8]/40",
-      radialBg: "radial-gradient(circle, #818CF8, transparent)",
-      blurOpacity: "opacity-[0.15] sm:opacity-[0.2]",
+      bulletBg: "bg-[#E4E4E7]",
+      textAccent: "text-[#E4E4E7]",
     },
     pink: {
-      bulletBg: "bg-[#F472B6]",
-      textAccent: "text-[#F472B6]",
-      glowColor: "before:via-[#F472B6]/40",
-      radialBg: "radial-gradient(circle, #F472B6, transparent)",
-      blurOpacity: "opacity-[0.12] sm:opacity-[0.18]",
+      bulletBg: "bg-[#94A3B8]",
+      textAccent: "text-[#94A3B8]",
     },
     violet: {
-      bulletBg: "bg-[#A78BFA]",
-      textAccent: "text-[#A78BFA]",
-      glowColor: "before:via-[#A78BFA]/40",
-      radialBg: "radial-gradient(circle, #A78BFA, transparent)",
-      blurOpacity: "opacity-[0.12] sm:opacity-[0.18]",
+      bulletBg: "bg-[#94A3B8]",
+      textAccent: "text-[#94A3B8]",
     },
     blue: {
-      bulletBg: "bg-blue-500",
-      textAccent: "text-blue-400",
-      glowColor: "before:via-blue-500/40",
-      radialBg: "radial-gradient(circle, #3b82f6, transparent)",
-      blurOpacity: "opacity-[0.12] sm:opacity-[0.18]",
+      bulletBg: "bg-[#94A3B8]",
+      textAccent: "text-[#94A3B8]",
     },
   }[accentColor]
 
   return (
     <div 
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.015] backdrop-blur-xl p-6 sm:p-8 shadow-xl shadow-black/10 transition-all duration-300",
-        "before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:to-transparent",
-        theme.glowColor,
+        "relative pb-6 mb-8 border-b border-white/5",
         className
       )}
     >
-      {/* Background Glow */}
-      <div
-        className={cn(
-          "absolute -top-32 -right-32 w-64 h-64 rounded-full pointer-events-none blur-3xl transition-opacity duration-500",
-          theme.blurOpacity
-        )}
-        style={{ background: theme.radialBg }}
-      />
-
       {/* Content wrapper */}
       <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1.5 flex-1">

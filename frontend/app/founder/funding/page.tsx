@@ -169,7 +169,7 @@ export default function FounderFundingPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 pt-4 pb-20">
+    <div className="mx-auto max-w-4xl space-y-12 pt-4 pb-20">
       {/* Sleek inline header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div className="flex flex-col gap-1">
@@ -181,7 +181,7 @@ export default function FounderFundingPage() {
             <DialogTrigger asChild>
               <Button
                 disabled={payoutEligibleMilestones.length === 0}
-                className="rounded-xl text-xs font-semibold px-4 py-2 bg-white text-[#0a0a0c] hover:bg-[#34D399] hover:text-[#0a0a0c] transition-all duration-300 disabled:opacity-40 disabled:hover:bg-white active:scale-[0.98] cursor-pointer h-9"
+                className="rounded-xl text-xs font-semibold px-4 py-2 bg-white text-[#0a0a0c] hover:bg-brand-accent hover:text-[#0a0a0c] transition-all duration-300 disabled:opacity-40 disabled:hover:bg-white active:scale-[0.98] cursor-pointer h-9"
               >
                 <PlusCircle className="mr-1.5 h-4 w-4 text-inherit" /> Request Payout
               </Button>
@@ -191,14 +191,14 @@ export default function FounderFundingPage() {
               {/* Top Form Progress Bar */}
               <div className="w-full h-[3px] bg-white/[0.03]">
                 <div 
-                  className="h-full bg-gradient-to-r from-teal-500 via-[#34D399] to-emerald-400 transition-all duration-500 ease-out"
+                  className="h-full bg-brand-accent transition-all duration-500 ease-out"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
 
               <DialogHeader className="p-6 pb-4 border-b border-white/[0.05] shrink-0">
                 <DialogTitle className="text-xl font-bold tracking-tight text-white flex items-center gap-2" style={{ fontFamily: "var(--font-outfit)" }}>
-                  <Coins className="h-5 w-5 text-[#34D399]" />
+                  <Coins className="h-5 w-5 text-brand-accent" />
                   Request Milestone Payout
                 </DialogTitle>
                 <DialogDescription className="text-white/40 text-xs mt-1">
@@ -227,18 +227,18 @@ export default function FounderFundingPage() {
                               className={cn(
                                 "flex flex-col items-start p-4 rounded-xl border text-left transition-all duration-300 group cursor-pointer w-full relative overflow-hidden",
                                 selected
-                                  ? "bg-emerald-500/10 border-emerald-500/40 shadow-[0_0_15px_rgba(52,211,153,0.15)]"
+                                  ? "bg-brand-accent/10 border-brand-accent/40"
                                   : "bg-black/30 border-white/5 hover:bg-white/[0.02] hover:border-white/10"
                               )}
                             >
                               <div className="flex items-center justify-between w-full mb-1">
-                                <span className="text-[9px] text-[#34D399] font-semibold tracking-wider font-mono uppercase bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                                <span className="text-[9px] text-brand-accent font-semibold tracking-wider font-mono uppercase bg-brand-accent/10 border border-brand-accent/20 px-2 py-0.5 rounded-full">
                                   {m.title.split(":")[0]}
                                 </span>
                                 <div className="flex items-center gap-2">
                                   <span className="text-xs font-mono font-bold text-white">{m.amount}</span>
                                   {selected && (
-                                    <div className="p-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-[#34D399]">
+                                    <div className="p-0.5 rounded-full bg-brand-accent/20 border border-brand-accent/30 text-brand-accent">
                                       <Check className="h-3 w-3 animate-scale-in" />
                                     </div>
                                   )}
@@ -343,7 +343,7 @@ export default function FounderFundingPage() {
                   <Button
                     type="submit"
                     disabled={submitting || !selectedMilestoneId || !proofLink.trim() || !workSummary.trim()}
-                    className="bg-white text-black hover:bg-[#34D399] hover:text-black text-xs font-semibold h-9 px-5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer"
+                    className="bg-white text-black hover:bg-brand-accent hover:text-black text-xs font-semibold h-9 px-5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer"
                   >
                     {submitting ? (
                       <>
@@ -374,96 +374,72 @@ export default function FounderFundingPage() {
       </div>
 
       {/* Escrow Pool Balance Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-6 border-y border-white/5">
         {/* Total Pool */}
-        <Card className="bg-white/[0.01] border-white/5 hover:border-white/10 backdrop-blur-xl shadow-xl rounded-2xl transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-white/30">Total Pool Target</span>
-              <Coins className="h-4 w-4 text-[#34D399]/70" />
-            </div>
-            <div className="mt-4 text-3xl font-bold tracking-tight text-white" style={{ fontFamily: "var(--font-outfit)" }}>
-              ${totalFunding.toLocaleString()}
-            </div>
-            <p className="text-[10px] font-mono text-white/30 mt-1.5">100% of raising round target</p>
-          </CardContent>
-        </Card>
+        <div className="space-y-1.5">
+          <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-white/35">Total Pool Target</span>
+          <div className="text-2xl sm:text-3xl font-bold tracking-tight text-white font-outfit">
+            ${totalFunding.toLocaleString()}
+          </div>
+          <p className="text-[10px] font-mono text-white/35">100% of target</p>
+        </div>
 
         {/* Released */}
-        <Card className="bg-white/[0.01] border-white/5 hover:border-[#34D399]/20 hover:shadow-[0_0_30px_rgba(52,211,153,0.03)] backdrop-blur-xl shadow-xl rounded-2xl transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-white/30">Released to Date</span>
-              <CheckCircle2 className="h-4 w-4 text-[#34D399]/70" />
-            </div>
-            <div className="mt-4 text-3xl font-bold tracking-tight text-[#34D399]" style={{ fontFamily: "var(--font-outfit)" }}>
-              ${releasedAmount.toLocaleString()}
-            </div>
-            <p className="text-[10px] font-mono text-white/30 mt-1.5">
-              {((releasedAmount / totalFunding) * 100).toFixed(0)}% Disbursed to treasury
-            </p>
-          </CardContent>
-        </Card>
+        <div className="space-y-1.5">
+          <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-white/35">Released to Date</span>
+          <div className="text-2xl sm:text-3xl font-bold tracking-tight text-brand-accent font-outfit">
+            ${releasedAmount.toLocaleString()}
+          </div>
+          <p className="text-[10px] font-mono text-white/35">
+            {((releasedAmount / totalFunding) * 100).toFixed(0)}% Disbursed
+          </p>
+        </div>
 
         {/* Pending Verification */}
-        <Card className="bg-white/[0.01] border-white/5 hover:border-[#E3C27A]/20 hover:shadow-[0_0_30px_rgba(227,194,122,0.03)] backdrop-blur-xl shadow-xl rounded-2xl transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-white/30">Pending Release</span>
-              <Clock className="h-4 w-4 text-[#E3C27A]/70" />
-            </div>
-            <div className="mt-4 text-3xl font-bold tracking-tight text-[#E3C27A]" style={{ fontFamily: "var(--font-outfit)" }}>
-              ${pendingAmount.toLocaleString()}
-            </div>
-            <p className="text-[10px] font-mono text-white/30 mt-1.5">Awaiting committee review</p>
-          </CardContent>
-        </Card>
+        <div className="space-y-1.5">
+          <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-white/35">Pending Release</span>
+          <div className="text-2xl sm:text-3xl font-bold tracking-tight text-[#C88E72] font-outfit">
+            ${pendingAmount.toLocaleString()}
+          </div>
+          <p className="text-[10px] font-mono text-white/35">Awaiting committee</p>
+        </div>
 
         {/* Locked in Escrow */}
-        <Card className="bg-white/[0.01] border-white/5 hover:border-white/10 backdrop-blur-xl shadow-xl rounded-2xl transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-white/30">Locked in Escrow</span>
-              <Lock className="h-4 w-4 text-white/30" />
-            </div>
-            <div className="mt-4 text-3xl font-bold tracking-tight text-white/70" style={{ fontFamily: "var(--font-outfit)" }}>
-              ${lockedAmount.toLocaleString()}
-            </div>
-            <p className="text-[10px] font-mono text-white/30 mt-1.5">Matures on upcoming milestones</p>
-          </CardContent>
-        </Card>
+        <div className="space-y-1.5">
+          <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-white/35">Locked in Escrow</span>
+          <div className="text-2xl sm:text-3xl font-bold tracking-tight text-white/70 font-outfit">
+            ${lockedAmount.toLocaleString()}
+          </div>
+          <p className="text-[10px] font-mono text-white/35">Matures upcoming</p>
+        </div>
       </div>
 
       {/* Escrow Pool Progress Bar */}
-      <Card className="bg-white/[0.01] border-white/5 backdrop-blur-xl shadow-xl rounded-2xl">
-        <CardHeader className="pb-3 p-6">
-          <div className="flex justify-between items-center text-[10px] font-mono font-bold tracking-widest uppercase text-white/40">
-            <span>Escrow Release Progress</span>
-            <span className="text-white/70 text-xs font-semibold font-sans">
-              ${releasedAmount.toLocaleString()} / ${totalFunding.toLocaleString()} Released
-            </span>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0 pb-6 px-6">
-          <Progress value={(releasedAmount / totalFunding) * 100} className="h-2 bg-white/5" />
-          <div className="flex items-center justify-between text-[9px] text-white/30 mt-2.5 font-mono tracking-wider">
-            <span>START</span>
-            <span className="text-[#34D399]/70 font-semibold">{((releasedAmount / totalFunding) * 100).toFixed(1)}% SECURED COHORT CAPITAL RELEASED</span>
-            <span>GOAL</span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="py-4 space-y-3">
+        <div className="flex justify-between items-center text-[10px] font-mono font-bold tracking-widest uppercase text-white/40">
+          <span>Escrow Release Progress</span>
+          <span className="text-white/70 text-xs font-semibold font-sans">
+            ${releasedAmount.toLocaleString()} / ${totalFunding.toLocaleString()} Released
+          </span>
+        </div>
+        <Progress value={(releasedAmount / totalFunding) * 100} className="h-2 bg-white/5" />
+        <div className="flex items-center justify-between text-[9px] text-white/30 pt-0.5 font-mono tracking-wider">
+          <span>START</span>
+          <span className="text-brand-accent font-semibold">{((releasedAmount / totalFunding) * 100).toFixed(1)}% SECURED RELEASED</span>
+          <span>GOAL</span>
+        </div>
+      </div>
 
       {/* Milestones Road Map and Timelines */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-8 lg:grid-cols-3">
         {/* Timeline Grid */}
-        <Card className="bg-white/[0.01] border-white/5 backdrop-blur-xl shadow-xl rounded-2xl lg:col-span-2">
-          <CardHeader className="pb-4 p-6 border-b border-white/5">
-            <CardTitle className="text-sm font-semibold tracking-widest uppercase text-white/45 font-mono">Milestone Timeline</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-8 p-6 space-y-8 relative">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="border-b border-white/5 pb-3">
+            <h3 className="text-sm font-semibold tracking-widest uppercase text-white/45 font-mono">Milestone Timeline</h3>
+          </div>
+          <div className="space-y-8 relative pt-2">
             {/* Center connector line */}
-            <div className="absolute left-[33px] top-10 bottom-10 w-[2px] bg-white/5 pointer-events-none" />
+            <div className="absolute left-[17px] top-6 bottom-6 w-[1px] bg-white/5 pointer-events-none" />
 
             {milestones.map((m) => {
               const isReleased = m.status === "Released"
@@ -476,14 +452,14 @@ export default function FounderFundingPage() {
                   {/* Status Indicator Bubble */}
                   <div
                     className={cn(
-                      "relative z-10 size-9 rounded-full grid place-items-center border transition-all duration-300",
+                      "relative z-10 size-9 rounded-full grid place-items-center border transition-all duration-300 bg-[#0a0a0c]",
                       isReleased
-                        ? "bg-emerald-500/10 border-[#34D399] text-[#34D399] shadow-[0_0_15px_rgba(52,211,153,0.15)]"
+                        ? "border-brand-accent/40 text-brand-accent"
                         : isPending
-                          ? "bg-[#E3C27A]/10 border-[#E3C27A] text-[#E3C27A] animate-pulse"
+                          ? "border-[#C88E72]/40 text-[#C88E72] animate-pulse"
                           : isActive
-                            ? "bg-white/5 border-[#34D399] text-[#34D399] shadow-[0_0_12px_rgba(52,211,153,0.1)]"
-                            : "bg-[#0c0d0f] border-white/5 text-white/20"
+                            ? "border-brand-accent/40 text-brand-accent"
+                            : "border-white/5 text-white/20"
                     )}
                   >
                     {isReleased ? (
@@ -491,30 +467,19 @@ export default function FounderFundingPage() {
                     ) : isPending ? (
                       <Clock className="h-4 w-4" />
                     ) : isActive ? (
-                      <span className="size-2 rounded-full bg-[#34D399]" />
+                      <span className="size-2 rounded-full bg-brand-accent" />
                     ) : (
                       <Lock className="h-3.5 w-3.5" />
                     )}
                   </div>
 
-                  {/* Milestone Card details */}
-                  <div
-                    className={cn(
-                      "flex-1 rounded-xl border p-5 transition-all duration-300",
-                      isReleased
-                        ? "bg-emerald-500/[0.01] border-emerald-500/10"
-                        : isPending
-                          ? "bg-[#E3C27A]/[0.01] border-[#E3C27A]/10"
-                          : isActive
-                            ? "bg-white/[0.01] border-white/5 hover:border-white/10"
-                            : "bg-[#0b0c0e]/30 border-white/5 opacity-55"
-                    )}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                  {/* Milestone details (cardless) */}
+                  <div className="flex-1 space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <h3
                         className={cn(
-                          "font-semibold text-sm sm:text-base leading-snug transition-colors",
-                          isReleased ? "text-[#34D399]" : isPending ? "text-[#E3C27A]" : "text-white"
+                          "font-semibold text-base leading-snug transition-colors",
+                          isReleased ? "text-brand-accent" : isPending ? "text-[#C88E72]" : "text-white"
                         )}
                       >
                         {m.title}
@@ -525,11 +490,11 @@ export default function FounderFundingPage() {
                           className={cn(
                             "text-[8px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full border",
                             isReleased
-                              ? "bg-[#34D399]/10 text-[#34D399] border-[#34D399]/20"
+                              ? "bg-brand-accent/10 text-brand-accent border-brand-accent/20"
                               : isPending
-                                ? "bg-[#E3C27A]/10 text-[#E3C27A] border-[#E3C27A]/20"
+                                ? "bg-[#C88E72]/10 text-[#C88E72] border-[#C88E72]/20"
                                 : isActive
-                                  ? "bg-blue-500/10 text-blue-300 border-blue-500/20"
+                                  ? "bg-white/5 text-white/70 border-white/10"
                                   : "bg-white/5 text-white/40 border-white/10"
                           )}
                         >
@@ -538,11 +503,11 @@ export default function FounderFundingPage() {
                       </div>
                     </div>
 
-                    <p className="text-xs text-white/50 leading-relaxed mb-3 font-sans">{m.description}</p>
+                    <p className="text-sm text-white/60 leading-relaxed font-sans">{m.description}</p>
 
                     {/* Submissions & Deliverables logs */}
                     {(isReleased || isPending) && (
-                      <div className="mt-4 pt-4 border-t border-white/5 space-y-2.5 text-xs">
+                      <div className="space-y-2.5 text-xs pt-1">
                         <div className="flex flex-wrap items-center justify-between gap-1.5 text-white/40 font-mono text-[9px] tracking-wide">
                           <span>
                             {isReleased ? "APPROVED & DISBURSED" : "SUBMITTED FOR VALIDATION"}
@@ -552,18 +517,18 @@ export default function FounderFundingPage() {
                           </span>
                         </div>
                         {m.workSummary && (
-                          <div className="bg-black/40 border border-white/5 rounded-xl p-3 text-white/70 text-xs italic leading-relaxed">
+                          <div className="bg-white/[0.01] border border-white/5 rounded-xl p-3 text-white/70 text-xs italic leading-relaxed">
                             &ldquo;{m.workSummary}&rdquo;
                           </div>
                         )}
                         {m.proofLink && (
                           <div className="flex items-center gap-1.5 pt-0.5">
-                            <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest">PROOF:</span>
+                            <span className="text-[9px] font-mono text-white/35 uppercase tracking-widest">PROOF:</span>
                             <a
                               href={m.proofLink}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-[#34D399] hover:underline flex items-center gap-1 font-mono text-[10px] truncate"
+                              className="text-brand-accent hover:underline flex items-center gap-1 font-mono text-[10px] truncate"
                             >
                               {m.proofLink} <ExternalLink className="h-3 w-3" />
                             </a>
@@ -575,23 +540,24 @@ export default function FounderFundingPage() {
                 </div>
               )
             })}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Security & Validation details */}
-        <div className="space-y-6">
-          <Card className="bg-white/[0.01] border-white/5 hover:border-white/10 backdrop-blur-xl shadow-xl rounded-2xl transition-all duration-300">
-            <CardHeader className="pb-4 p-6 border-b border-white/5">
-              <CardTitle className="text-sm font-semibold tracking-widest uppercase text-white/45 font-mono">Validation Committee</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4 p-6 space-y-4">
+        <div className="space-y-12">
+          {/* Validation Committee */}
+          <div className="space-y-4">
+            <div className="border-b border-white/5 pb-3">
+              <h3 className="text-sm font-semibold tracking-widest uppercase text-white/45 font-mono">Validation Committee</h3>
+            </div>
+            <div className="space-y-4 pt-2">
               <div className="flex items-center gap-3">
-                <div className="size-8 rounded-full bg-[#34D399]/10 border border-[#34D399]/20 text-[#34D399] grid place-items-center text-xs font-semibold font-mono shadow">
+                <div className="size-8 rounded-full bg-brand-accent/10 border border-brand-accent/20 text-brand-accent grid place-items-center text-xs font-semibold font-mono shadow">
                   SC
                 </div>
                 <div className="min-w-0">
                   <div className="text-sm font-semibold text-white">Sarah Chen</div>
-                  <div className="text-[9px] text-[#34D399] font-semibold tracking-wider font-mono uppercase">Lead Reviewer - Horizon Capital</div>
+                  <div className="text-[9px] text-brand-accent font-semibold tracking-wider font-mono uppercase">Lead Reviewer - Horizon Capital</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -604,20 +570,21 @@ export default function FounderFundingPage() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-white/5 flex gap-2 text-xs text-white/50 bg-black/10 rounded-xl p-3.5 border border-white/5 leading-relaxed font-sans">
-                <ShieldCheck className="h-4 w-4 text-[#34D399] shrink-0 mt-0.5" />
+              <div className="pt-4 flex gap-2 text-xs text-white/50 bg-white/[0.01] rounded-xl p-3.5 border border-white/5 leading-relaxed font-sans">
+                <ShieldCheck className="h-4 w-4 text-brand-accent shrink-0 mt-0.5" />
                 <p>
                   Validation requires approval from at least <strong>50%</strong> of active review board members. Review is typically completed within 72 hours.
                 </p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="bg-white/[0.01] border-white/5 hover:border-white/10 backdrop-blur-xl shadow-xl rounded-2xl transition-all duration-300">
-            <CardHeader className="pb-4 p-6 border-b border-white/5">
-              <CardTitle className="text-sm font-semibold tracking-widest uppercase text-white/45 font-mono">Escrow Guidelines</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4 p-6 space-y-4 text-xs text-white/50 leading-relaxed font-sans">
+          {/* Escrow Guidelines */}
+          <div className="space-y-4">
+            <div className="border-b border-white/5 pb-3">
+              <h3 className="text-sm font-semibold tracking-widest uppercase text-white/45 font-mono">Escrow Guidelines</h3>
+            </div>
+            <div className="space-y-4 pt-2 text-xs text-white/50 leading-relaxed font-sans">
               <p>
                 1. Escrow pool funds are secured by smart contract and can only be disbursed to the verified project treasury after committee validation.
               </p>
@@ -627,8 +594,8 @@ export default function FounderFundingPage() {
               <p>
                 3. If milestone deliverables require changes, reviewers will attach a feedback log detailing code reviews or functional gaps.
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>

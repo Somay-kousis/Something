@@ -12,7 +12,6 @@ import {
   Cpu,
   Users,
   ShieldAlert,
-  Sparkles,
   RefreshCw,
   ArrowRight,
   ShieldCheck,
@@ -60,48 +59,48 @@ function parseRationale(rationaleText: string) {
 
 const ACCENTS = {
   emerald: {
-    name: "Emerald Green",
-    text: "text-emerald-400",
-    bg: "bg-emerald-500",
-    border: "border-emerald-500/20",
-    glow: "shadow-[0_0_15px_rgba(52,211,153,0.2)]",
-    btnBg: "bg-emerald-500 text-black hover:bg-emerald-600",
-    ring: "focus-within:ring-1 focus-within:ring-emerald-500/20 focus-within:border-emerald-500/40",
-    activePill: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
-    color: "#34D399",
+    name: "Console Sage",
+    text: "text-[#8EA38E]",
+    bg: "bg-[#8EA38E]",
+    border: "border-[#8EA38E]/25",
+    glow: "",
+    btnBg: "bg-[#8EA38E] text-black hover:bg-[#8EA38E]/90",
+    ring: "focus-within:ring-1 focus-within:ring-[#8EA38E]/20 focus-within:border-[#8EA38E]/30",
+    activePill: "bg-[#8EA38E]/10 text-[#8EA38E] border-[#8EA38E]/30",
+    color: "#8EA38E",
   },
   indigo: {
-    name: "Indigo Blue",
-    text: "text-indigo-400",
-    bg: "bg-indigo-500",
-    border: "border-indigo-500/20",
-    glow: "shadow-[0_0_15px_rgba(99,102,241,0.2)]",
-    btnBg: "bg-indigo-500 text-white hover:bg-indigo-600",
-    ring: "focus-within:ring-1 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/40",
-    activePill: "bg-indigo-500/10 text-indigo-400 border-indigo-500/30",
-    color: "#6366F1",
+    name: "Tactile Chalk",
+    text: "text-[#E2DFD5]",
+    bg: "bg-[#E2DFD5]",
+    border: "border-[#E2DFD5]/25",
+    glow: "",
+    btnBg: "bg-[#E2DFD5] text-black hover:bg-[#E2DFD5]/90",
+    ring: "focus-within:ring-1 focus-within:ring-[#E2DFD5]/20 focus-within:border-[#E2DFD5]/30",
+    activePill: "bg-[#E2DFD5]/10 text-[#E2DFD5] border-[#E2DFD5]/30",
+    color: "#E2DFD5",
   },
   violet: {
-    name: "Cyber Violet",
-    text: "text-violet-400",
-    bg: "bg-violet-500",
-    border: "border-violet-500/20",
-    glow: "shadow-[0_0_15px_rgba(139,92,246,0.2)]",
-    btnBg: "bg-violet-500 text-white hover:bg-violet-600",
-    ring: "focus-within:ring-1 focus-within:ring-violet-500/20 focus-within:border-violet-500/40",
-    activePill: "bg-violet-500/10 text-violet-400 border-violet-500/30",
-    color: "#8B5CF6",
+    name: "Anodized Steel",
+    text: "text-[#8293A4]",
+    bg: "bg-[#8293A4]",
+    border: "border-[#8293A4]/25",
+    glow: "",
+    btnBg: "bg-[#8293A4] text-black hover:bg-[#8293A4]/90",
+    ring: "focus-within:ring-1 focus-within:ring-[#8293A4]/20 focus-within:border-[#8293A4]/30",
+    activePill: "bg-[#8293A4]/10 text-[#8293A4] border-[#8293A4]/30",
+    color: "#8293A4",
   },
   amber: {
-    name: "Amber Gold",
-    text: "text-amber-400",
-    bg: "bg-amber-500",
-    border: "border-amber-500/20",
-    glow: "shadow-[0_0_15px_rgba(245,158,11,0.2)]",
-    btnBg: "bg-amber-500 text-black hover:bg-amber-600",
-    ring: "focus-within:ring-1 focus-within:ring-amber-500/20 focus-within:border-amber-500/40",
-    activePill: "bg-amber-500/10 text-amber-400 border-amber-500/30",
-    color: "#F59E0B",
+    name: "Earthy Copper",
+    text: "text-[#C88E72]",
+    bg: "bg-[#C88E72]",
+    border: "border-[#C88E72]/25",
+    glow: "",
+    btnBg: "bg-[#C88E72] text-black hover:bg-[#C88E72]/90",
+    ring: "focus-within:ring-1 focus-within:ring-[#C88E72]/20 focus-within:border-[#C88E72]/30",
+    activePill: "bg-[#C88E72]/10 text-[#C88E72] border-[#C88E72]/30",
+    color: "#C88E72",
   },
 }
 
@@ -275,11 +274,7 @@ export default function FounderMutinyPage() {
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6 pb-24 relative min-h-[calc(100vh-9rem)] flex flex-col justify-between select-none">
       
-      {/* Mesh glows in background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.08] z-0">
-        <div className="absolute top-[20%] left-[10%] w-[350px] h-[350px] rounded-full bg-amber-500 blur-[100px] animate-pulse duration-[8s]" />
-        <div className="absolute bottom-[25%] right-[10%] w-[400px] h-[400px] rounded-full bg-violet-500 blur-[120px] animate-pulse duration-[12s]" />
-      </div>
+      {/* Mesh glows in background disabled for flat layout */}
 
       <div className="flex-1 space-y-6 z-10">
         
@@ -317,7 +312,7 @@ export default function FounderMutinyPage() {
                     whileHover={{ scale: 1.01, y: -1 }}
                     whileTap={{ scale: 0.99 }}
                     className={cn(
-                      "flex flex-col items-start p-4 rounded-xl border text-left transition-all duration-300 w-full cursor-pointer bg-white/[0.015] backdrop-blur-md border-white/5 hover:border-white/10 hover:bg-white/[0.025] shadow-sm group",
+                      "flex flex-col items-start p-4 rounded-xl border text-left transition-all w-full cursor-pointer bg-black/20 border-white/5 hover:border-white/10 hover:bg-white/[0.01] group",
                       item.color
                     )}
                   >
@@ -358,7 +353,7 @@ export default function FounderMutinyPage() {
                       
                       {isUser ? (
                         /* User Chat Bubble */
-                        <div className="inline-block rounded-2xl bg-zinc-900/80 border border-white/5 px-4.5 py-3.5 text-[12.5px] text-white/80 font-sans leading-relaxed text-left shadow-sm">
+                        <div className="inline-block rounded-xl bg-white/[0.02] border border-white/5 px-4 py-2.5 text-xs text-white/80 font-sans leading-relaxed text-left">
                           {msg.content}
                         </div>
                       ) : (
@@ -368,7 +363,7 @@ export default function FounderMutinyPage() {
                           
                           {/* Case A: Simulating Loader */}
                           {msg.isSimulating ? (
-                            <div className="w-full rounded-xl border border-white/5 bg-white/[0.01] p-4.5 font-mono text-[10.5px] space-y-3">
+                            <div className="w-full rounded-lg border border-white/5 bg-black/20 p-4 font-mono text-[10px] space-y-3">
                               <div className="flex items-center gap-2 text-white/40">
                                 <Loader2 className="h-3 w-3 animate-spin" />
                                 <span className="text-[9.5px] uppercase tracking-wider font-bold">Thinking...</span>
@@ -423,7 +418,7 @@ export default function FounderMutinyPage() {
                                   ) : (
                                     <div className="space-y-3">
                                       <div className="text-[10px] font-bold font-mono uppercase tracking-widest text-emerald-400/90 flex items-center gap-1.5">
-                                        <Sparkles className="h-3.5 w-3.5" /> Resonance Framework (Something)
+                                        <ShieldCheck className="h-3.5 w-3.5" /> Resonance Framework (Something)
                                       </div>
                                       <div className="pl-3.5 border-l border-emerald-500/10 space-y-3">
                                         {parseRationale(msg.results.rationale || "").points.map((pt, idx) => (
@@ -471,7 +466,7 @@ export default function FounderMutinyPage() {
         
         {/* Sleek, capsule-embedded text composition box */}
         <div className={cn(
-          "bg-zinc-950/80 border border-white/10 backdrop-blur-xl rounded-2xl p-2.5 flex flex-col gap-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition focus-within:border-white/20",
+          "bg-black/40 border border-white/5 rounded-xl p-2.5 flex flex-col gap-1.5 transition focus-within:border-white/10",
           activeAccent.ring
         )}>
           <Textarea
@@ -504,7 +499,7 @@ export default function FounderMutinyPage() {
               <select
                 value={mode}
                 onChange={(e) => setMode(e.target.value as MutinyMode)}
-                className="bg-zinc-900 border border-white/10 rounded-lg text-[10px] px-2 py-0.5 text-white/40 focus:text-white/70 focus:outline-none focus:border-white/10 font-sans tracking-wide cursor-pointer py-1"
+                className="bg-black/30 border border-white/5 rounded-md text-[10px] px-2.5 py-1 text-white/50 hover:text-white/80 focus:text-white/80 focus:outline-none focus:border-white/10 font-sans tracking-wide cursor-pointer"
               >
                 <option value="support">Something (Belief)</option>
                 <option value="critic">Nothing (Doubt)</option>
