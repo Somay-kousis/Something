@@ -25,7 +25,7 @@ export function logFeedback(evt: FeedbackEvent) {
 export function getFeedback(): FeedbackEvent[] {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-  } catch (err) {
+  } catch {
     return []
   }
 }
