@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import ModeToggle from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
-import { queryMutiny } from "@/lib/mock-mutiny"
+
 
 export default function IdeaComposer({ onRun, loading = false }: { onRun: (idea: string, mode: 'mut'|'iny'|'mutiny') => void; loading?: boolean }) {
   const [mode, setMode] = useState<'mut'|'iny'|'mutiny'>('mutiny')
