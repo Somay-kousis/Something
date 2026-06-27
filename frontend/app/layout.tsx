@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans"
 import "./globals.css"
 import { AuthProvider } from "@/components/auth-provider"
 import { AvatarProvider } from "@/components/avatar-context"
+import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {
   title: "Something",
@@ -14,14 +15,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`h-full dark ${GeistSans.variable}`}>
+    <html lang="en" className={`h-full ${GeistSans.variable}`} suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#0A0A0C" />
         {/* Google Fonts loaded via link — graceful fallback if offline */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
         <style
@@ -30,16 +31,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               :root {
                 --font-inter: 'Inter', var(--font-geist-sans, system-ui, -apple-system, sans-serif);
                 --font-outfit: 'Outfit', var(--font-geist-sans, system-ui, -apple-system, sans-serif);
-                color-scheme: dark !important;
-                background-color: #0A0A0C !important;
+                --font-serif: 'Newsreader', Georgia, serif;
               }
               html, body {
-                background-color: #0A0A0C !important;
                 margin: 0 !important;
                 padding: 0 !important;
               }
-              #__next, body > div {
-                background-color: #0A0A0C !important;
+              #___next, body > div {
                 min-height: 100vh !important;
               }
             `,
@@ -47,14 +45,16 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
       </head>
       <body
-        className={`${GeistSans.className} min-h-screen bg-[#0A0A0C] text-white antialiased dark`}
+        className={`${GeistSans.className} min-h-screen bg-background text-foreground antialiased`}
         style={{ fontFamily: "var(--font-inter, system-ui, sans-serif)" }}
       >
-        <div style={{ backgroundColor: "#0A0A0C", minHeight: "100vh" }}>
-          <AuthProvider>
-            <AvatarProvider>{children}</AvatarProvider>
-          </AuthProvider>
-        </div>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <div className="min-h-screen bg-background text-foreground">
+            <AuthProvider>
+              <AvatarProvider>{children}</AvatarProvider>
+            </AuthProvider>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   )
