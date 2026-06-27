@@ -202,7 +202,7 @@ export default function InvestorProfilePage() {
   if (loading) {
     return (
       <div className="mx-auto max-w-[1400px] flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
   }
@@ -210,9 +210,9 @@ export default function InvestorProfilePage() {
   if (error && !profile) {
     return (
       <div className="mx-auto max-w-[1400px]">
-        <Card className="bg-[#101113] border-[#1a1b1e]">
+        <Card className="bg-background border-border">
           <CardContent className="py-8 text-center">
-            <p className="text-white/60">{error}</p>
+            <p className="text-muted-foreground">{error}</p>
             <Button onClick={fetchProfile} className="mt-4">
               Retry
             </Button>
@@ -231,7 +231,7 @@ export default function InvestorProfilePage() {
       )}
 
       {/* Header: Avatar • Info • Trust */}
-      <section className="rounded-xl bg-[#101113] p-5">
+      <section className="rounded-xl bg-background p-5">
         <div className="grid gap-4 md:grid-cols-[auto_minmax(0,1fr)] lg:grid-cols-[auto_minmax(0,1fr)_360px] md:items-start lg:items-center">
           <div>
             <AvatarUploader
@@ -250,8 +250,8 @@ export default function InvestorProfilePage() {
               <h1 className="text-xl sm:text-2xl font-semibold tracking-tight break-words">{userName}</h1>
               <VerificationBadge className="shrink-0" />
             </div>
-            <p className="mt-1 flex items-center gap-2 text-white/70 text-sm">
-              <Building2 className="h-4 w-4 text-white/60" />
+            <p className="mt-1 flex items-center gap-2 text-foreground/70 text-sm">
+              <Building2 className="h-4 w-4 text-muted-foreground" />
               <span className="truncate">{firm}</span>
             </p>
           </div>
@@ -267,7 +267,7 @@ export default function InvestorProfilePage() {
             </div>
             <Button
               onClick={requestReverification}
-              className="rounded-md bg-white text-[#0b0b0c] hover:bg-white/90"
+              className="rounded-md bg-primary text-primary-foreground hover:opacity-90"
             >
               <ShieldCheck className="mr-2 h-4 w-4" />
               Request re‑verify
@@ -281,7 +281,7 @@ export default function InvestorProfilePage() {
         {/* Main column */}
         <div className="min-w-0 space-y-6">
           {/* Essentials */}
-          <Card className="bg-[#101113] border-[#1a1b1e]">
+          <Card className="bg-background border-border">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <UserRound className="h-4 w-4" />
@@ -293,40 +293,40 @@ export default function InvestorProfilePage() {
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="bg-[#0f1012] border-[#1a1b1e]"
+                  className="bg-accent/30 border-border"
                 />
               </Field>
               <Field label="Affiliation">
                 <Input
                   value={firm}
                   onChange={(e) => setFirm(e.target.value)}
-                  className="bg-[#0f1012] border-[#1a1b1e]"
+                  className="bg-accent/30 border-border"
                 />
               </Field>
 
               <div className="grid gap-2 sm:col-span-2">
-                <label className="text-xs text-white/60">Typical check size (USD)</label>
+                <label className="text-xs text-muted-foreground">Typical check size (USD)</label>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-white/60">Min</span>
+                    <span className="text-xs text-muted-foreground">Min</span>
                     <Input
                       type="number"
                       min={0}
                       step={1000}
                       value={minCheck}
                       onChange={(e) => setMinCheck(safeInt(e.target.value, minCheck))}
-                      className="h-9 bg-[#0f1012] border-[#1a1b1e]"
+                      className="h-9 bg-accent/30 border-border"
                     />
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-white/60">Max</span>
+                    <span className="text-xs text-muted-foreground">Max</span>
                     <Input
                       type="number"
                       min={0}
                       step={1000}
                       value={maxCheck}
                       onChange={(e) => setMaxCheck(safeInt(e.target.value, maxCheck))}
-                      className="h-9 bg-[#0f1012] border-[#1a1b1e]"
+                      className="h-9 bg-accent/30 border-border"
                     />
                   </div>
                 </div>
@@ -337,7 +337,7 @@ export default function InvestorProfilePage() {
                   <Textarea
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    className="min-h-[100px] bg-[#0f1012] border-[#1a1b1e]"
+                    className="min-h-[100px] bg-accent/30 border-border"
                   />
                 </Field>
               </div>
@@ -346,7 +346,7 @@ export default function InvestorProfilePage() {
                 <Button
                   onClick={saveProfile}
                   disabled={saving}
-                  className="w-fit rounded-md bg-white text-[#0b0b0c] hover:bg-white/90"
+                  className="w-fit rounded-md bg-primary text-primary-foreground hover:opacity-90"
                 >
                   {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Save profile
@@ -356,7 +356,7 @@ export default function InvestorProfilePage() {
           </Card>
 
           {/* Interests */}
-          <Card className="bg-[#101113] border-[#1a1b1e]">
+          <Card className="bg-background border-border">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <Tag className="h-4 w-4" />
@@ -373,7 +373,7 @@ export default function InvestorProfilePage() {
                       onClick={() => toggleInterest(t)}
                       className={cn(
                         "text-xs rounded-md px-3 py-1.5 border transition",
-                        on ? "border-white/30 bg-white/[0.06]" : "border-[#1a1b1e] text-white/80 hover:bg-white/[0.03]",
+                        on ? "border-white/30 bg-white/[0.06]" : "border-border text-foreground/80 hover:bg-white/[0.03]",
                       )}
                       aria-pressed={on}
                     >
@@ -382,12 +382,12 @@ export default function InvestorProfilePage() {
                   )
                 })}
               </div>
-              <div className="text-xs text-white/60">Used to personalize discovery and matching.</div>
+              <div className="text-xs text-muted-foreground">Used to personalize discovery and matching.</div>
             </CardContent>
           </Card>
 
           {/* Preferences */}
-          <Card className="bg-[#101113] border-[#1a1b1e]">
+          <Card className="bg-background border-border">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <Wallet className="h-4 w-4" />
@@ -409,7 +409,7 @@ export default function InvestorProfilePage() {
               />
 
               <div className="grid gap-2">
-                <div className="text-xs text-white/60">Stage focus</div>
+                <div className="text-xs text-muted-foreground">Stage focus</div>
                 <div className="flex flex-wrap gap-2">
                   {(["Pre‑seed", "Angel", "Seed"] as const).map((s) => {
                     const on = stageFocus.includes(s)
@@ -419,7 +419,7 @@ export default function InvestorProfilePage() {
                         onClick={() => toggleStage(s)}
                         className={cn(
                           "text-xs rounded-md px-3 py-1.5 border transition",
-                          on ? "border-white/30 bg-white/[0.06]" : "border-[#1a1b1e] hover:bg-white/[0.03]",
+                          on ? "border-white/30 bg-white/[0.06]" : "border-border hover:bg-white/[0.03]",
                         )}
                         aria-pressed={on}
                       >
@@ -431,7 +431,7 @@ export default function InvestorProfilePage() {
               </div>
 
               <div className="grid gap-2">
-                <div className="text-xs text-white/60">Pace (investments per quarter)</div>
+                <div className="text-xs text-muted-foreground">Pace (investments per quarter)</div>
                 <div className="flex items-center gap-3">
                   <input
                     type="range"
@@ -450,7 +450,7 @@ export default function InvestorProfilePage() {
               <Button
                 onClick={savePreferences}
                 disabled={saving}
-                className="w-fit rounded-md bg-white text-[#0b0b0c] hover:bg-white/90"
+                className="w-fit rounded-md bg-primary text-primary-foreground hover:opacity-90"
               >
                 {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Save preferences
@@ -462,7 +462,7 @@ export default function InvestorProfilePage() {
         {/* Right rail */}
         <aside className="space-y-6">
           {/* Visibility & links */}
-          <Card className="bg-[#101113] border-[#1a1b1e]">
+          <Card className="bg-background border-border">
             <CardHeader className="pb-2">
               <CardTitle className="text-base flex items-center gap-2">
                 <Link2 className="h-4 w-4" />
@@ -477,38 +477,38 @@ export default function InvestorProfilePage() {
                 onCheckedChange={(v) => updateVisibility("publicProfile", v)}
               />
               <div className="grid gap-2">
-                <div className="text-xs text-white/60">Handle</div>
+                <div className="text-xs text-muted-foreground">Handle</div>
                 <div className="flex items-center gap-2">
-                  <span className="text-white/60">@</span>
+                  <span className="text-muted-foreground">@</span>
                   <Input
                     value={handle}
                     onChange={(e) => setHandle(e.target.value)}
                     onBlur={(e) => updateVisibility("handle", e.target.value)}
-                    className="h-8 bg-[#0f1012] border-[#1a1b1e]"
+                    className="h-8 bg-accent/30 border-border"
                   />
                 </div>
-                <div className="text-xs text-white/60">
+                <div className="text-xs text-muted-foreground">
                   Profile URL: <span className="text-white">something.to/{handle}</span>
                 </div>
               </div>
               <div className="grid gap-2">
-                <div className="text-xs text-white/60">Linked accounts</div>
+                <div className="text-xs text-muted-foreground">Linked accounts</div>
                 <div className="flex flex-wrap gap-2">
                   {profile?.links && profile.links.length > 0 ? (
                     profile.links.map((l, i) => (
                       <a
                         key={i}
                         href={l.href}
-                        className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-[#0f1012] px-2.5 py-1.5 text-xs hover:bg-white/[0.04]"
+                        className="inline-flex items-center gap-2 rounded-md border border-border/60 bg-accent/30 px-2.5 py-1.5 text-xs hover:bg-accent"
                       >
                         <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/60" />
                         {l.label}
                       </a>
                     ))
                   ) : (
-                    <div className="text-xs text-white/60">No linked accounts</div>
+                    <div className="text-xs text-muted-foreground">No linked accounts</div>
                   )}
-                  <button className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-[#0f1012] px-2 py-1 text-[11px] text-white/80 hover:bg-white/[0.04]">
+                  <button className="inline-flex items-center gap-1 rounded-md border border-border/60 bg-accent/30 px-2 py-1 text-[11px] text-foreground/80 hover:bg-accent">
                     Connect…
                   </button>
                 </div>
@@ -517,7 +517,7 @@ export default function InvestorProfilePage() {
           </Card>
 
           {/* Portfolio snapshot */}
-          <Card className="bg-[#101113] border-[#1a1b1e]">
+          <Card className="bg-background border-border">
             <CardHeader className="pb-2">
               <CardTitle className="text-base">Portfolio snapshot</CardTitle>
             </CardHeader>
@@ -526,25 +526,25 @@ export default function InvestorProfilePage() {
                 <Link
                   key={p.id}
                   href={`/investor/search/${p.id}`}
-                  className="rounded-md border border-white/10 bg-[#0f1012] px-3 py-2 text-sm hover:bg-white/[0.04]"
+                  className="rounded-md border border-border/60 bg-accent/30 px-3 py-2 text-sm hover:bg-accent"
                 >
                   {p.name}
                 </Link>
               ))}
-              <div className="text-[11px] text-white/60">Tap to view each brief.</div>
+              <div className="text-[11px] text-muted-foreground">Tap to view each brief.</div>
             </CardContent>
           </Card>
 
           {/* Guidance */}
-          <Card className="bg-[#101113] border-[#1a1b1e]">
+          <Card className="bg-background border-border">
             <CardHeader className="pb-2">
               <CardTitle className="text-base">Guidance</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
-              <div className="rounded-md border border-white/10 bg-[#0f1012] px-3 py-2">
+              <div className="rounded-md border border-border/60 bg-accent/30 px-3 py-2">
                 Verified investors can enable &quot;Public profile&quot; to receive curated intros.
               </div>
-              <div className="rounded-md border border-white/10 bg-[#0f1012] px-3 py-2">
+              <div className="rounded-md border border-border/60 bg-accent/30 px-3 py-2">
                 Trust grows with NDA usage, escrow releases, and verified receipts.
               </div>
             </CardContent>
@@ -558,7 +558,7 @@ export default function InvestorProfilePage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="grid gap-2">
-      <label className="text-xs text-white/60">{label}</label>
+      <label className="text-xs text-muted-foreground">{label}</label>
       {children}
     </div>
   )
@@ -576,10 +576,10 @@ function RowSwitch({
   onCheckedChange: (v: boolean) => void
 }) {
   return (
-    <div className="flex items-start justify-between gap-3 rounded-md border border-[#1a1b1e] bg-[#0f1012] p-3">
+    <div className="flex items-start justify-between gap-3 rounded-md border border-border bg-accent/30 p-3">
       <div className="min-w-0">
         <div className="font-medium">{label}</div>
-        {desc && <div className="text-xs text-white/60">{desc}</div>}
+        {desc && <div className="text-xs text-muted-foreground">{desc}</div>}
       </div>
       <Switch checked={checked} onCheckedChange={onCheckedChange} aria-label={label} />
     </div>
