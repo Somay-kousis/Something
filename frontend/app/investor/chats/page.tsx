@@ -163,27 +163,27 @@ export default function InvestorChatsPage() {
       <div className="grid lg:grid-cols-[320px_minmax(0,1fr)] gap-4 lg:gap-6">
         {/* Threads list */}
         <section className={cn("lg:block", showOnlyChatOnMobile ? "hidden" : "block")}>
-          <div className="rounded-xl bg-[#101113] p-3 sm:p-4">
+          <div className="rounded-xl bg-background p-3 sm:p-4">
             <div className="flex items-center gap-2 mb-4">
               <div className="relative flex-1">
-                <Search className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+                <Search className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/40" />
                 <Input
                   placeholder="Search conversations..."
                   value={query}
                   onChange={e => setQuery(e.target.value)}
-                  className="h-9 w-full pl-8 bg-[#0f1012] border-transparent text-white placeholder:text-white/40 focus:ring-1 focus:ring-white/20"
+                  className="h-9 w-full pl-8 bg-accent/30 border-transparent text-white placeholder:text-foreground/40 focus:ring-1 focus:ring-white/20"
                 />
               </div>
             </div>
 
             <div className="space-y-0.5">
               {isLoadingThreads ? (
-                [...Array(3)].map((_, i) => <Skeleton key={i} className="h-[90px] w-full rounded-lg bg-white/[0.04]" />)
+                [...Array(3)].map((_, i) => <Skeleton key={i} className="h-[90px] w-full rounded-lg bg-accent/30" />)
               ) : error ? (
                 <div className="p-4 text-center text-sm text-red-400">{error}</div>
               ) : filteredThreads.length === 0 ? (
                 <div className="p-4 text-center">
-                  <div className="text-sm text-white/60">No conversations found</div>
+                  <div className="text-sm text-muted-foreground">No conversations found</div>
                 </div>
               ) : (
                 filteredThreads.map(t => (
@@ -192,12 +192,12 @@ export default function InvestorChatsPage() {
                     onClick={() => setActiveId(t.id)}
                     className={cn(
                       "w-full rounded-lg px-3 py-3 text-left transition-all duration-200 group",
-                      t.id === activeId ? "bg-white/[0.08] shadow-sm" : "hover:bg-white/[0.04] active:bg-white/[0.06]",
+                      t.id === activeId ? "bg-accent/50 shadow-sm" : "hover:bg-accent active:bg-accent/40",
                     )}
                   >
                     <div className="flex items-center gap-3">
                       <div className="relative">
-                        <div className="grid size-10 place-items-center rounded-full text-xs font-medium bg-[#0f1012]">
+                        <div className="grid size-10 place-items-center rounded-full text-xs font-medium bg-accent/30">
                           {t.name.split(" ").map(n => n[0]).join("").substring(0, 2)}
                         </div>
                         {t.isOnline && <div className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full bg-green-400 border-2 border-[#101113]" />}
@@ -209,10 +209,10 @@ export default function InvestorChatsPage() {
                             {t.unreadCount > 0 && (
                               <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-medium bg-white/90 text-[#101113] rounded-full">{t.unreadCount}</span>
                             )}
-                            <span className="text-[10px] text-white/50 whitespace-nowrap">{formatTime(t.lastActive)}</span>
+                            <span className="text-[10px] text-foreground/50 whitespace-nowrap">{formatTime(t.lastActive)}</span>
                           </div>
                         </div>
-                        <p className="truncate text-xs text-white/60">{t.lastMessagePreview}</p>
+                        <p className="truncate text-xs text-muted-foreground">{t.lastMessagePreview}</p>
                       </div>
                     </div>
                   </button>
@@ -224,14 +224,14 @@ export default function InvestorChatsPage() {
 
         {/* Chat view */}
         <section className={cn("lg:block", showOnlyListOnMobile ? "hidden" : "block")}>
-          <div className="rounded-xl bg-[#101113] overflow-hidden flex flex-col h-[600px] lg:h-[700px]">
+          <div className="rounded-xl bg-background overflow-hidden flex flex-col h-[600px] lg:h-[700px]">
             {/* Header */}
             <div className="flex h-14 items-center gap-3 px-3 sm:px-4 border-b border-white/[0.06]">
               <button className="lg:hidden" onClick={() => setActiveId(null)}><ChevronLeft className="h-5 w-5" /></button>
               {activeThread ? (
                 <div className="truncate text-sm font-medium leading-tight">{activeThread.name}</div>
               ) : (
-                <div className="px-2 text-sm text-white/70">Select a conversation</div>
+                <div className="px-2 text-sm text-foreground/70">Select a conversation</div>
               )}
             </div>
 
@@ -251,12 +251,12 @@ export default function InvestorChatsPage() {
                         <div className={cn("rounded-2xl px-3 py-2.5 text-sm", isYou ? "bg-white text-[#0b0b0c] rounded-br-md" : "bg-[#1a1b1e] text-white rounded-bl-md")}>
                           <p>{m.text}</p>
                         </div>
-                        <div className={cn("flex items-center gap-1 mt-1 text-[10px]", isYou ? "justify-end text-white/50" : "text-white/50")}>
+                        <div className={cn("flex items-center gap-1 mt-1 text-[10px]", isYou ? "justify-end text-foreground/50" : "text-foreground/50")}>
                           <span>{formatTime(m.createdAt)}</span>
                           {isYou && lastMessage && (
                             m.deliveryStatus === "seen" ? <CheckCheck className="h-3 w-3 text-blue-400" /> :
-                            m.deliveryStatus === "delivered" ? <CheckCheck className="h-3 w-3 text-white/40" /> :
-                            <Clock className="h-3 w-3 text-white/30" />
+                            m.deliveryStatus === "delivered" ? <CheckCheck className="h-3 w-3 text-foreground/40" /> :
+                            <Clock className="h-3 w-3 text-foreground/30" />
                           )}
                         </div>
                       </div>
@@ -275,10 +275,10 @@ export default function InvestorChatsPage() {
                 value={text}
                 onChange={e => setText(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) onSend(e); }}
-                className="w-full min-h-[40px] max-h-[120px] py-2.5 px-3 rounded-2xl bg-[#0f1012] border-transparent text-white placeholder:text-white/40 focus:ring-1 focus:ring-white/20 resize-none"
+                className="w-full min-h-[40px] max-h-[120px] py-2.5 px-3 rounded-2xl bg-accent/30 border-transparent text-white placeholder:text-foreground/40 focus:ring-1 focus:ring-white/20 resize-none"
                 rows={1}
               />
-              <Button type="submit" size="icon" disabled={!activeThread || text.trim().length === 0} className="size-10 rounded-full flex-shrink-0 bg-white text-black enabled:hover:bg-white/90 disabled:bg-white/20 disabled:text-white/60">
+              <Button type="submit" size="icon" disabled={!activeThread || text.trim().length === 0} className="size-10 rounded-full flex-shrink-0 bg-white text-background enabled:hover:bg-white/90 disabled:bg-white/20 disabled:text-muted-foreground">
                 <Send className="h-4 w-4" />
               </Button>
             </form>
