@@ -11,7 +11,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { SomethingLogo } from "@/components/something-logo"
 import { cn } from "@/lib/utils"
 import { 
-  ArrowRight, 
   ArrowLeft, 
   Mail, 
   Lock, 
@@ -59,16 +58,16 @@ export default function SignupPage() {
   const [confirm, setConfirm] = useState("")
   const [role, setRole] = useState("founder") // "founder" | "investor"
   const [experience, setExperience] = useState("")
-  const [phone, setPhone] = useState("")
+  const [phone] = useState("")
   const [linkedin, setLinkedin] = useState("")
   const [github, setGithub] = useState("")
   const [twitter, setTwitter] = useState("")
   const [firm, setFirm] = useState("")
   const [expertise, setExpertise] = useState<string[]>([])
-  const [expertiseOther, setExpertiseOther] = useState("")
+  const [expertiseOther] = useState("")
   const [newExpertise, setNewExpertise] = useState("")
   const [interests, setInterests] = useState<string[]>([])
-  const [interestsOther, setInterestsOther] = useState("")
+  const [interestsOther] = useState("")
   const [newInterest, setNewInterest] = useState("")
   const [age, setAge] = useState<number | "">("")
   const [occupation, setOccupation] = useState("")
