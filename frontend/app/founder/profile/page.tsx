@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Input } from "@/components/ui/input"
@@ -29,7 +27,6 @@ import {
   AlertTriangle,
   CheckCircle,
   Save,
-  User,
   Plus,
   Trash2,
   Github,
@@ -126,7 +123,7 @@ const ACCENTS = {
     glow: "",
     borderHighlight: "border-[#8EA38E]",
     textHighlight: "text-[#8EA38E]",
-    btnBg: "bg-[#8EA38E] text-black hover:bg-[#8EA38E]/90",
+    btnBg: "bg-[#8EA38E] text-background hover:bg-[#8EA38E]/90",
     ring: "focus-visible:ring-[#8EA38E]/20 focus-visible:border-[#8EA38E]/30",
     color: "#8EA38E",
   },
@@ -138,7 +135,7 @@ const ACCENTS = {
     glow: "",
     borderHighlight: "border-[#E2DFD5]",
     textHighlight: "text-[#E2DFD5]",
-    btnBg: "bg-[#E2DFD5] text-black hover:bg-[#E2DFD5]/90",
+    btnBg: "bg-[#E2DFD5] text-background hover:bg-[#E2DFD5]/90",
     ring: "focus-visible:ring-[#E2DFD5]/20 focus-visible:border-[#E2DFD5]/30",
     color: "#E2DFD5",
   },
@@ -150,7 +147,7 @@ const ACCENTS = {
     glow: "",
     borderHighlight: "border-[#8293A4]",
     textHighlight: "text-[#8293A4]",
-    btnBg: "bg-[#8293A4] text-black hover:bg-[#8293A4]/90",
+    btnBg: "bg-[#8293A4] text-background hover:bg-[#8293A4]/90",
     ring: "focus-visible:ring-[#8293A4]/20 focus-visible:border-[#8293A4]/30",
     color: "#8293A4",
   },
@@ -162,7 +159,7 @@ const ACCENTS = {
     glow: "",
     borderHighlight: "border-[#C88E72]",
     textHighlight: "text-[#C88E72]",
-    btnBg: "bg-[#C88E72] text-black hover:bg-[#C88E72]/90",
+    btnBg: "bg-[#C88E72] text-background hover:bg-[#C88E72]/90",
     ring: "focus-visible:ring-[#C88E72]/20 focus-visible:border-[#C88E72]/30",
     color: "#C88E72",
   },
@@ -334,7 +331,7 @@ export default function FounderProfilePage() {
     setSaving(true)
 
     setTimeout(() => {
-      let updated: ProfileData = { ...profile }
+      const updated: ProfileData = { ...profile }
       if (editMode === "header") {
         updated.name = editName
         updated.headline = editHeadline
@@ -383,7 +380,7 @@ export default function FounderProfilePage() {
       description: expDesc
     }
 
-    let updatedExpList = [...profile.experience]
+    const updatedExpList = [...profile.experience]
     if (editingExpIndex !== null) {
       updatedExpList[editingExpIndex] = newExp
       addToast("Experience Updated", `Modified role: '${expRole}' at ${expCompany}.`, "success")
@@ -434,7 +431,7 @@ export default function FounderProfilePage() {
       duration: eduDuration
     }
 
-    let updatedEduList = [...profile.education]
+    const updatedEduList = [...profile.education]
     if (editingEduIndex !== null) {
       updatedEduList[editingEduIndex] = newEdu
       addToast("Academics Updated", `Modified credential at ${eduInstitution}.`, "success")
@@ -581,7 +578,7 @@ export default function FounderProfilePage() {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className="pointer-events-auto flex items-start gap-3 w-[330px] rounded-xl bg-zinc-950/85 border border-white/10 backdrop-blur-xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-300 relative overflow-hidden"
+            className="pointer-events-auto flex items-start gap-3 w-[330px] rounded-xl bg-background/85 border border-border/10 backdrop-blur-xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.5)] animate-in slide-in-from-right duration-300 relative overflow-hidden"
           >
             <div className="absolute bottom-0 left-0 h-[2px] w-full animate-out fade-out fill-mode-forwards origin-left bg-indigo-500" 
                  style={{ animationDuration: "4.5s", animationName: "shrinkProgress", backgroundColor: activeAccent.color }} />
@@ -592,12 +589,12 @@ export default function FounderProfilePage() {
               {t.type === "info" && <CheckCircle2 className="h-4.5 w-4.5 text-blue-400" />}
             </div>
             <div className="flex-1 space-y-0.5">
-              <h5 className="text-xs font-bold text-white font-mono uppercase tracking-wider">{t.title}</h5>
-              {t.description && <p className="text-[10px] text-white/50 leading-relaxed font-sans">{t.description}</p>}
+              <h5 className="text-xs font-bold text-foreground font-mono uppercase tracking-wider">{t.title}</h5>
+              {t.description && <p className="text-[10px] text-foreground/50 leading-relaxed font-sans">{t.description}</p>}
             </div>
             <button
               onClick={() => setToasts((prev) => prev.filter((item) => item.id !== t.id))}
-              className="text-white/20 hover:text-white/50 cursor-pointer shrink-0 transition"
+              className="text-foreground/20 hover:text-foreground/50 cursor-pointer shrink-0 transition"
               aria-label="Close Toast"
             >
               <X className="h-3.5 w-3.5" />
@@ -608,8 +605,8 @@ export default function FounderProfilePage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div className="space-y-1">
-          <h2 className="text-2xl font-bold tracking-tight text-white font-outfit">Founder Profile</h2>
-          <p className="text-white/40 text-xs font-sans font-medium">Construct your verification track record, education milestones, and wallet certificates.</p>
+          <h2 className="text-2xl font-serif font-light text-foreground leading-tight">Founder Profile</h2>
+          <p className="text-foreground/40 text-xs font-sans font-light leading-relaxed">Construct your verification track record, education milestones, and wallet certificates.</p>
         </div>
         <Button
           variant="outline"
@@ -623,7 +620,7 @@ export default function FounderProfilePage() {
               addToast("Database Reset", "Founder details reverted to mock defaults.", "info")
             }
           }}
-          className="border-white/10 text-white/60 hover:bg-white/5 hover:text-white rounded-full text-xs h-8 px-4 font-mono uppercase tracking-wider shrink-0 cursor-pointer"
+          className="border-border/10 text-foreground/60 hover:bg-foreground/5 hover:text-foreground rounded-full text-xs h-8 px-4 font-mono uppercase tracking-wider shrink-0 cursor-pointer"
         >
           Reset Profile Data
         </Button>
@@ -635,11 +632,11 @@ export default function FounderProfilePage() {
         <div className="space-y-6 md:col-span-2">
           
           {/* 1. Header Profile details Cardless */}
-          <div className="py-6 border-b border-white/5">
+          <div className="py-6 border-b border-border/5">
             <div className="flex items-start justify-between gap-4">
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
                 {/* Glowing Avatar representation */}
-                <div className="size-20 rounded-full overflow-hidden border-2 border-white/10 shrink-0 bg-white/5 flex items-center justify-center relative shadow-[0_4px_12px_rgba(0,0,0,0.3)] group">
+                <div className="size-20 rounded-full overflow-hidden border-2 border-border/10 shrink-0 bg-foreground/5 flex items-center justify-center relative shadow-[0_4px_12px_rgba(0,0,0,0.3)] group">
                   {profile.avatarUrl ? (
                     profile.avatarUrl.startsWith("linear-gradient") ? (
                       <div className="size-full animate-pulse" style={{ background: profile.avatarUrl }} />
@@ -648,15 +645,15 @@ export default function FounderProfilePage() {
                       <img src={profile.avatarUrl} alt="Avatar" className="size-full object-cover" />
                     )
                   ) : (
-                    <span className="text-2xl font-bold font-mono text-white/60">{getInitials(profile.name)}</span>
+                    <span className="text-2xl font-bold font-mono text-foreground/60">{getInitials(profile.name)}</span>
                   )}
                   
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+                    className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
                     aria-label="Upload custom image"
                   >
-                    <Camera className="h-5 w-5 text-white" />
+                    <Camera className="h-5 w-5 text-foreground" />
                   </button>
                 </div>
                 
@@ -670,7 +667,7 @@ export default function FounderProfilePage() {
 
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-                    <h1 className="text-2xl font-bold tracking-tight text-white font-outfit">
+                    <h1 className="text-2xl font-serif font-light text-foreground leading-tight">
                       {profile.name}
                     </h1>
                     {profile.isVerified && (
@@ -679,8 +676,8 @@ export default function FounderProfilePage() {
                       </Badge>
                     )}
                   </div>
-                  <p className="text-white/80 text-sm font-sans">{profile.headline}</p>
-                  <div className="flex items-center justify-center sm:justify-start gap-1.5 text-xs text-white/45 font-mono pt-0.5">
+                  <p className="text-foreground/80 text-sm font-sans">{profile.headline}</p>
+                  <div className="flex items-center justify-center sm:justify-start gap-1.5 text-xs text-foreground/45 font-mono pt-0.5">
                     <MapPin className="h-3.5 w-3.5" style={{ color: activeAccent.color }} />
                     <span>{profile.location}</span>
                   </div>
@@ -690,7 +687,7 @@ export default function FounderProfilePage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="border border-white/5 text-white/50 hover:bg-white/5 hover:text-white rounded-full h-8 w-8 shrink-0 cursor-pointer"
+                className="border border-border/5 text-foreground/50 hover:bg-foreground/5 hover:text-foreground rounded-full h-8 w-8 shrink-0 cursor-pointer"
                 aria-label="Edit Profile Header"
                 onClick={() => openEditModal("header")}
               >
@@ -700,28 +697,28 @@ export default function FounderProfilePage() {
 
             {/* Social items and status footer */}
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3 pt-2">
-              <div className="flex items-center gap-1.5 text-xs text-white/40 font-sans">
+              <div className="flex items-center gap-1.5 text-xs text-foreground/40 font-sans">
                 <CheckCircle className="h-4 w-4" style={{ color: activeAccent.color }} />
                 <span>Available for match connections & escrow pooling</span>
               </div>
               <div className="flex items-center gap-1">
                 {profile.socials.linkedin && (
                   <a href={profile.socials.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn Profile">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/5 rounded-full">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-foreground/40 hover:text-foreground hover:bg-foreground/5 rounded-full">
                       <Linkedin className="h-4 w-4" />
                     </Button>
                   </a>
                 )}
                 {profile.socials.twitter && (
                   <a href={profile.socials.twitter} target="_blank" rel="noreferrer" aria-label="Twitter Profile">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/5 rounded-full">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-foreground/40 hover:text-foreground hover:bg-foreground/5 rounded-full">
                       <Twitter className="h-4 w-4" />
                     </Button>
                   </a>
                 )}
                 {profile.socials.website && (
                   <a href={profile.socials.website} target="_blank" rel="noreferrer" aria-label="Personal Website">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white hover:bg-white/5 rounded-full">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-foreground/40 hover:text-foreground hover:bg-foreground/5 rounded-full">
                       <Globe className="h-4 w-4" />
                     </Button>
                   </a>
@@ -732,28 +729,28 @@ export default function FounderProfilePage() {
 
           {/* 2. Biography Synopsis */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-white/5 pb-3">
-              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">Biography Synopsis</h3>
+            <div className="flex items-center justify-between border-b border-border/5 pb-3">
+              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">Biography Synopsis</h3>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 text-white/40 hover:text-white hover:bg-white/5 rounded-full cursor-pointer"
+                className="h-7 w-7 text-foreground/40 hover:text-foreground hover:bg-foreground/5 rounded-full cursor-pointer"
                 aria-label="Edit Bio"
                 onClick={() => openEditModal("about")}
               >
                 <Pencil className="h-3.5 w-3.5" />
               </Button>
             </div>
-            <p className="text-white/60 text-sm leading-relaxed font-sans pt-1">
+            <p className="text-foreground/60 text-sm leading-relaxed font-sans pt-1">
               {profile.about || "No biography info entered yet. Complete profile settings to connect with prospective investors."}
             </p>
           </div>
 
           {/* 3. Skill tags component manager */}
           <div className="space-y-4">
-            <div className="border-b border-white/5 pb-3">
-              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">Expertise Tags</h3>
-              <p className="text-white/35 text-[9px] font-mono uppercase tracking-wider pt-1">Type core expertise tag below and press Enter or comma to append</p>
+            <div className="border-b border-border/5 pb-3">
+              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">Expertise Tags</h3>
+              <p className="text-foreground/35 text-[9px] font-mono uppercase tracking-wider pt-1">Type core expertise tag below and press Enter or comma to append</p>
             </div>
             <div className="space-y-4 pt-1">
               {/* Flex Tags list */}
@@ -761,12 +758,12 @@ export default function FounderProfilePage() {
                 {(profile.skills || []).map((skill) => (
                   <Badge
                     key={skill}
-                    className="bg-white/[0.02] text-white/75 border-white/5 hover:border-white/10 rounded px-2.5 py-1 text-xs font-mono font-medium flex items-center gap-1.5 shadow-sm transition hover:bg-white/5"
+                    className="bg-foreground/[0.02] text-foreground/75 border-border/5 hover:border-border/10 rounded px-2.5 py-1 text-xs font-mono font-medium flex items-center gap-1.5 shadow-sm transition hover:bg-foreground/5"
                   >
                     {skill}
                     <button
                       onClick={() => handleRemoveSkill(skill)}
-                      className="text-white/30 hover:text-white cursor-pointer shrink-0 transition"
+                      className="text-foreground/30 hover:text-foreground cursor-pointer shrink-0 transition"
                       aria-label={`Remove Skill ${skill}`}
                     >
                       <X className="h-3 w-3" />
@@ -774,7 +771,7 @@ export default function FounderProfilePage() {
                   </Badge>
                 ))}
                 {(profile.skills || []).length === 0 && (
-                  <span className="text-xs text-white/30 font-mono">No expertise tags listed yet.</span>
+                  <span className="text-xs text-foreground/30 font-mono">No expertise tags listed yet.</span>
                 )}
               </div>
 
@@ -784,22 +781,22 @@ export default function FounderProfilePage() {
                 value={newSkillText}
                 onChange={(e) => setNewSkillText(e.target.value)}
                 onKeyDown={handleAddSkill}
-                className={cn("bg-black/40 border-white/5 text-xs text-white rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                className={cn("bg-background/40 border-border/5 text-xs text-foreground rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
               />
             </div>
           </div>
 
           {/* 4. Experience Timeline */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-white/5 pb-3">
-              <h3 className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">
+            <div className="flex items-center justify-between border-b border-border/5 pb-3">
+              <h3 className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">
                 <Briefcase className="h-3.5 w-3.5" style={{ color: activeAccent.color }} /> Professional Track Record
               </h3>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleOpenExpModal(null)}
-                className="h-8 rounded-lg text-[10px] font-mono uppercase tracking-wider text-white hover:bg-white/5 border-white/10 bg-transparent cursor-pointer flex items-center gap-1"
+                className="h-8 rounded-lg text-[10px] font-mono uppercase tracking-wider text-foreground hover:bg-foreground/5 border-border/10 bg-transparent cursor-pointer flex items-center gap-1"
               >
                 <Plus className="h-3.5 w-3.5" /> Add Role
               </Button>
@@ -808,28 +805,28 @@ export default function FounderProfilePage() {
               {(profile.experience || []).length > 0 ? (
                 <>
                   {/* Visual timeline connector line */}
-                  <div className="absolute left-[11px] top-4 bottom-4 w-[1px] bg-white/5 pointer-events-none" />
+                  <div className="absolute left-[11px] top-4 bottom-4 w-[1px] bg-foreground/5 pointer-events-none" />
 
                   {(profile.experience || []).map((exp, index) => (
                     <div key={index} className="flex gap-4 relative group/item">
-                      <div className="size-6 rounded-full bg-[#0a0a0c] border border-white/15 text-white/60 grid place-items-center z-10 text-[9px] shrink-0 mt-1 font-mono font-semibold">
+                      <div className="size-6 rounded-full bg-background border border-border/15 text-foreground/60 grid place-items-center z-10 text-[9px] shrink-0 mt-1 font-mono font-semibold">
                         {index + 1}
                       </div>
                       <div className="space-y-1.5 flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div className="space-y-0.5">
-                            <h3 className="font-semibold text-sm text-white font-outfit leading-tight">{exp.role}</h3>
+                            <h3 className="font-semibold text-sm text-foreground font-sans leading-tight">{exp.role}</h3>
                             <p className="text-xs text-[#34D399] font-medium leading-none font-sans" style={{ color: activeAccent.color }}>{exp.company}</p>
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
-                            <span className="text-[9px] text-white/35 font-mono bg-white/[0.02] border border-white/5 rounded px-2 py-0.5">{exp.duration}</span>
+                            <span className="text-[9px] text-foreground/35 font-mono bg-foreground/[0.02] border border-border/5 rounded px-2 py-0.5">{exp.duration}</span>
                             
                             {/* Action Tools */}
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => handleOpenExpModal(index)}
-                              className="h-6 w-6 text-white/30 hover:text-white hover:bg-white/5 rounded"
+                              className="h-6 w-6 text-foreground/30 hover:text-foreground hover:bg-foreground/5 rounded"
                               aria-label={`Edit role at ${exp.company}`}
                             >
                               <Pencil className="h-3.5 w-3.5" />
@@ -845,13 +842,13 @@ export default function FounderProfilePage() {
                             </Button>
                           </div>
                         </div>
-                        <p className="text-sm text-white/60 leading-relaxed font-sans">{exp.description}</p>
+                        <p className="text-sm text-foreground/60 leading-relaxed font-sans">{exp.description}</p>
                       </div>
                     </div>
                   ))}
                 </>
               ) : (
-                <div className="text-center py-6 text-xs text-white/30 font-mono">
+                <div className="text-center py-6 text-xs text-foreground/30 font-mono">
                   No professional history listed. Complete credentials to index your profile.
                 </div>
               )}
@@ -861,15 +858,15 @@ export default function FounderProfilePage() {
           {/* 5. Education Academics */}
           {/* 5. Education Academics */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-white/5 pb-3">
-              <h3 className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">
+            <div className="flex items-center justify-between border-b border-border/5 pb-3">
+              <h3 className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">
                 <GraduationCap className="h-3.5 w-3.5" style={{ color: activeAccent.color }} /> Academic Background
               </h3>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleOpenEduModal(null)}
-                className="h-8 rounded-lg text-[10px] font-mono uppercase tracking-wider text-white hover:bg-white/5 border-white/10 bg-transparent cursor-pointer flex items-center gap-1"
+                className="h-8 rounded-lg text-[10px] font-mono uppercase tracking-wider text-foreground hover:bg-foreground/5 border-border/10 bg-transparent cursor-pointer flex items-center gap-1"
               >
                 <Plus className="h-3.5 w-3.5" /> Add Academic
               </Button>
@@ -880,20 +877,20 @@ export default function FounderProfilePage() {
                   {(profile.education || []).map((edu, index) => (
                     <div
                       key={index}
-                      className="flex items-start gap-4 p-3.5 rounded-xl border border-white/5 bg-black/20 hover:border-white/10 transition duration-300"
+                      className="flex items-start gap-4 py-3 border-b border-border/[0.03] transition duration-300"
                     >
-                      <div className="size-8 rounded-lg bg-white/5 border border-white/10 text-white/60 grid place-items-center shrink-0 shadow">
-                        <GraduationCap className="h-4 w-4" style={{ color: activeAccent.color }} />
+                      <div className="size-8 rounded-lg bg-foreground/5 border border-border/5 text-foreground/50 grid place-items-center shrink-0 shadow">
+                        <GraduationCap className="h-3.5 w-3.5" style={{ color: activeAccent.color }} />
                       </div>
                       <div className="min-w-0 flex-1 space-y-1">
                         <div className="flex items-start justify-between gap-1">
-                          <h3 className="font-semibold text-xs text-white font-outfit truncate">{edu.institution}</h3>
+                          <h3 className="font-semibold text-xs text-foreground font-sans truncate">{edu.institution}</h3>
                           
                           {/* Action tools */}
                           <div className="flex gap-0.5 shrink-0 opacity-40 hover:opacity-100 transition">
                             <button
                               onClick={() => handleOpenEduModal(index)}
-                              className="text-white/40 hover:text-white"
+                              className="text-foreground/40 hover:text-foreground"
                               aria-label={`Edit education at ${edu.institution}`}
                             >
                               <Pencil className="h-3 w-3" />
@@ -907,14 +904,14 @@ export default function FounderProfilePage() {
                             </button>
                           </div>
                         </div>
-                        <p className="text-[11px] text-white/65 font-sans truncate">{edu.degree}</p>
-                        <p className="text-[9px] text-white/30 font-mono leading-none">{edu.duration}</p>
+                        <p className="text-[11px] text-foreground/65 font-sans truncate">{edu.degree}</p>
+                        <p className="text-[9px] text-foreground/30 font-mono leading-none">{edu.duration}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-6 text-xs text-white/30 font-mono">
+                <div className="text-center py-6 text-xs text-foreground/30 font-mono">
                   No academic credentials verified.
                 </div>
               )}
@@ -924,23 +921,23 @@ export default function FounderProfilePage() {
           {/* 6. Fields of Interest */}
           {/* 6. Fields of Interest */}
           <div className="space-y-4">
-            <div className="border-b border-white/5 pb-3">
-              <h3 className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">
+            <div className="border-b border-border/5 pb-3">
+              <h3 className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">
                 <Compass className="h-3.5 w-3.5" style={{ color: activeAccent.color }} /> Core Interests & Fields
               </h3>
-              <p className="text-white/35 text-[9px] font-mono uppercase tracking-wider pt-1">Type fields of interest below and press Enter or comma to append</p>
+              <p className="text-foreground/35 text-[9px] font-mono uppercase tracking-wider pt-1">Type fields of interest below and press Enter or comma to append</p>
             </div>
             <div className="space-y-4 pt-1">
               <div className="flex flex-wrap gap-2">
                 {(profile.interests || []).map((interest) => (
                   <Badge
                     key={interest}
-                    className="bg-white/[0.02] text-white/60 border-white/5 hover:border-white/10 rounded px-2.5 py-0.5 text-xs font-mono flex items-center gap-1 shadow-sm transition hover:bg-white/5"
+                    className="bg-foreground/[0.02] text-foreground/60 border-border/5 hover:border-border/10 rounded px-2.5 py-0.5 text-xs font-mono flex items-center gap-1 shadow-sm transition hover:bg-foreground/5"
                   >
                     #{interest}
                     <button
                       onClick={() => handleRemoveInterest(interest)}
-                      className="text-white/20 hover:text-white cursor-pointer shrink-0 transition ml-0.5"
+                      className="text-foreground/20 hover:text-foreground cursor-pointer shrink-0 transition ml-0.5"
                       aria-label={`Remove interest ${interest}`}
                     >
                       <X className="h-2.5 w-2.5" />
@@ -948,7 +945,7 @@ export default function FounderProfilePage() {
                   </Badge>
                 ))}
                 {(profile.interests || []).length === 0 && (
-                  <span className="text-xs text-white/30 font-mono">No interests linked.</span>
+                  <span className="text-xs text-foreground/30 font-mono">No interests linked.</span>
                 )}
               </div>
 
@@ -957,7 +954,7 @@ export default function FounderProfilePage() {
                 value={newInterestText}
                 onChange={(e) => setNewInterestText(e.target.value)}
                 onKeyDown={handleAddInterest}
-                className={cn("bg-black/40 border-white/5 text-xs text-white rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                className={cn("bg-background/40 border-border/5 text-xs text-foreground rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
               />
             </div>
           </div>
@@ -969,24 +966,24 @@ export default function FounderProfilePage() {
           
           {/* Profile Completion Panel */}
           <div className="space-y-4">
-            <div className="border-b border-white/5 pb-3">
-              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">Completeness Score</h3>
-              <p className="text-white/40 text-[11px] pt-1 leading-relaxed">
+            <div className="border-b border-border/5 pb-3">
+              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">Completeness Score</h3>
+              <p className="text-foreground/40 text-[11px] pt-1 leading-relaxed">
                 Connect missing nodes and complete data blocks to verify developer index status.
               </p>
             </div>
             <div className="space-y-5 pt-1">
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs font-semibold font-mono">
-                  <span className="text-white/40 uppercase tracking-wider">Scoring Index</span>
-                  <span className="text-white" style={{ color: activeAccent.color }}>{profile.profileCompletion}%</span>
+                  <span className="text-foreground/40 uppercase tracking-wider">Scoring Index</span>
+                  <span className="text-foreground" style={{ color: activeAccent.color }}>{profile.profileCompletion}%</span>
                 </div>
-                <Progress value={profile.profileCompletion} className="h-2 bg-white/5" indicatorClassName={activeAccent.bg} />
+                <Progress value={profile.profileCompletion} className="h-2 bg-foreground/5" indicatorClassName={activeAccent.bg} />
               </div>
 
               {/* Completion checklist tasks */}
-              <div className="space-y-2 border-t border-white/5 pt-4">
-                <span className="text-[9px] font-mono uppercase tracking-wider text-white/35">Quick checklist</span>
+              <div className="space-y-2 border-t border-border/5 pt-4">
+                <span className="text-[9px] font-mono uppercase tracking-wider text-foreground/35">Quick checklist</span>
                 <div className="space-y-1">
                   {[
                     { text: "Add biography description", done: !!(profile.about && profile.about.trim().length > 10) },
@@ -1003,7 +1000,7 @@ export default function FounderProfilePage() {
                         "w-full text-left flex items-center justify-between py-1.5 px-2 rounded-lg text-[10.5px] font-sans border transition-all relative cursor-pointer",
                         task.done
                           ? "bg-emerald-500/[0.02] border-emerald-500/10 text-emerald-400/50 line-through cursor-not-allowed"
-                          : "bg-transparent border-transparent text-white/70 hover:bg-white/5 hover:text-white"
+                          : "bg-transparent border-transparent text-foreground/70 hover:bg-foreground/5 hover:text-foreground"
                       )}
                     >
                       <span className="truncate pr-2">{task.text}</span>
@@ -1021,19 +1018,19 @@ export default function FounderProfilePage() {
 
           {/* Verification connections panel */}
           <div className="space-y-4">
-            <div className="border-b border-white/5 pb-3">
-              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-white/45 font-mono">Verification Nodes</h3>
-              <p className="text-white/40 text-[11px] pt-1">Verify third-party authentication certificates</p>
+            <div className="border-b border-border/5 pb-3">
+              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">Verification Nodes</h3>
+              <p className="text-foreground/40 text-[11px] pt-1">Verify third-party authentication certificates</p>
             </div>
             <div className="space-y-3.5 pt-1">
               
               {/* GitHub Link State */}
-              <div className="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-black/20">
+              <div className="flex items-center justify-between py-3 border-b border-border/[0.03]">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <Github className="h-4.5 w-4.5 text-white/70 shrink-0" />
+                  <Github className="h-4 w-4 text-foreground/60 shrink-0" />
                   <div className="min-w-0">
-                    <span className="block text-xs font-bold text-white font-outfit">GitHub Identity</span>
-                    <span className="block text-[9px] font-mono text-white/30 uppercase tracking-wide leading-none pt-0.5">
+                    <span className="block text-xs font-semibold text-foreground">GitHub Identity</span>
+                    <span className="block text-[9px] font-mono text-foreground/30 uppercase tracking-wide leading-none pt-0.5">
                       {profile.githubVerified ? "Linked: @alex_edge" : "Unverified"}
                     </span>
                   </div>
@@ -1053,12 +1050,12 @@ export default function FounderProfilePage() {
               </div>
 
               {/* Web3 Wallet State */}
-              <div className="flex items-center justify-between p-3 rounded-xl border border-white/5 bg-black/20">
+              <div className="flex items-center justify-between py-3 border-b border-border/[0.03]">
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <Wallet className="h-4.5 w-4.5 text-white/70 shrink-0" />
+                  <Wallet className="h-4 w-4 text-foreground/60 shrink-0" />
                   <div className="min-w-0">
-                    <span className="block text-xs font-bold text-white font-outfit">Web3 signature</span>
-                    <span className="block text-[9px] font-mono text-white/30 uppercase tracking-wide leading-none pt-0.5">
+                    <span className="block text-xs font-semibold text-foreground">Web3 signature</span>
+                    <span className="block text-[9px] font-mono text-foreground/30 uppercase tracking-wide leading-none pt-0.5">
                       {profile.walletVerified ? "Linked: ed25519" : "Unverified"}
                     </span>
                   </div>
@@ -1085,78 +1082,78 @@ export default function FounderProfilePage() {
 
       {/* DIALOG 1: Header details edit */}
       <Dialog open={editMode === "header"} onOpenChange={() => !saving && setEditMode(null)}>
-        <DialogContent className="bg-[#0b0c0e] border-white/10 text-white rounded-2xl max-w-md shadow-2xl p-6">
+        <DialogContent className="bg-popover/95 border border-border/[0.08] backdrop-blur-2xl text-foreground rounded-2xl max-w-md shadow-2xl p-6">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold font-outfit">Edit Profile Header</DialogTitle>
-            <DialogDescription className="text-white/40 text-xs">Update your primary identity metrics visible on investor cohort indexes.</DialogDescription>
+            <DialogTitle className="text-base font-serif font-light text-foreground">Edit Profile Header</DialogTitle>
+            <DialogDescription className="text-foreground/40 text-xs">Update your primary identity metrics visible on investor cohort indexes.</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSaveProfile} className="space-y-4 pt-3.5">
             <div className="space-y-1.5">
-              <label htmlFor="p-name" className="text-[10px] text-white/50 font-semibold uppercase tracking-wider font-mono">Display Name</label>
+              <label htmlFor="p-name" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Display Name</label>
               <Input
                 id="p-name"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className={cn("bg-black/40 border-white/5 text-white text-xs rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                className={cn("bg-background/40 border-border/5 text-foreground text-xs rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                 required
               />
             </div>
             
             <div className="space-y-1.5">
-              <label htmlFor="p-headline" className="text-[10px] text-white/50 font-semibold uppercase tracking-wider font-mono">Headline Role</label>
+              <label htmlFor="p-headline" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Headline Role</label>
               <Input
                 id="p-headline"
                 value={editHeadline}
                 onChange={(e) => setEditHeadline(e.target.value)}
-                className={cn("bg-black/40 border-white/5 text-white text-xs rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                className={cn("bg-background/40 border-border/5 text-foreground text-xs rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                 required
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="p-location" className="text-[10px] text-white/50 font-semibold uppercase tracking-wider font-mono">Location Node</label>
+              <label htmlFor="p-location" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Location Node</label>
               <Input
                 id="p-location"
                 value={editLocation}
                 onChange={(e) => setEditLocation(e.target.value)}
-                className={cn("bg-black/40 border-white/5 text-white text-xs rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                className={cn("bg-background/40 border-border/5 text-foreground text-xs rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                 required
               />
             </div>
 
-            <div className="border-t border-white/5 pt-3 space-y-3">
-              <span className="text-[9px] font-mono uppercase tracking-wider text-white/30 block">Social connection handles</span>
+            <div className="border-t border-border/5 pt-3 space-y-3">
+              <span className="text-[9px] font-mono uppercase tracking-wider text-foreground/30 block">Social connection handles</span>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <label htmlFor="p-linkedin" className="text-[9px] text-white/40 font-mono">LinkedIn Url</label>
+                  <label htmlFor="p-linkedin" className="text-[9px] text-foreground/40 font-mono">LinkedIn Url</label>
                   <Input
                     id="p-linkedin"
                     type="url"
                     value={editLinkedin}
                     onChange={(e) => setEditLinkedin(e.target.value)}
-                    className={cn("bg-black/40 border-white/5 text-white text-xs rounded-lg h-8 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                    className={cn("bg-background/40 border-border/5 text-foreground text-xs rounded-lg h-8 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="p-twitter" className="text-[9px] text-white/40 font-mono">Twitter Url</label>
+                  <label htmlFor="p-twitter" className="text-[9px] text-foreground/40 font-mono">Twitter Url</label>
                   <Input
                     id="p-twitter"
                     type="url"
                     value={editTwitter}
                     onChange={(e) => setEditTwitter(e.target.value)}
-                    className={cn("bg-black/40 border-white/5 text-white text-xs rounded-lg h-8 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                    className={cn("bg-background/40 border-border/5 text-foreground text-xs rounded-lg h-8 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                   />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="p-website" className="text-[9px] text-white/40 font-mono">Personal Website</label>
+                <label htmlFor="p-website" className="text-[9px] text-foreground/40 font-mono">Personal Website</label>
                 <Input
                   id="p-website"
                   type="url"
                   value={editWebsite}
                   onChange={(e) => setEditWebsite(e.target.value)}
-                  className={cn("bg-black/40 border-white/5 text-white text-xs rounded-lg h-8 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                  className={cn("bg-background/40 border-border/5 text-foreground text-xs rounded-lg h-8 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                 />
               </div>
             </div>
@@ -1166,7 +1163,7 @@ export default function FounderProfilePage() {
                 type="button"
                 variant="outline"
                 onClick={() => setEditMode(null)}
-                className="border-white/10 text-white hover:bg-white/5 text-xs font-semibold rounded-lg h-9 px-4"
+                className="border-border/10 text-foreground hover:bg-foreground/5 text-xs font-semibold rounded-lg h-9 px-4"
               >
                 Cancel
               </Button>
@@ -1185,20 +1182,20 @@ export default function FounderProfilePage() {
 
       {/* DIALOG 2: Biography editor modal */}
       <Dialog open={editMode === "about"} onOpenChange={() => !saving && setEditMode(null)}>
-        <DialogContent className="bg-[#0b0c0e] border-white/10 text-white rounded-2xl max-w-md shadow-2xl p-6">
+        <DialogContent className="bg-popover/95 border border-border/[0.08] backdrop-blur-2xl text-foreground rounded-2xl max-w-md shadow-2xl p-6">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold font-outfit">Edit Biography Synopsis</DialogTitle>
-            <DialogDescription className="text-white/40 text-xs">Formulate a description detailing credentials, engineering focus, or project targets.</DialogDescription>
+            <DialogTitle className="text-base font-serif font-light text-foreground">Edit Biography Synopsis</DialogTitle>
+            <DialogDescription className="text-foreground/40 text-xs">Formulate a description detailing credentials, engineering focus, or project targets.</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSaveProfile} className="space-y-4 pt-3.5">
             <div className="space-y-1.5">
-              <label htmlFor="p-bio" className="text-[10px] text-white/50 font-semibold uppercase tracking-wider font-mono">Biography description</label>
+              <label htmlFor="p-bio" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Biography description</label>
               <Textarea
                 id="p-bio"
                 value={editAbout}
                 onChange={(e) => setEditAbout(e.target.value)}
-                className={cn("bg-black/40 border-white/5 text-xs text-white rounded-lg min-h-[140px] focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                className={cn("bg-background/40 border-border/5 text-xs text-foreground rounded-lg min-h-[140px] focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                 required
               />
             </div>
@@ -1208,7 +1205,7 @@ export default function FounderProfilePage() {
                 type="button"
                 variant="outline"
                 onClick={() => setEditMode(null)}
-                className="border-white/10 text-white hover:bg-white/5 text-xs font-semibold rounded-lg h-9 px-4"
+                className="border-border/10 text-foreground hover:bg-foreground/5 text-xs font-semibold rounded-lg h-9 px-4"
               >
                 Cancel
               </Button>
@@ -1227,60 +1224,60 @@ export default function FounderProfilePage() {
 
       {/* DIALOG 3: Add/Edit Experience Modal */}
       <Dialog open={expModalOpen} onOpenChange={setExpModalOpen}>
-        <DialogContent className="bg-[#0b0c0e] border-white/10 text-white rounded-2xl max-w-md shadow-2xl p-6">
+        <DialogContent className="bg-popover/95 border border-border/[0.08] backdrop-blur-2xl text-foreground rounded-2xl max-w-md shadow-2xl p-6">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold font-outfit">
+            <DialogTitle className="text-base font-serif font-light text-foreground">
               {editingExpIndex !== null ? "Edit Professional Experience" : "Add Professional Experience"}
             </DialogTitle>
-            <DialogDescription className="text-white/40 text-xs">Append a role timeline item detailing development history or milestones achieved.</DialogDescription>
+            <DialogDescription className="text-foreground/40 text-xs">Append a role timeline item detailing development history or milestones achieved.</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSaveExperience} className="space-y-4 pt-3.5">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <label htmlFor="exp-role" className="text-[10px] text-white/50 font-semibold uppercase tracking-wider font-mono">Job Title / Role</label>
+                <label htmlFor="exp-role" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Job Title / Role</label>
                 <Input
                   id="exp-role"
                   value={expRole}
                   onChange={(e) => setExpRole(e.target.value)}
                   placeholder="e.g. Lead Architect"
-                  className={cn("bg-black/40 border-white/5 text-xs text-white rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                  className={cn("bg-background/40 border-border/5 text-xs text-foreground rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                   required
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="exp-company" className="text-[10px] text-white/50 font-semibold uppercase tracking-wider font-mono">Company / Node</label>
+                <label htmlFor="exp-company" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Company / Node</label>
                 <Input
                   id="exp-company"
                   value={expCompany}
                   onChange={(e) => setExpCompany(e.target.value)}
                   placeholder="e.g. Edge Vision Kit"
-                  className={cn("bg-black/40 border-white/5 text-xs text-white rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                  className={cn("bg-background/40 border-border/5 text-xs text-foreground rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                   required
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="exp-duration" className="text-[10px] text-white/50 font-semibold uppercase tracking-wider font-mono">Duration Timeline</label>
+              <label htmlFor="exp-duration" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Duration Timeline</label>
               <Input
                 id="exp-duration"
                 value={expDuration}
                 onChange={(e) => setExpDuration(e.target.value)}
                 placeholder="e.g. 2025 - Present"
-                className={cn("bg-black/40 border-white/5 text-xs text-white rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                className={cn("bg-background/40 border-border/5 text-xs text-foreground rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                 required
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="exp-desc" className="text-[10px] text-white/50 font-semibold uppercase tracking-wider font-mono">Role Description & Milestones</label>
+              <label htmlFor="exp-desc" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Role Description & Milestones</label>
               <Textarea
                 id="exp-desc"
                 value={expDesc}
                 onChange={(e) => setExpDesc(e.target.value)}
                 placeholder="Detail technical actions, sync nodes established, smart contract rulesets deployed..."
-                className={cn("bg-black/40 border-white/5 text-xs text-white rounded-lg min-h-[90px] focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                className={cn("bg-background/40 border-border/5 text-xs text-foreground rounded-lg min-h-[90px] focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                 required
               />
             </div>
@@ -1290,7 +1287,7 @@ export default function FounderProfilePage() {
                 type="button"
                 variant="outline"
                 onClick={() => setExpModalOpen(false)}
-                className="border-white/10 text-white hover:bg-white/5 text-xs font-semibold rounded-lg h-9 px-4"
+                className="border-border/10 text-foreground hover:bg-foreground/5 text-xs font-semibold rounded-lg h-9 px-4"
               >
                 Cancel
               </Button>
@@ -1308,47 +1305,47 @@ export default function FounderProfilePage() {
 
       {/* DIALOG 4: Add/Edit Education Modal */}
       <Dialog open={eduModalOpen} onOpenChange={setEduModalOpen}>
-        <DialogContent className="bg-[#0b0c0e] border-white/10 text-white rounded-2xl max-w-md shadow-2xl p-6">
+        <DialogContent className="bg-popover/95 border border-border/[0.08] backdrop-blur-2xl text-foreground rounded-2xl max-w-md shadow-2xl p-6">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold font-outfit">
+            <DialogTitle className="text-base font-serif font-light text-foreground">
               {editingEduIndex !== null ? "Edit Academic Record" : "Add Academic Record"}
             </DialogTitle>
-            <DialogDescription className="text-white/40 text-xs">Append educational background or verified credentials to index database.</DialogDescription>
+            <DialogDescription className="text-foreground/40 text-xs">Append educational background or verified credentials to index database.</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSaveEducation} className="space-y-4 pt-3.5">
             <div className="space-y-1.5">
-              <label htmlFor="edu-inst" className="text-[10px] text-white/50 font-semibold uppercase tracking-wider font-mono">Institution name</label>
+              <label htmlFor="edu-inst" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Institution name</label>
               <Input
                 id="edu-inst"
                 value={eduInstitution}
                 onChange={(e) => setEduInstitution(e.target.value)}
                 placeholder="e.g. UC Berkeley"
-                className={cn("bg-black/40 border-white/5 text-xs text-white rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                className={cn("bg-background/40 border-border/5 text-xs text-foreground rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                 required
               />
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <label htmlFor="edu-degree" className="text-[10px] text-white/50 font-semibold uppercase tracking-wider font-mono">Degree Earned</label>
+                <label htmlFor="edu-degree" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Degree Earned</label>
                 <Input
                   id="edu-degree"
                   value={eduDegree}
                   onChange={(e) => setEduDegree(e.target.value)}
                   placeholder="e.g. B.S. in Computer Science"
-                  className={cn("bg-black/40 border-white/5 text-xs text-white rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                  className={cn("bg-background/40 border-border/5 text-xs text-foreground rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                   required
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="edu-duration" className="text-[10px] text-white/50 font-semibold uppercase tracking-wider font-mono">Timeline Years</label>
+                <label htmlFor="edu-duration" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Timeline Years</label>
                 <Input
                   id="edu-duration"
                   value={eduDuration}
                   onChange={(e) => setEduDuration(e.target.value)}
                   placeholder="e.g. 2018 - 2022"
-                  className={cn("bg-black/40 border-white/5 text-xs text-white rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
+                  className={cn("bg-background/40 border-border/5 text-xs text-foreground rounded-lg h-9 focus-visible:ring-offset-0 focus-visible:ring-1", activeAccent.ring)}
                   required
                 />
               </div>
@@ -1359,7 +1356,7 @@ export default function FounderProfilePage() {
                 type="button"
                 variant="outline"
                 onClick={() => setEduModalOpen(false)}
-                className="border-white/10 text-white hover:bg-white/5 text-xs font-semibold rounded-lg h-9 px-4"
+                className="border-border/10 text-foreground hover:bg-foreground/5 text-xs font-semibold rounded-lg h-9 px-4"
               >
                 Cancel
               </Button>
@@ -1377,13 +1374,13 @@ export default function FounderProfilePage() {
 
       {/* DIALOG 5: Simulated Connection logs Modal */}
       <Dialog open={verifyModalType !== null} onOpenChange={(open) => !isVerifyingLink && setVerifyModalType(open ? verifyModalType : null)}>
-        <DialogContent className="bg-zinc-950 border border-white/10 text-white rounded-2xl max-w-md shadow-2xl p-6 font-sans">
-          <DialogHeader className="border-b border-white/5 pb-3">
-            <DialogTitle className="text-base font-bold font-outfit flex items-center gap-2">
+        <DialogContent className="bg-popover/95 border border-border/[0.08] backdrop-blur-2xl text-foreground rounded-2xl max-w-md shadow-2xl p-6 font-sans">
+          <DialogHeader className="border-b border-border/5 pb-3">
+            <DialogTitle className="text-base font-serif font-light text-foreground flex items-center gap-2">
               {verifyModalType === "github" ? <Github className="h-4.5 w-4.5" /> : <Wallet className="h-4.5 w-4.5" />}
               {verifyModalType === "github" ? "GitHub Verification Node" : "Web3 Wallet Signature Verification"}
             </DialogTitle>
-            <DialogDescription className="text-white/40 text-xs">
+            <DialogDescription className="text-foreground/40 text-xs">
               Establish decentralized credentials to increase your credibility index ranking.
             </DialogDescription>
           </DialogHeader>
@@ -1391,13 +1388,13 @@ export default function FounderProfilePage() {
           <div className="space-y-4 pt-4">
             {isVerifyingLink ? (
               <div className="space-y-2">
-                <span className="text-[10px] font-mono text-white/50 uppercase tracking-widest flex items-center gap-2">
+                <span className="text-[10px] font-mono text-foreground/50 uppercase tracking-widest flex items-center gap-2">
                   <Loader2 className="h-3 w-3 animate-spin" style={{ color: activeAccent.color }} />
                   Broadcasting verification handshake...
                 </span>
-                <div className="bg-black p-4 border border-white/5 rounded-lg font-mono text-[10px] text-white/60 h-32 overflow-y-auto space-y-1">
+                <div className="bg-black p-4 border border-border/5 rounded-lg font-mono text-[10px] text-foreground/60 h-32 overflow-y-auto space-y-1">
                   {verifyLogs.map((log, i) => (
-                    <div key={i} className={cn(log.includes("SUCCESS") ? "text-emerald-400" : log.includes("GATEWAY") || log.includes("RPC") ? "text-blue-400" : "text-white/50")}>
+                    <div key={i} className={cn(log.includes("SUCCESS") ? "text-emerald-400" : log.includes("GATEWAY") || log.includes("RPC") ? "text-blue-400" : "text-foreground/50")}>
                       {log}
                     </div>
                   ))}
@@ -1409,8 +1406,8 @@ export default function FounderProfilePage() {
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="text-sm font-bold text-white font-outfit">Authentication Verified</h4>
-                  <p className="text-[11px] text-white/50 max-w-xs mx-auto">
+                  <h4 className="text-sm font-semibold text-foreground">Authentication Verified</h4>
+                  <p className="text-[11px] text-foreground/50 max-w-xs mx-auto">
                     {verifyModalType === "github" 
                       ? "OAuth signature link verified. Public user metadata securely tied to profile node."
                       : "Multi-sig signature cryptographic challenge verified. Wallet link linked."}
@@ -1421,7 +1418,7 @@ export default function FounderProfilePage() {
 
             <DialogFooter className="pt-3">
               {isVerifyingLink ? (
-                <Button disabled className="w-full text-xs font-semibold h-9 rounded-lg font-mono bg-white/5 text-white/30 border border-white/5">
+                <Button disabled className="w-full text-xs font-semibold h-9 rounded-lg font-mono bg-foreground/5 text-foreground/30 border border-border/5">
                   Verifying Credentials...
                 </Button>
               ) : (
