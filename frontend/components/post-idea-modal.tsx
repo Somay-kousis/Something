@@ -53,7 +53,7 @@ interface PostIdeaModalProps {
   editingIdea?: Idea | null
 }
 
-const STAGE_CARDS: { value: Stage; label: string; description: string; icon: React.ComponentType<any>; color: string; ringColor: string; bgActive: string; textColor: string }[] = [
+const STAGE_CARDS: { value: Stage; label: string; description: string; icon: React.ComponentType<{ className?: string }>; color: string; ringColor: string; bgActive: string; textColor: string }[] = [
   {
     value: "concept",
     label: "Concept",
