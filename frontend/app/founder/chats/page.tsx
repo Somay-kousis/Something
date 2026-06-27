@@ -4,11 +4,9 @@ import type React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Send, ChevronLeft, MoreHorizontal, Users, Clock, CheckCheck, Loader2 } from "lucide-react"
+import { Search, Send, ChevronLeft, MoreHorizontal, Clock, CheckCheck, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import axios from "axios"
-
-import { PageHeader } from "@/components/page-header"
 
 type Category = "all" | "co" | "requests" | "general"
 
@@ -531,12 +529,12 @@ export default function FounderChatsPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6">
+    <div className="mx-auto w-full max-w-5xl space-y-6 px-4">
       {/* Sleek inline header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-2xl font-bold tracking-tight text-white font-outfit">Chats & Syncs</h2>
-          <p className="text-white/45 text-xs font-sans font-medium">Coordinate in real-time with team co-founders, advisory boards, and review committee investors.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/[0.03]">
+        <div className="flex flex-col gap-1.5">
+          <h2 className="text-2xl font-serif font-light text-foreground leading-tight">Chats & Synchronization</h2>
+          <p className="text-foreground/40 text-xs font-sans font-light leading-relaxed">Coordinate in real-time with team co-founders, advisory boards, and review committee investors.</p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -551,31 +549,31 @@ export default function FounderChatsPage() {
                 setLoadedThreads(new Set())
               }
             }}
-            className="border border-white/10 text-white/80 hover:bg-white/5 rounded-xl text-xs h-9 px-4 bg-transparent cursor-pointer"
+            className="border border-border/10 text-foreground/70 hover:bg-foreground/5 hover:text-foreground rounded-full text-xs h-8.5 px-4 bg-transparent cursor-pointer font-sans"
           >
             Reset Chat Data
           </Button>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-[340px_minmax(0,1fr)] gap-4 lg:gap-6">
+      <div className="grid lg:grid-cols-[320px_minmax(0,1fr)] gap-4 lg:gap-6">
         {/* Left Side: Threads panel */}
         <section className={cn("lg:block", showOnlyChatOnMobile ? "hidden" : "block")}>
-          <div className="rounded-xl border border-white/5 bg-black/20 p-4 flex flex-col h-[600px] lg:h-[700px]">
+          <div className="rounded-xl border border-border/[0.03] bg-background/10 p-4 flex flex-col h-[600px] lg:h-[700px] shadow-lg">
             <div className="flex flex-col gap-2 mb-4">
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/30" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-foreground/30" />
                 <Input
                   placeholder="Search chats..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="h-9 w-full pl-9 bg-black/40 border-white/5 text-white placeholder:text-white/30 rounded-lg focus-visible:ring-brand-accent focus-visible:border-brand-accent/20"
+                  className="h-9 w-full pl-9 bg-background/30 border-border/[0.03] text-foreground placeholder:text-foreground/20 rounded-lg focus-visible:ring-brand-accent focus-visible:border-brand-accent/20 text-xs font-sans"
                 />
               </div>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as Category)}
-                className="h-9 rounded-lg bg-black/40 border border-white/5 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-brand-accent cursor-pointer"
+                className="h-9 rounded-lg bg-background/30 border border-border/[0.03] px-3 text-xs text-foreground/60 focus:outline-none focus:ring-1 focus:ring-brand-accent cursor-pointer font-sans"
                 aria-label="Filter conversations"
               >
                 <option value="all" className="bg-[#0c0d0f]">All Conversations</option>
@@ -588,13 +586,13 @@ export default function FounderChatsPage() {
             <div className="flex-1 overflow-y-auto space-y-1 pr-1" style={{ scrollbarWidth: "thin" }}>
               {isLoadingThreads && (
                 <div className="p-8 text-center flex flex-col items-center justify-center gap-2">
-                  <Loader2 className="h-6 w-6 animate-spin text-brand-accent" />
-                  <span className="text-xs text-white/40">Loading workspace threads...</span>
+                  <Loader2 className="h-5 w-5 animate-spin text-brand-accent" />
+                  <span className="text-[11px] text-foreground/40">Loading workspace threads...</span>
                 </div>
               )}
               {!isLoadingThreads && filtered.length === 0 && (
                 <div className="p-8 text-center">
-                  <div className="text-xs text-white/40">No conversations found</div>
+                  <div className="text-xs text-foreground/40 font-mono uppercase tracking-widest">No conversations</div>
                 </div>
               )}
               {!isLoadingThreads &&
@@ -605,47 +603,47 @@ export default function FounderChatsPage() {
                       key={t.id}
                       onClick={() => setActiveId(t.id)}
                       className={cn(
-                        "w-full rounded-lg px-3 py-3 text-left transition-all duration-300 relative group flex gap-3 items-start border border-transparent",
+                        "w-full rounded-lg px-3 py-3 text-left transition-all duration-300 relative group flex gap-3 items-start border border-transparent cursor-pointer",
                         active
-                          ? "bg-white/[0.04] border-white/5"
-                          : "hover:bg-white/[0.01]"
+                          ? "bg-foreground/[0.03] border-border/[0.02]"
+                          : "hover:bg-foreground/[0.01]"
                       )}
                       aria-pressed={active}
                     >
                       {active && (
-                        <div className="absolute left-0 top-3 bottom-3 w-[2px] bg-brand-accent rounded-r-full" />
+                        <div className="absolute left-0 top-3.5 bottom-3.5 w-[2px] bg-brand-accent rounded-r-full" />
                       )}
                       <div className="relative shrink-0">
                         <div
                           className={cn(
-                            "grid size-10 place-items-center rounded-full text-xs font-semibold tracking-wider font-mono",
+                            "grid size-9 place-items-center rounded-full text-[10px] font-semibold tracking-wider font-mono",
                             active
                               ? "bg-brand-accent/10 text-brand-accent"
-                              : "bg-white/5 text-white/70 group-hover:bg-white/10"
+                              : "bg-foreground/5 text-foreground/60 group-hover:bg-foreground/10"
                           )}
                         >
                           {initials(t.name)}
                         </div>
                         {t.isOnline && (
-                          <div className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-brand-accent border border-black" />
+                          <div className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full bg-brand-accent border border-black" />
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between mb-0.5">
-                          <span className="truncate text-sm font-semibold text-white">{t.name}</span>
-                          <span className="text-[10px] text-white/30 font-mono shrink-0">
+                          <span className="truncate text-xs font-semibold text-foreground/90">{t.name.split("•")[0]?.trim()}</span>
+                          <span className="text-[9px] text-foreground/30 font-mono shrink-0">
                             {formatTime(t.lastActive)}
                           </span>
                         </div>
-                        <div className="truncate text-xs text-white/40 mb-1 group-hover:text-white/60">
+                        <div className="truncate text-[11px] text-foreground/40 mb-1 group-hover:text-foreground/60 font-sans font-light">
                           {t.preview}
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-white/35 uppercase tracking-widest font-mono">
+                          <span className="text-[9px] text-foreground/30 uppercase tracking-[0.1em] font-mono">
                             #{t.category}
                           </span>
                           {t.unread > 0 && (
-                            <span className="flex items-center justify-center h-4.5 min-w-[18px] px-1.5 text-[9px] font-bold bg-brand-accent text-black rounded-full">
+                            <span className="flex items-center justify-center h-4 min-w-[16px] px-1 text-[8.5px] font-bold bg-brand-accent text-background rounded-full">
                               {t.unread}
                             </span>
                           )}
@@ -660,11 +658,11 @@ export default function FounderChatsPage() {
 
         {/* Right Side: Message pane */}
         <section className={cn("lg:block", showOnlyListOnMobile ? "hidden" : "block")}>
-          <div className="rounded-xl border border-white/5 bg-black/20 overflow-hidden flex flex-col h-[600px] lg:h-[700px]">
+          <div className="rounded-xl border border-border/[0.03] bg-background/10 overflow-hidden flex flex-col h-[600px] lg:h-[700px] shadow-lg">
             {/* Thread Header */}
-            <div className="flex h-14 items-center gap-3 px-4 border-b border-white/5 bg-black/25">
+            <div className="flex h-14 items-center gap-3 px-4 border-b border-border/[0.03] bg-background/10">
               <button
-                className="lg:hidden inline-flex size-8 items-center justify-center rounded-full hover:bg-white/5 transition-colors text-white/70"
+                className="lg:hidden inline-flex size-8 items-center justify-center rounded-full hover:bg-foreground/5 transition-colors text-foreground/60 cursor-pointer"
                 onClick={() => setActiveId(null)}
                 aria-label="Back to conversations"
               >
@@ -673,22 +671,22 @@ export default function FounderChatsPage() {
               {activeThread ? (
                 <>
                   <div className="relative">
-                    <div className="grid size-9 place-items-center rounded-full bg-white/5 text-white/70 text-xs font-semibold tracking-wider font-mono">
+                    <div className="grid size-9 place-items-center rounded-full bg-foreground/5 text-foreground/60 text-[10px] font-semibold tracking-wider font-mono">
                       {initials(activeThread.name)}
                     </div>
                     {activeThread.isOnline && (
-                      <div className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-brand-accent border border-black" />
+                      <div className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full bg-brand-accent border border-black" />
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-base font-semibold text-white leading-tight">
+                    <div className="truncate text-sm font-semibold text-foreground/95 leading-tight">
                       {activeThread.name}
                     </div>
-                    <div className="flex items-center gap-1.5 text-[10px] text-white/40 mt-0.5">
+                    <div className="flex items-center gap-1.5 text-[9.5px] text-foreground/40 mt-0.5">
                       {activeThread.isOnline ? (
                         <>
-                          <span className="size-1.5 rounded-full bg-brand-accent" />
-                          <span>Connected</span>
+                          <span className="size-1 rounded-full bg-brand-accent" />
+                          <span>Active Now</span>
                         </>
                       ) : (
                         <>
@@ -699,37 +697,37 @@ export default function FounderChatsPage() {
                     </div>
                   </div>
                   <button
-                    className="inline-flex size-8 items-center justify-center rounded-full hover:bg-white/5 text-white/40 hover:text-white transition-colors"
+                    className="inline-flex size-8 items-center justify-center rounded-full hover:bg-foreground/5 text-foreground/30 hover:text-foreground transition-colors cursor-pointer"
                     aria-label="More options"
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </button>
                 </>
               ) : (
-                <div className="text-xs text-white/40 uppercase tracking-widest font-mono">Select Thread</div>
+                <div className="text-[10px] text-foreground/30 uppercase tracking-[0.2em] font-mono">Sync Workspace</div>
               )}
             </div>
 
             {/* Message Thread Scroll view */}
             <div
               ref={listRef}
-              className="flex-1 overflow-y-auto px-4 py-6 space-y-4.5 scroll-smooth bg-[#0a0a0c]/60"
+              className="flex-1 overflow-y-auto px-5 py-6 space-y-5 scroll-smooth bg-background/40"
               style={{ scrollbarWidth: "thin" }}
             >
               {!activeThread && (
-                <div className="grid h-full place-items-center text-center">
-                  <div className="space-y-2">
-                    <div className="text-sm text-white/50 font-medium">Select a thread to sync</div>
-                    <div className="text-xs text-white/30 max-w-xs mx-auto">
-                      Choose from co-founders or reviewing investment firms to start writing messages.
+                <div className="grid h-full place-items-center text-center px-4">
+                  <div className="space-y-2 max-w-sm">
+                    <div className="text-sm text-foreground/50 font-medium font-serif">Select a synchronization thread</div>
+                    <div className="text-xs text-foreground/30 leading-relaxed font-sans font-light">
+                      Choose from cohort co-founders or review board investors to start sharing project updates.
                     </div>
                   </div>
                 </div>
               )}
               {activeThread && isLoadingMessages && (
                 <div className="grid h-full place-items-center">
-                  <div className="flex flex-col items-center gap-2 text-xs text-white/40">
-                    <Loader2 className="h-5 w-5 animate-spin text-violet-400" />
+                  <div className="flex flex-col items-center gap-2 text-xs text-foreground/40">
+                    <Loader2 className="h-4 w-4 animate-spin text-brand-accent" />
                     <span>Loading message log...</span>
                   </div>
                 </div>
@@ -744,27 +742,27 @@ export default function FounderChatsPage() {
                       <div className="max-w-[85%] sm:max-w-[70%] space-y-1.5">
                         <div
                           className={cn(
-                            "rounded-xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed border",
+                            "rounded-xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed border font-sans font-light",
                             isYou
-                              ? "bg-brand-accent/5 text-white border-brand-accent/15 rounded-br-none"
-                              : "bg-white/[0.02] text-white/80 border-white/5 rounded-bl-none"
+                              ? "bg-foreground/[0.02] text-foreground border-border/[0.04] rounded-br-none"
+                              : "bg-background/20 text-foreground/85 border-border/[0.02] rounded-bl-none"
                           )}
                         >
                           <div className="whitespace-pre-wrap break-words">{m.text}</div>
                         </div>
                         <div
                           className={cn(
-                            "flex items-center gap-1.5 text-[10px] font-mono text-white/40",
+                            "flex items-center gap-1.5 text-[9px] font-mono text-foreground/30",
                             isYou ? "justify-end" : "justify-start"
                           )}
                         >
                           <span>{formatTime(m.when)}</span>
                           {showDeliveryStatus && (
                             <span className="flex items-center">
-                           {m.seen ? (
-                                <CheckCheck className="h-3.5 w-3.5 text-brand-accent" />
+                              {m.seen ? (
+                                <CheckCheck className="h-3 w-3 text-brand-accent" />
                               ) : (
-                                <CheckCheck className="h-3.5 w-3.5 text-white/30" />
+                                <CheckCheck className="h-3 w-3 text-foreground/20" />
                               )}
                             </span>
                           )}
@@ -777,27 +775,27 @@ export default function FounderChatsPage() {
               {/* Simulated typing bubble */}
               {isTyping && activeThread && (
                 <div className="flex justify-start">
-                  <div className="bg-zinc-900/90 border border-white/10 rounded-2xl rounded-bl-none px-4 py-3">
+                  <div className="bg-background/20 border border-border/[0.02] rounded-xl rounded-bl-none px-4 py-3">
                     <div className="flex space-x-1.5 items-center h-3">
-                      <div className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                      <div className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                      <div className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce"></div>
+                      <div className="w-1 h-1 bg-brand-accent rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                      <div className="w-1 h-1 bg-brand-accent rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="w-1 h-1 bg-brand-accent rounded-full animate-bounce"></div>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Input Form area */}
-            <div className="p-3 border-t border-white/5 bg-black/25">
-              <form onSubmit={onSend} className="flex items-end gap-2">
+            {/* Input Form area (Claude Floating Capsule Design) */}
+            <div className="p-4 border-t border-border/[0.03] bg-background/10">
+              <form onSubmit={onSend} className="flex flex-col gap-1.5 bg-background/35 border border-border/10 rounded-xl p-2 focus-within:border-border/20 focus-within:bg-background/55 transition-all">
                 <textarea
                   ref={inputRef}
-                  placeholder={activeThread ? "Write message..." : "Select a thread to message"}
+                  placeholder={activeThread ? "Write a message to sync details..." : "Select a thread to message"}
                   disabled={!activeThread}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  className="w-full min-h-[42px] max-h-[120px] h-[42px] py-3 px-4 pr-4 rounded-xl bg-black/50 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-brand-accent focus:border-brand-accent/20 resize-none overflow-y-auto text-sm leading-relaxed"
+                  className="w-full bg-transparent border-0 text-foreground placeholder:text-foreground/20 text-xs sm:text-[13px] leading-relaxed resize-none p-2 focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[44px] shadow-none"
                   rows={1}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
@@ -806,20 +804,23 @@ export default function FounderChatsPage() {
                     }
                   }}
                 />
-                <Button
-                  type="submit"
-                  size="icon"
-                  disabled={!activeThread || text.trim().length === 0}
-                  className={cn(
-                    "size-10 rounded-full transition-all flex-shrink-0 cursor-pointer",
-                    text.trim().length > 0
-                      ? "bg-white text-black hover:bg-brand-accent hover:text-black"
-                      : "bg-white/5 text-white/35 cursor-not-allowed border border-white/5"
-                  )}
-                  aria-label="Send message"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center justify-between border-t border-border/[0.03] pt-2 px-1">
+                  <span className="text-[9px] text-foreground/30 font-mono tracking-wide">Press Enter to sync</span>
+                  <Button
+                    type="submit"
+                    size="icon"
+                    disabled={!activeThread || text.trim().length === 0}
+                    className={cn(
+                      "size-7.5 rounded-full transition-all flex-shrink-0 cursor-pointer shadow shadow-black/10",
+                      text.trim().length > 0
+                        ? "bg-primary text-primary-foreground hover:bg-brand-accent hover:text-background"
+                        : "bg-foreground/5 text-foreground/25 border border-border/5 cursor-not-allowed"
+                    )}
+                    aria-label="Send message"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
               </form>
             </div>
           </div>
