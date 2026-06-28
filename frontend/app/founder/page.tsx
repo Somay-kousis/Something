@@ -108,7 +108,7 @@ export default function FounderOverviewPage() {
   const fundsRaw  = 84400
 
   return (
-    <div className="mx-auto max-w-4xl pt-6 pb-24 space-y-16 px-4">
+    <div className="w-full pt-6 pb-24 px-6 xl:px-10">
 
       <PageHeader
         category={`${greeting} — ${dateStr}`}
@@ -127,10 +127,10 @@ export default function FounderOverviewPage() {
         }
       />
 
-      {/* ── Action notice (Claude style callout banner) ── */}
-      <div className="relative overflow-hidden rounded-r-xl border-l-[3px] border-[#C88E72] bg-[#C88E72]/[0.03] py-4.5 px-5">
+      {/* ── Alert banner — full width strip ── */}
+      <div className="relative overflow-hidden rounded-r-xl border-l-[3px] border-[#C88E72] bg-[#C88E72]/[0.03] py-4 px-5 mb-10">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 relative z-10">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <span className="relative flex h-1.5 w-1.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C88E72] opacity-75"></span>
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#C88E72]"></span>
@@ -147,152 +147,154 @@ export default function FounderOverviewPage() {
         </div>
       </div>
 
-      {/* ── KPI Stats Row (Minimal layout without cards) ── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-10 border-y border-border/[0.03]">
+      {/* ── KPI Stats Row — full width command bar ── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 py-8 border-y border-border/[0.03] mb-12">
         <KpiStat label="Funds raised" rawValue={fundsRaw} isCurrency sub="+$4,400 this week" />
         <KpiStat label="Active ideas" rawValue={2} sub="2 in progress" />
         <KpiStat label="Team members" rawValue={3} sub="All active" />
         <KpiStat label="Unread chats" rawValue={kpis.unreadChats} sub="1 new thread" />
       </div>
 
-      {/* ── Milestone Escrow Pool (Timeline layout) ── */}
-      <div className="border-t border-border/[0.03] pt-12">
-        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-border/[0.03] pb-5 mb-8">
-          <div className="space-y-1.5">
-            <SectionLabel>Milestone Escrow Pool</SectionLabel>
-            <p className="text-xs text-foreground/40">Track funds held in secure multi-signature escrow.</p>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-xs text-foreground/35">Released</span>
-            <span className="text-3xl font-serif font-light text-brand-accent">
-              {escrowPct}%
-            </span>
-          </div>
-        </div>
+      {/* ── Two-column body ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 xl:gap-14">
 
-        <div className="flex items-baseline gap-2 mb-6">
-          <span className="text-3xl sm:text-4xl font-serif font-light tracking-tight text-foreground">
-            ${escrow.raised.toLocaleString()}
-          </span>
-          <span className="text-xs font-mono text-foreground/30">/ ${escrow.goal.toLocaleString()} total project value</span>
-        </div>
+        {/* ── Left column (3/5): Escrow + Ideas ── */}
+        <div className="lg:col-span-3 space-y-14">
 
-        {/* Clean Flat Progress Bar with subtle glow */}
-        <div className="h-1 w-full rounded-full bg-foreground/[0.03] overflow-hidden mb-10 relative">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-brand-accent/50 to-brand-accent transition-all duration-1000"
-            style={{ width: `${escrowPct}%` }}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
-          {[
-            { label: "Whitepaper & Specs",    amount: "$40K", done: true,  pending: false },
-            { label: "Alpha & Sync Engine",   amount: "$40K", done: false, pending: true  },
-            { label: "Security Audit & Beta", amount: "$40K", done: false, pending: false },
-            { label: "Mainnet Launch",        amount: "$80K", done: false, pending: false },
-          ].map((m, i) => (
-            <div key={i} className="space-y-2.5 py-4 px-3 hover:bg-foreground/[0.01] transition-all rounded-lg border border-transparent hover:border-border/[0.02]">
-              <div className="flex items-center gap-2">
-                <div className={cn(
-                  "size-5 rounded-full border grid place-items-center transition-all duration-300",
-                  m.done ? "bg-brand-accent/10 border-brand-accent/30 text-brand-accent" :
-                  m.pending ? "bg-[#C88E72]/10 border-[#C88E72]/30 text-[#C88E72] animate-pulse" :
-                  "bg-foreground/[0.01] border-border/10 text-foreground/10"
-                )}>
-                  {m.done    ? <CheckCircle2 className="h-3 w-3" />
-                   : m.pending ? <Clock className="h-3 w-3" />
-                   : <Lock className="h-3 w-3" />}
-                </div>
-                <span className={cn("text-xs font-mono font-medium tracking-tight",
-                  m.done ? "text-foreground/80" : m.pending ? "text-[#C88E72]" : "text-foreground/20"
-                )}>{m.amount}</span>
+          {/* Milestone Escrow Pool */}
+          <div>
+            <div className="flex items-baseline justify-between gap-4 border-b border-border/[0.03] pb-5 mb-8">
+              <div className="space-y-1">
+                <SectionLabel>Milestone Escrow Pool</SectionLabel>
+                <p className="text-xs text-foreground/40">Funds held in secure multi-signature escrow.</p>
               </div>
-              <div>
-                <p className={cn("text-xs font-medium leading-snug",
-                  m.done ? "text-foreground/80" : m.pending ? "text-foreground/60" : "text-foreground/30"
-                )}>{m.label}</p>
-                <p className={cn("text-[9px] font-mono uppercase tracking-[0.1em] mt-1.5",
-                  m.done ? "text-brand-accent/80" : m.pending ? "text-[#C88E72]/80" : "text-foreground/20"
-                )}>
-                  {m.done ? "Released" : m.pending ? "Pending Release" : "Locked"}
-                </p>
+              <div className="flex items-baseline gap-1.5 shrink-0">
+                <span className="text-xs text-foreground/35">Released</span>
+                <span className="text-2xl font-serif font-light text-brand-accent">{escrowPct}%</span>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* ── Your Ideas (Clean layout with thin borders) ── */}
-      <div className="border-t border-border/[0.03] pt-12">
-        <div className="flex items-center justify-between border-b border-border/[0.03] pb-4 mb-6">
-          <div className="space-y-1.5">
-            <SectionLabel>Your ideas</SectionLabel>
-            <p className="text-xs text-foreground/40">Review submission status and current funding tracking.</p>
-          </div>
-          <Link href="/founder/ideas" className="text-[10px] font-mono uppercase tracking-[0.15em] text-brand-accent hover:text-brand-accent/85 transition-colors flex items-center gap-1 font-semibold">
-            All ideas <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
+            <div className="flex items-baseline gap-2 mb-5">
+              <span className="text-3xl sm:text-4xl font-serif font-light tracking-tight text-foreground">
+                ${escrow.raised.toLocaleString()}
+              </span>
+              <span className="text-xs font-mono text-foreground/30">/ ${escrow.goal.toLocaleString()} total</span>
+            </div>
 
-        <div className="divide-y divide-white/[0.03]">
-          {ideas.map((idea) => (
-            <IdeaRow key={idea.id} idea={idea} />
-          ))}
-        </div>
-      </div>
+            <div className="h-px w-full bg-foreground/[0.04] overflow-hidden mb-8 relative">
+              <div
+                className="h-full bg-brand-accent/60 transition-all duration-1000"
+                style={{ width: `${escrowPct}%` }}
+              />
+            </div>
 
-      {/* ── Team & Activity Log (Side by side) ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-border/[0.03] pt-12">
-        
-        {/* Team Sync */}
-        <div className="space-y-6">
-          <div className="border-b border-border/[0.03] pb-4">
-            <SectionLabel>Team synchronization</SectionLabel>
-            <p className="text-xs text-foreground/40 mt-1.5 font-sans leading-relaxed">Real-time presence and active roles.</p>
-          </div>
-          <div className="space-y-4">
-            {team.map((m) => (
-              <div key={m.id} className="flex items-center gap-3.5 py-1.5 hover:px-2 rounded-lg -mx-2 hover:bg-foreground/[0.01] transition-all">
-                <div className="h-8 w-8 rounded-full bg-foreground/5 border border-border/10 text-foreground/70 text-[10px] font-bold grid place-items-center shrink-0 font-mono">
-                  {m.initials}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: "Whitepaper & Specs",    amount: "$40K", done: true,  pending: false },
+                { label: "Alpha & Sync Engine",   amount: "$40K", done: false, pending: true  },
+                { label: "Security Audit & Beta", amount: "$40K", done: false, pending: false },
+                { label: "Mainnet Launch",        amount: "$80K", done: false, pending: false },
+              ].map((m, i) => (
+                <div key={i} className="space-y-2 py-3.5 px-3 rounded-lg border border-border/[0.03] hover:border-border/[0.06] hover:bg-foreground/[0.01] transition-all">
+                  <div className="flex items-center gap-2">
+                    <div className={cn(
+                      "size-4 rounded-full border grid place-items-center",
+                      m.done ? "bg-brand-accent/10 border-brand-accent/30 text-brand-accent" :
+                      m.pending ? "bg-[#C88E72]/10 border-[#C88E72]/30 text-[#C88E72] animate-pulse" :
+                      "bg-foreground/[0.01] border-border/10 text-foreground/10"
+                    )}>
+                      {m.done    ? <CheckCircle2 className="h-2.5 w-2.5" />
+                       : m.pending ? <Clock className="h-2.5 w-2.5" />
+                       : <Lock className="h-2.5 w-2.5" />}
+                    </div>
+                    <span className={cn("text-[10px] font-mono font-semibold",
+                      m.done ? "text-foreground/70" : m.pending ? "text-[#C88E72]" : "text-foreground/18"
+                    )}>{m.amount}</span>
+                  </div>
+                  <div>
+                    <p className={cn("text-[11px] font-medium leading-snug",
+                      m.done ? "text-foreground/75" : m.pending ? "text-foreground/55" : "text-foreground/25"
+                    )}>{m.label}</p>
+                    <p className={cn("text-[8px] font-mono uppercase tracking-[0.12em] mt-1",
+                      m.done ? "text-brand-accent/70" : m.pending ? "text-[#C88E72]/70" : "text-foreground/18"
+                    )}>
+                      {m.done ? "Released" : m.pending ? "Pending" : "Locked"}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-semibold text-foreground/95 truncate">{m.name}</div>
-                  <div className="text-[9px] text-foreground/40 font-mono mt-0.5 uppercase tracking-wide truncate">{m.role}</div>
-                </div>
-                <span className="text-[9px] font-mono text-foreground/30 shrink-0 bg-foreground/[0.02] border border-border/5 rounded px-2.5 py-0.5">{m.lastActive}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Your Ideas */}
+          <div className="border-t border-border/[0.03] pt-10">
+            <div className="flex items-center justify-between border-b border-border/[0.03] pb-4 mb-6">
+              <div className="space-y-1">
+                <SectionLabel>Your ideas</SectionLabel>
+                <p className="text-xs text-foreground/40">Submission status and funding tracking.</p>
               </div>
-            ))}
+              <Link href="/founder/ideas" className="text-[10px] font-mono uppercase tracking-[0.15em] text-brand-accent hover:text-brand-accent/75 transition-colors flex items-center gap-1 font-semibold">
+                All ideas <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
+            <div className="divide-y divide-border/[0.03]">
+              {ideas.map((idea) => (
+                <IdeaRow key={idea.id} idea={idea} />
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Recent Activity */}
-        <div className="space-y-6">
-          <div className="border-b border-border/[0.03] pb-4">
-            <SectionLabel>Recent activity log</SectionLabel>
-            <p className="text-xs text-foreground/40 mt-1.5 font-sans leading-relaxed">System updates and external interactions.</p>
-          </div>
-          <div className="space-y-4">
-            {activity.map((item) => (
-              <div key={item.id} className="flex items-start gap-3 py-1.5 hover:px-2 rounded-lg -mx-2 hover:bg-foreground/[0.01] transition-all">
-                <span className={cn(
-                  "mt-2 h-1.5 w-1.5 rounded-full shrink-0", 
-                  item.important ? "bg-[#C88E72]" : "bg-foreground/20"
-                )} />
-                <div className="flex-1 min-w-0">
-                  <p className={cn("text-xs leading-normal", item.important ? "text-foreground/90 font-medium" : "text-foreground/50")}>
-                    {item.text}
-                  </p>
+        {/* ── Right column (2/5): Team + Activity ── */}
+        <div className="lg:col-span-2 lg:border-l lg:border-border/[0.03] lg:pl-8 xl:pl-10 space-y-10">
+
+          {/* Team Sync */}
+          <div className="space-y-5">
+            <div className="border-b border-border/[0.03] pb-3.5">
+              <SectionLabel>Team synchronization</SectionLabel>
+              <p className="text-[11px] text-foreground/38 mt-1 font-sans">Real-time presence and active roles.</p>
+            </div>
+            <div className="space-y-1">
+              {team.map((m) => (
+                <div key={m.id} className="flex items-center gap-3 py-2.5 px-2 rounded-lg hover:bg-foreground/[0.02] transition-all cursor-default">
+                  <div className="h-7 w-7 rounded-full bg-foreground/[0.04] border border-border/10 text-foreground/60 text-[9px] font-bold grid place-items-center shrink-0 font-mono">
+                    {m.initials}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[11px] font-semibold text-foreground/85 truncate">{m.name}</div>
+                    <div className="text-[9px] text-foreground/30 font-mono mt-0.5 uppercase tracking-wide truncate">{m.role}</div>
+                  </div>
+                  <span className="text-[9px] font-mono text-foreground/25 shrink-0 tabular-nums">{m.lastActive}</span>
                 </div>
-                <span className="text-[8px] font-mono text-foreground/35 shrink-0 mt-0.5 uppercase tracking-wider bg-foreground/[0.02] border border-border/5 rounded px-1.5 py-0.5">
-                  {item.timestamp}
-                </span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
 
+          {/* Recent Activity */}
+          <div className="space-y-5 border-t border-border/[0.03] pt-8">
+            <div className="border-b border-border/[0.03] pb-3.5">
+              <SectionLabel>Recent activity</SectionLabel>
+              <p className="text-[11px] text-foreground/38 mt-1 font-sans">System updates and interactions.</p>
+            </div>
+            <div className="space-y-1">
+              {activity.map((item) => (
+                <div key={item.id} className="flex items-start gap-3 py-2.5 px-2 rounded-lg hover:bg-foreground/[0.02] transition-all cursor-default">
+                  <span className={cn(
+                    "mt-[5px] h-1.5 w-1.5 rounded-full shrink-0",
+                    item.important ? "bg-[#C88E72]" : "bg-foreground/12"
+                  )} />
+                  <div className="flex-1 min-w-0">
+                    <p className={cn("text-[11px] leading-relaxed", item.important ? "text-foreground/80 font-medium" : "text-foreground/40")}>
+                      {item.text}
+                    </p>
+                    <span className="text-[8px] font-mono text-foreground/22 uppercase tracking-wider mt-0.5 block">{item.timestamp}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
       </div>
 
     </div>

@@ -262,9 +262,9 @@ export default function FounderMutinyPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-6 pb-24 relative min-h-[calc(100vh-9rem)] flex flex-col justify-between select-none px-4">
-      
-      <div className="flex-1 space-y-6 z-10">
+    <div className="w-full pt-6 pb-24 px-6 xl:px-10 min-h-[calc(100vh-9rem)] flex flex-col justify-between select-none">
+      <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col justify-between space-y-6 relative">
+        <div className="flex-1 space-y-6 z-10">
         
         {/* Minimal header title */}
         <div className="flex flex-col gap-1.5 pb-2 border-b border-border/[0.03]">
@@ -517,7 +517,7 @@ export default function FounderMutinyPage() {
           </div>
         </div>
       </div>
-
+      </div>
     </div>
   )
 }

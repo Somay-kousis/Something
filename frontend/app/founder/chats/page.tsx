@@ -529,7 +529,7 @@ export default function FounderChatsPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6 px-4">
+    <div className="w-full pt-6 pb-24 px-6 xl:px-10">
       {/* Sleek inline header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/[0.03]">
         <div className="flex flex-col gap-1.5">

@@ -571,7 +571,7 @@ export default function FounderProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-12 pt-4 pb-20 relative">
+    <div className="w-full pt-6 pb-24 px-6 xl:px-10 relative">
       
       {/* Toast Alert container */}
       <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none">
@@ -671,7 +671,7 @@ export default function FounderProfilePage() {
                       {profile.name}
                     </h1>
                     {profile.isVerified && (
-                      <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[9px] font-mono font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full border">
+                      <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-[9px] font-mono font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full border">
                         Verified Cohort Member
                       </Badge>
                     )}
@@ -816,7 +816,7 @@ export default function FounderProfilePage() {
                         <div className="flex items-start justify-between gap-2">
                           <div className="space-y-0.5">
                             <h3 className="font-semibold text-sm text-foreground font-sans leading-tight">{exp.role}</h3>
-                            <p className="text-xs text-[#34D399] font-medium leading-none font-sans" style={{ color: activeAccent.color }}>{exp.company}</p>
+                            <p className="text-xs text-brand-accent font-medium leading-none font-sans" style={{ color: activeAccent.color }}>{exp.company}</p>
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
                             <span className="text-[9px] text-foreground/35 font-mono bg-foreground/[0.02] border border-border/5 rounded px-2 py-0.5">{exp.duration}</span>
@@ -999,13 +999,13 @@ export default function FounderProfilePage() {
                       className={cn(
                         "w-full text-left flex items-center justify-between py-1.5 px-2 rounded-lg text-[10.5px] font-sans border transition-all relative cursor-pointer",
                         task.done
-                          ? "bg-emerald-500/[0.02] border-emerald-500/10 text-emerald-400/50 line-through cursor-not-allowed"
+                          ? "bg-emerald-500/5 border-emerald-600/15 text-emerald-700/75 dark:bg-emerald-500/[0.02] dark:border-emerald-500/10 dark:text-emerald-400/50 line-through cursor-not-allowed"
                           : "bg-transparent border-transparent text-foreground/70 hover:bg-foreground/5 hover:text-foreground"
                       )}
                     >
                       <span className="truncate pr-2">{task.text}</span>
                       {task.done ? (
-                        <Check className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                        <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                       ) : (
                         <ChevronRight className="h-3.5 w-3.5 opacity-35 shrink-0 group-hover:translate-x-0.5 transition" />
                       )}
@@ -1037,7 +1037,7 @@ export default function FounderProfilePage() {
                 </div>
 
                 {profile.githubVerified ? (
-                  <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[8px] font-mono py-0 px-2 rounded-full uppercase">Verified</Badge>
+                  <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-[8px] font-mono py-0 px-2 rounded-full uppercase">Verified</Badge>
                 ) : (
                   <Button
                     size="sm"
@@ -1062,7 +1062,7 @@ export default function FounderProfilePage() {
                 </div>
 
                 {profile.walletVerified ? (
-                  <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[8px] font-mono py-0 px-2 rounded-full uppercase">Secured</Badge>
+                  <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-[8px] font-mono py-0 px-2 rounded-full uppercase">Secured</Badge>
                 ) : (
                   <Button
                     size="sm"
@@ -1402,7 +1402,7 @@ export default function FounderProfilePage() {
               </div>
             ) : (
               <div className="space-y-3.5 text-center py-2.5">
-                <div className="mx-auto size-11 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 grid place-items-center">
+                <div className="mx-auto size-11 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 grid place-items-center">
                   <CheckCircle2 className="h-6 w-6" />
                 </div>
                 <div className="space-y-1">

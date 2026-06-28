@@ -52,6 +52,8 @@ export default function FounderLayout({ children }: { children: React.ReactNode 
       const storedAccent = localStorage.getItem("founder_settings_accent")
       if (storedAccent) {
         setAccentKey(storedAccent)
+      } else {
+        setAccentKey(theme === "dark" ? "violet" : "emerald")
       }
     }
   }
@@ -73,7 +75,16 @@ export default function FounderLayout({ children }: { children: React.ReactNode 
       window.removeEventListener("founder-profile-update", handleStorageChange)
       window.removeEventListener("founder-accent-update", handleAccentUpdate)
     }
-  }, [])
+  }, [theme])
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && mounted) {
+      const storedAccent = localStorage.getItem("founder_settings_accent")
+      if (!storedAccent) {
+        setAccentKey(theme === "dark" ? "violet" : "emerald")
+      }
+    }
+  }, [theme, mounted])
 
   useEffect(() => {
     if (typeof window === "undefined" || !mounted) return
@@ -260,6 +271,10 @@ export default function FounderLayout({ children }: { children: React.ReactNode 
     // Per-theme typography tweaks
     root.style.setProperty("--theme-font-weight",       t.fontWeight)
     root.style.setProperty("--theme-letter-spacing",    t.letterSpacing)
+    
+    const rawWeight = parseInt(t.fontWeight) || 400
+    const bodyWeight = isDark ? Math.max(380, rawWeight) : Math.max(420, rawWeight + 20)
+    root.style.setProperty("--theme-body-weight",       bodyWeight.toString())
   }, [accentKey, theme, mounted])
 
 

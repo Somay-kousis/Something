@@ -139,7 +139,8 @@ export default function IdeaDetailsPage() {
   }[idea.stage] ?? { text: "text-foreground/60", bg: "bg-foreground/5", border: "border-border/10" }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pt-4 pb-20 px-4">
+    <div className="w-full pt-6 pb-24 px-6 xl:px-10">
+      <div className="max-w-5xl mx-auto space-y-8">
       {/* Back Button */}
       <div>
         <Button onClick={() => router.back()} variant="ghost" className="text-foreground/55 hover:text-foreground hover:bg-foreground/[0.03] rounded-full px-4 h-8 text-xs font-semibold cursor-pointer">
@@ -260,6 +261,7 @@ export default function IdeaDetailsPage() {
             <p className="text-xs text-foreground/30 text-center py-6 font-mono uppercase tracking-widest">No comments yet</p>
           )}
         </div>
+      </div>
       </div>
     </div>
   )

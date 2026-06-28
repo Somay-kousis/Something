@@ -528,7 +528,7 @@ export default function FounderIdeasPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-12 pt-4 pb-20">
+    <div className="w-full pt-6 pb-24 px-6 xl:px-10">
       <PageHeader
         category="Ideas Workspace"
         title="Ideas & Drafts"
