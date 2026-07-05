@@ -590,7 +590,7 @@ export default function FounderProfilePage() {
             </div>
             <div className="flex-1 space-y-0.5">
               <h5 className="text-xs font-bold text-foreground font-mono uppercase tracking-wider">{t.title}</h5>
-              {t.description && <p className="text-[10px] text-foreground/50 leading-relaxed font-sans">{t.description}</p>}
+              {t.description && <p className="text-[11px] text-foreground/50 leading-relaxed font-sans">{t.description}</p>}
             </div>
             <button
               onClick={() => setToasts((prev) => prev.filter((item) => item.id !== t.id))}
@@ -671,7 +671,7 @@ export default function FounderProfilePage() {
                       {profile.name}
                     </h1>
                     {profile.isVerified && (
-                      <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-[9px] font-mono font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full border">
+                      <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-[11px] font-mono font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full border">
                         Verified Cohort Member
                       </Badge>
                     )}
@@ -730,7 +730,7 @@ export default function FounderProfilePage() {
           {/* 2. Biography Synopsis */}
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b border-border/5 pb-3">
-              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">Biography Synopsis</h3>
+              <h3 className="text-[11px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">Biography Synopsis</h3>
               <Button
                 variant="ghost"
                 size="icon"
@@ -749,8 +749,8 @@ export default function FounderProfilePage() {
           {/* 3. Skill tags component manager */}
           <div className="space-y-4">
             <div className="border-b border-border/5 pb-3">
-              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">Expertise Tags</h3>
-              <p className="text-foreground/35 text-[9px] font-mono uppercase tracking-wider pt-1">Type core expertise tag below and press Enter or comma to append</p>
+              <h3 className="text-[11px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">Expertise Tags</h3>
+              <p className="text-foreground/35 text-[11px] font-mono uppercase tracking-wider pt-1">Type core expertise tag below and press Enter or comma to append</p>
             </div>
             <div className="space-y-4 pt-1">
               {/* Flex Tags list */}
@@ -789,14 +789,14 @@ export default function FounderProfilePage() {
           {/* 4. Experience Timeline */}
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b border-border/5 pb-3">
-              <h3 className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">
+              <h3 className="flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">
                 <Briefcase className="h-3.5 w-3.5" style={{ color: activeAccent.color }} /> Professional Track Record
               </h3>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleOpenExpModal(null)}
-                className="h-8 rounded-lg text-[10px] font-mono uppercase tracking-wider text-foreground hover:bg-foreground/5 border-border/10 bg-transparent cursor-pointer flex items-center gap-1"
+                className="h-8 rounded-lg text-[11px] font-mono uppercase tracking-wider text-foreground hover:bg-foreground/5 border-border/10 bg-transparent cursor-pointer flex items-center gap-1"
               >
                 <Plus className="h-3.5 w-3.5" /> Add Role
               </Button>
@@ -809,7 +809,7 @@ export default function FounderProfilePage() {
 
                   {(profile.experience || []).map((exp, index) => (
                     <div key={index} className="flex gap-4 relative group/item">
-                      <div className="size-6 rounded-full bg-background border border-border/15 text-foreground/60 grid place-items-center z-10 text-[9px] shrink-0 mt-1 font-mono font-semibold">
+                      <div className="size-6 rounded-full bg-background border border-border/15 text-foreground/60 grid place-items-center z-10 text-[11px] shrink-0 mt-1 font-mono font-semibold">
                         {index + 1}
                       </div>
                       <div className="space-y-1.5 flex-1 min-w-0">
@@ -819,7 +819,7 @@ export default function FounderProfilePage() {
                             <p className="text-xs text-brand-accent font-medium leading-none font-sans" style={{ color: activeAccent.color }}>{exp.company}</p>
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
-                            <span className="text-[9px] text-foreground/35 font-mono bg-foreground/[0.02] border border-border/5 rounded px-2 py-0.5">{exp.duration}</span>
+                            <span className="text-[11px] text-foreground/35 font-mono bg-foreground/[0.02] border border-border/5 rounded px-2 py-0.5">{exp.duration}</span>
                             
                             {/* Action Tools */}
                             <Button
@@ -859,14 +859,14 @@ export default function FounderProfilePage() {
           {/* 5. Education Academics */}
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b border-border/5 pb-3">
-              <h3 className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">
+              <h3 className="flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">
                 <GraduationCap className="h-3.5 w-3.5" style={{ color: activeAccent.color }} /> Academic Background
               </h3>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleOpenEduModal(null)}
-                className="h-8 rounded-lg text-[10px] font-mono uppercase tracking-wider text-foreground hover:bg-foreground/5 border-border/10 bg-transparent cursor-pointer flex items-center gap-1"
+                className="h-8 rounded-lg text-[11px] font-mono uppercase tracking-wider text-foreground hover:bg-foreground/5 border-border/10 bg-transparent cursor-pointer flex items-center gap-1"
               >
                 <Plus className="h-3.5 w-3.5" /> Add Academic
               </Button>
@@ -905,7 +905,7 @@ export default function FounderProfilePage() {
                           </div>
                         </div>
                         <p className="text-[11px] text-foreground/65 font-sans truncate">{edu.degree}</p>
-                        <p className="text-[9px] text-foreground/30 font-mono leading-none">{edu.duration}</p>
+                        <p className="text-[11px] text-foreground/30 font-mono leading-none">{edu.duration}</p>
                       </div>
                     </div>
                   ))}
@@ -922,10 +922,10 @@ export default function FounderProfilePage() {
           {/* 6. Fields of Interest */}
           <div className="space-y-4">
             <div className="border-b border-border/5 pb-3">
-              <h3 className="flex items-center gap-2 text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">
+              <h3 className="flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">
                 <Compass className="h-3.5 w-3.5" style={{ color: activeAccent.color }} /> Core Interests & Fields
               </h3>
-              <p className="text-foreground/35 text-[9px] font-mono uppercase tracking-wider pt-1">Type fields of interest below and press Enter or comma to append</p>
+              <p className="text-foreground/35 text-[11px] font-mono uppercase tracking-wider pt-1">Type fields of interest below and press Enter or comma to append</p>
             </div>
             <div className="space-y-4 pt-1">
               <div className="flex flex-wrap gap-2">
@@ -967,7 +967,7 @@ export default function FounderProfilePage() {
           {/* Profile Completion Panel */}
           <div className="space-y-4">
             <div className="border-b border-border/5 pb-3">
-              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">Completeness Score</h3>
+              <h3 className="text-[11px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">Completeness Score</h3>
               <p className="text-foreground/40 text-[11px] pt-1 leading-relaxed">
                 Connect missing nodes and complete data blocks to verify developer index status.
               </p>
@@ -983,7 +983,7 @@ export default function FounderProfilePage() {
 
               {/* Completion checklist tasks */}
               <div className="space-y-2 border-t border-border/5 pt-4">
-                <span className="text-[9px] font-mono uppercase tracking-wider text-foreground/35">Quick checklist</span>
+                <span className="text-[11px] font-mono uppercase tracking-wider text-foreground/35">Quick checklist</span>
                 <div className="space-y-1">
                   {[
                     { text: "Add biography description", done: !!(profile.about && profile.about.trim().length > 10) },
@@ -1019,7 +1019,7 @@ export default function FounderProfilePage() {
           {/* Verification connections panel */}
           <div className="space-y-4">
             <div className="border-b border-border/5 pb-3">
-              <h3 className="text-[10px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">Verification Nodes</h3>
+              <h3 className="text-[11px] font-semibold tracking-widest uppercase text-foreground/45 font-mono">Verification Nodes</h3>
               <p className="text-foreground/40 text-[11px] pt-1">Verify third-party authentication certificates</p>
             </div>
             <div className="space-y-3.5 pt-1">
@@ -1030,19 +1030,19 @@ export default function FounderProfilePage() {
                   <Github className="h-4 w-4 text-foreground/60 shrink-0" />
                   <div className="min-w-0">
                     <span className="block text-xs font-semibold text-foreground">GitHub Identity</span>
-                    <span className="block text-[9px] font-mono text-foreground/30 uppercase tracking-wide leading-none pt-0.5">
+                    <span className="block text-[11px] font-mono text-foreground/30 uppercase tracking-wide leading-none pt-0.5">
                       {profile.githubVerified ? "Linked: @alex_edge" : "Unverified"}
                     </span>
                   </div>
                 </div>
 
                 {profile.githubVerified ? (
-                  <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-[8px] font-mono py-0 px-2 rounded-full uppercase">Verified</Badge>
+                  <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-[11px] font-mono py-0 px-2 rounded-full uppercase">Verified</Badge>
                 ) : (
                   <Button
                     size="sm"
                     onClick={() => handleStartSimulatedVerify("github")}
-                    className={cn("h-7 rounded-lg text-[9px] font-mono uppercase tracking-wider py-0 px-2.5 cursor-pointer transition active:scale-95", activeAccent.btnBg)}
+                    className={cn("h-7 rounded-lg text-[11px] font-mono uppercase tracking-wider py-0 px-2.5 cursor-pointer transition active:scale-95", activeAccent.btnBg)}
                   >
                     Connect
                   </Button>
@@ -1055,19 +1055,19 @@ export default function FounderProfilePage() {
                   <Wallet className="h-4 w-4 text-foreground/60 shrink-0" />
                   <div className="min-w-0">
                     <span className="block text-xs font-semibold text-foreground">Web3 signature</span>
-                    <span className="block text-[9px] font-mono text-foreground/30 uppercase tracking-wide leading-none pt-0.5">
+                    <span className="block text-[11px] font-mono text-foreground/30 uppercase tracking-wide leading-none pt-0.5">
                       {profile.walletVerified ? "Linked: ed25519" : "Unverified"}
                     </span>
                   </div>
                 </div>
 
                 {profile.walletVerified ? (
-                  <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-[8px] font-mono py-0 px-2 rounded-full uppercase">Secured</Badge>
+                  <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-[11px] font-mono py-0 px-2 rounded-full uppercase">Secured</Badge>
                 ) : (
                   <Button
                     size="sm"
                     onClick={() => handleStartSimulatedVerify("wallet")}
-                    className={cn("h-7 rounded-lg text-[9px] font-mono uppercase tracking-wider py-0 px-2.5 cursor-pointer transition active:scale-95", activeAccent.btnBg)}
+                    className={cn("h-7 rounded-lg text-[11px] font-mono uppercase tracking-wider py-0 px-2.5 cursor-pointer transition active:scale-95", activeAccent.btnBg)}
                   >
                     Verify
                   </Button>
@@ -1090,7 +1090,7 @@ export default function FounderProfilePage() {
 
           <form onSubmit={handleSaveProfile} className="space-y-4 pt-3.5">
             <div className="space-y-1.5">
-              <label htmlFor="p-name" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Display Name</label>
+              <label htmlFor="p-name" className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Display Name</label>
               <Input
                 id="p-name"
                 value={editName}
@@ -1101,7 +1101,7 @@ export default function FounderProfilePage() {
             </div>
             
             <div className="space-y-1.5">
-              <label htmlFor="p-headline" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Headline Role</label>
+              <label htmlFor="p-headline" className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Headline Role</label>
               <Input
                 id="p-headline"
                 value={editHeadline}
@@ -1112,7 +1112,7 @@ export default function FounderProfilePage() {
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="p-location" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Location Node</label>
+              <label htmlFor="p-location" className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Location Node</label>
               <Input
                 id="p-location"
                 value={editLocation}
@@ -1123,10 +1123,10 @@ export default function FounderProfilePage() {
             </div>
 
             <div className="border-t border-border/5 pt-3 space-y-3">
-              <span className="text-[9px] font-mono uppercase tracking-wider text-foreground/30 block">Social connection handles</span>
+              <span className="text-[11px] font-mono uppercase tracking-wider text-foreground/30 block">Social connection handles</span>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <label htmlFor="p-linkedin" className="text-[9px] text-foreground/40 font-mono">LinkedIn Url</label>
+                  <label htmlFor="p-linkedin" className="text-[11px] text-foreground/40 font-mono">LinkedIn Url</label>
                   <Input
                     id="p-linkedin"
                     type="url"
@@ -1136,7 +1136,7 @@ export default function FounderProfilePage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="p-twitter" className="text-[9px] text-foreground/40 font-mono">Twitter Url</label>
+                  <label htmlFor="p-twitter" className="text-[11px] text-foreground/40 font-mono">Twitter Url</label>
                   <Input
                     id="p-twitter"
                     type="url"
@@ -1147,7 +1147,7 @@ export default function FounderProfilePage() {
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="p-website" className="text-[9px] text-foreground/40 font-mono">Personal Website</label>
+                <label htmlFor="p-website" className="text-[11px] text-foreground/40 font-mono">Personal Website</label>
                 <Input
                   id="p-website"
                   type="url"
@@ -1190,7 +1190,7 @@ export default function FounderProfilePage() {
 
           <form onSubmit={handleSaveProfile} className="space-y-4 pt-3.5">
             <div className="space-y-1.5">
-              <label htmlFor="p-bio" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Biography description</label>
+              <label htmlFor="p-bio" className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Biography description</label>
               <Textarea
                 id="p-bio"
                 value={editAbout}
@@ -1235,7 +1235,7 @@ export default function FounderProfilePage() {
           <form onSubmit={handleSaveExperience} className="space-y-4 pt-3.5">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <label htmlFor="exp-role" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Job Title / Role</label>
+                <label htmlFor="exp-role" className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Job Title / Role</label>
                 <Input
                   id="exp-role"
                   value={expRole}
@@ -1246,7 +1246,7 @@ export default function FounderProfilePage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="exp-company" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Company / Node</label>
+                <label htmlFor="exp-company" className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Company / Node</label>
                 <Input
                   id="exp-company"
                   value={expCompany}
@@ -1259,7 +1259,7 @@ export default function FounderProfilePage() {
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="exp-duration" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Duration Timeline</label>
+              <label htmlFor="exp-duration" className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Duration Timeline</label>
               <Input
                 id="exp-duration"
                 value={expDuration}
@@ -1271,7 +1271,7 @@ export default function FounderProfilePage() {
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="exp-desc" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Role Description & Milestones</label>
+              <label htmlFor="exp-desc" className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Role Description & Milestones</label>
               <Textarea
                 id="exp-desc"
                 value={expDesc}
@@ -1315,7 +1315,7 @@ export default function FounderProfilePage() {
 
           <form onSubmit={handleSaveEducation} className="space-y-4 pt-3.5">
             <div className="space-y-1.5">
-              <label htmlFor="edu-inst" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Institution name</label>
+              <label htmlFor="edu-inst" className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Institution name</label>
               <Input
                 id="edu-inst"
                 value={eduInstitution}
@@ -1328,7 +1328,7 @@ export default function FounderProfilePage() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <label htmlFor="edu-degree" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Degree Earned</label>
+                <label htmlFor="edu-degree" className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Degree Earned</label>
                 <Input
                   id="edu-degree"
                   value={eduDegree}
@@ -1339,7 +1339,7 @@ export default function FounderProfilePage() {
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="edu-duration" className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Timeline Years</label>
+                <label htmlFor="edu-duration" className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Timeline Years</label>
                 <Input
                   id="edu-duration"
                   value={eduDuration}
@@ -1388,11 +1388,11 @@ export default function FounderProfilePage() {
           <div className="space-y-4 pt-4">
             {isVerifyingLink ? (
               <div className="space-y-2">
-                <span className="text-[10px] font-mono text-foreground/50 uppercase tracking-widest flex items-center gap-2">
+                <span className="text-[11px] font-mono text-foreground/50 uppercase tracking-widest flex items-center gap-2">
                   <Loader2 className="h-3 w-3 animate-spin" style={{ color: activeAccent.color }} />
                   Broadcasting verification handshake...
                 </span>
-                <div className="bg-black p-4 border border-border/5 rounded-lg font-mono text-[10px] text-foreground/60 h-32 overflow-y-auto space-y-1">
+                <div className="bg-black p-4 border border-border/5 rounded-lg font-mono text-[11px] text-foreground/60 h-32 overflow-y-auto space-y-1">
                   {verifyLogs.map((log, i) => (
                     <div key={i} className={cn(log.includes("SUCCESS") ? "text-emerald-400" : log.includes("GATEWAY") || log.includes("RPC") ? "text-blue-400" : "text-foreground/50")}>
                       {log}
