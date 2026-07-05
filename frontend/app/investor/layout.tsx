@@ -5,13 +5,24 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
+import { useAuth } from "@/components/auth-provider"
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppInvestorSidebar } from "@/components/app-investor-sidebar"
 import { NotificationsDropdown } from "@/components/notifications-dropdown"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import { Search, Sun, Moon, Plus } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Search, Sun, Moon, UserRound, Settings, LogOut, RefreshCw, Eye, EyeOff } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 const SECTION_MAP: Record<string, string> = {
   search:      "Search",
@@ -19,24 +30,33 @@ const SECTION_MAP: Record<string, string> = {
   chats:       "Chats",
   profile:     "Profile",
   settings:    "Settings",
-}
-
-export type IdeaData = {
-  title: string
-  description: string
+  diligence:   "Diligence AI",
+  problems:    "Problems",
 }
 
 export default function InvestorLayout({ children }: { children: React.ReactNode }) {
   const pathname  = usePathname()
   const router    = useRouter()
+  const { logout } = useAuth()
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [accentKey, setAccentKey] = useState("emerald")
 
+  // User identity
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [userName, setUserName]   = useState("Investor")
+  const [userEmail, setUserEmail] = useState("")
+
+  // Ghost mode state
+  const [ghostMode, setGhostMode] = useState(false)
+
   const seg     = pathname?.split("/").filter(Boolean)[1]
   const section = SECTION_MAP[seg ?? ""] ?? "Overview"
 
-  // ── Mount + read accent from localStorage ─────────────────────────────
+  const getInitials = (n: string) =>
+    n.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "IN"
+
+  // ── Mount + read accent + user data from localStorage ─────────────────────
   useEffect(() => {
     setMounted(true)
     const saved = localStorage.getItem("founder_settings_accent")
@@ -46,36 +66,54 @@ export default function InvestorLayout({ children }: { children: React.ReactNode
       setAccentKey(theme === "dark" ? "violet" : "emerald")
     }
 
+    // Load user identity
+    const name  = localStorage.getItem("demo_name")
+    const email = localStorage.getItem("demo_email")
+    const ghost = localStorage.getItem("investor_ghost_mode") === "true"
+    if (name)  setUserName(name)
+    if (email) setUserEmail(email)
+    setGhostMode(ghost)
+
+    // Also check investor-specific profile
+    const investorProfile = localStorage.getItem("investor_profile_data")
+    if (investorProfile) {
+      try {
+        const p = JSON.parse(investorProfile)
+        if (p.name)      setUserName(p.name)
+        if (p.avatarUrl) setAvatarUrl(p.avatarUrl)
+      } catch { /* ignore */ }
+    }
+
     const handleAccentUpdate = (e: Event) => {
       const ce = e as CustomEvent<{ accent: string }>
       if (ce.detail?.accent) setAccentKey(ce.detail.accent)
     }
     const handleStorageChange = () => {
       const s = localStorage.getItem("founder_settings_accent")
-      if (s) {
-        setAccentKey(s)
-      } else {
-        setAccentKey(theme === "dark" ? "violet" : "emerald")
-      }
+      if (s) setAccentKey(s)
+      const n = localStorage.getItem("demo_name")
+      if (n) setUserName(n)
+      const g = localStorage.getItem("investor_ghost_mode") === "true"
+      setGhostMode(g)
     }
     window.addEventListener("founder-accent-update", handleAccentUpdate)
     window.addEventListener("storage", handleStorageChange)
+    window.addEventListener("investor-profile-update", handleStorageChange)
     return () => {
       window.removeEventListener("founder-accent-update", handleAccentUpdate)
       window.removeEventListener("storage", handleStorageChange)
+      window.removeEventListener("investor-profile-update", handleStorageChange)
     }
   }, [theme])
 
   useEffect(() => {
     if (typeof window !== "undefined" && mounted) {
       const saved = localStorage.getItem("founder_settings_accent")
-      if (!saved) {
-        setAccentKey(theme === "dark" ? "violet" : "emerald")
-      }
+      if (!saved) setAccentKey(theme === "dark" ? "violet" : "emerald")
     }
   }, [theme, mounted])
 
-  // ── Full CSS token injection (mirrors founder layout exactly) ──────────
+  // ── Full CSS token injection ───────────────────────────────────────────────
   useEffect(() => {
     if (typeof window === "undefined" || !mounted) return
     const isDark = theme !== "light"
@@ -130,8 +168,15 @@ export default function InvestorLayout({ children }: { children: React.ReactNode
     
     const rawWeight = parseInt(t.fontWeight) || 400
     const bodyWeight = isDark ? Math.max(380, rawWeight) : Math.max(420, rawWeight + 20)
-    root.style.setProperty("--theme-body-weight",         bodyWeight.toString())
+    root.style.setProperty("--theme-body-weight", bodyWeight.toString())
   }, [accentKey, theme, mounted])
+
+  const toggleGhostMode = () => {
+    const next = !ghostMode
+    setGhostMode(next)
+    localStorage.setItem("investor_ghost_mode", String(next))
+    window.dispatchEvent(new CustomEvent("ghost-mode-change", { detail: { ghost: next } }))
+  }
 
   return (
     <SidebarProvider>
@@ -162,20 +207,34 @@ export default function InvestorLayout({ children }: { children: React.ReactNode
                 placeholder="Search ideas, founders, domains…"
                 className="h-8 w-[240px] pl-9 bg-accent/40 border-border/40 text-foreground placeholder:text-foreground/30 rounded-lg focus-visible:ring-1 focus-visible:ring-[var(--brand-accent)] focus-visible:border-[var(--brand-accent)]/20 text-xs"
               />
-              <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 inline-flex h-4.5 select-none items-center gap-0.5 rounded border border-border bg-foreground/5 px-1.5 font-mono text-[9px] font-medium text-foreground/40">
-                <span className="text-[10px]">⌘</span>K
+              <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 inline-flex h-4.5 select-none items-center gap-0.5 rounded border border-border bg-foreground/5 px-1.5 font-mono text-[11px] font-medium text-foreground/40">
+                <span className="text-[11px]">⌘</span>K
               </kbd>
             </div>
 
-            {/* New Idea button */}
-            <Button
-              size="sm"
-              onClick={() => router.push("/investor/search")}
-              className="h-8 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold tracking-wide transition-all active:scale-[0.98] cursor-pointer shrink-0 px-3"
-            >
-              <Plus className="mr-1.5 h-3.5 w-3.5 shrink-0" />
-              Discover
-            </Button>
+            {/* Ghost Mode toggle */}
+            {mounted && (
+              <button
+                id="ghost-mode-toggle"
+                onClick={toggleGhostMode}
+                className={cn(
+                  "flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer border",
+                  ghostMode
+                    ? "bg-violet-500/10 border-violet-500/30 text-violet-400 hover:bg-violet-500/15"
+                    : "bg-foreground/[0.03] border-border text-foreground/40 hover:text-foreground/60 hover:bg-foreground/[0.06]"
+                )}
+                aria-label="Toggle ghost mode"
+                title={ghostMode ? "Ghost Mode: ON — founders can't see you" : "Ghost Mode: OFF — you're visible"}
+              >
+                {ghostMode
+                  ? <EyeOff className="h-3.5 w-3.5" />
+                  : <Eye className="h-3.5 w-3.5" />
+                }
+                <span className="hidden sm:inline">
+                  {ghostMode ? "Ghost" : "Visible"}
+                </span>
+              </button>
+            )}
 
             {/* Notifications */}
             <NotificationsDropdown />
@@ -195,6 +254,81 @@ export default function InvestorLayout({ children }: { children: React.ReactNode
                 }
               </Button>
             )}
+
+            {/* Avatar dropdown — mirrors founder layout */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center rounded-full border border-[var(--brand-accent)]/30 p-0.5 transition cursor-pointer select-none focus:outline-none hover:border-[var(--brand-accent)]/50">
+                  <Avatar className="h-7 w-7 border border-border">
+                    {avatarUrl ? (
+                      avatarUrl.startsWith("linear-gradient") ? (
+                        <AvatarImage src="" alt="" className="hidden" />
+                      ) : (
+                        <AvatarImage src={avatarUrl} alt={userName} className="object-cover" />
+                      )
+                    ) : null}
+                    <AvatarFallback
+                      className="text-foreground text-[11px] font-bold font-mono uppercase bg-accent"
+                      style={{ background: avatarUrl && avatarUrl.startsWith("linear-gradient") ? avatarUrl : undefined }}
+                    >
+                      {getInitials(userName)}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent className="w-56 bg-popover border border-border text-popover-foreground shadow-2xl rounded-xl backdrop-blur-xl p-1.5" align="end">
+                <DropdownMenuLabel className="px-2.5 py-2">
+                  <div className="flex flex-col space-y-0.5">
+                    <span className="text-xs font-semibold text-foreground">{userName}</span>
+                    <span className="text-[11px] text-muted-foreground font-mono leading-none">
+                      {userEmail || "investor@something.to"}
+                    </span>
+                    {ghostMode && (
+                      <span className="text-[11px] text-violet-400 font-mono mt-1 flex items-center gap-1">
+                        <EyeOff className="h-2.5 w-2.5" /> Ghost Mode active
+                      </span>
+                    )}
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-border" />
+
+                <DropdownMenuItem
+                  onClick={() => router.push("/investor/profile")}
+                  className="hover:bg-accent cursor-pointer text-xs rounded-lg py-2 flex items-center gap-2 font-mono uppercase tracking-wider text-[11px] font-semibold text-muted-foreground hover:text-foreground transition"
+                  id="investor-header-profile"
+                >
+                  <UserRound className="h-3.5 w-3.5 opacity-60" /> Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => router.push("/investor/settings")}
+                  className="hover:bg-accent cursor-pointer text-xs rounded-lg py-2 flex items-center gap-2 font-mono uppercase tracking-wider text-[11px] font-semibold text-muted-foreground hover:text-foreground transition"
+                  id="investor-header-settings"
+                >
+                  <Settings className="h-3.5 w-3.5 opacity-60" /> Settings
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator className="bg-border" />
+
+                <DropdownMenuItem
+                  onClick={() => router.push("/founder")}
+                  className="hover:bg-accent cursor-pointer text-xs rounded-lg py-2 flex items-center gap-2 font-mono uppercase tracking-wider text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 transition"
+                  id="investor-switch-founder"
+                >
+                  <RefreshCw className="h-3.5 w-3.5 opacity-60" /> Switch to Founder
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator className="bg-border" />
+
+                <DropdownMenuItem
+                  onClick={() => { logout(); router.push("/login") }}
+                  className="hover:bg-red-500/10 text-red-400 hover:text-red-300 text-xs rounded-lg py-2 cursor-pointer flex items-center gap-2 font-mono uppercase tracking-wider text-[11px] font-semibold transition"
+                  id="investor-logout"
+                >
+                  <LogOut className="h-3.5 w-3.5 opacity-60" /> Log Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
