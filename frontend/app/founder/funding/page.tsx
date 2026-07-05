@@ -209,7 +209,7 @@ export default function FounderFundingPage() {
                     
                     {/* Left Column: Milestone Selector */}
                     <div className="space-y-2">
-                      <label className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono block">Select Active Milestone *</label>
+                      <label className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono block">Select Active Milestone *</label>
                       <div className="grid gap-2.5 max-h-[300px] overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:bg-foreground/10 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent">
                         {payoutEligibleMilestones.map((m) => {
                           const selected = selectedMilestoneId === m.id
@@ -226,7 +226,7 @@ export default function FounderFundingPage() {
                               )}
                             >
                               <div className="flex items-center justify-between w-full mb-1">
-                                <span className="text-[9px] text-brand-accent font-semibold tracking-wider font-mono uppercase bg-brand-accent/10 border border-brand-accent/20 px-2 py-0.5 rounded-full">
+                                <span className="text-[11px] text-brand-accent font-semibold tracking-wider font-mono uppercase bg-brand-accent/10 border border-brand-accent/20 px-2 py-0.5 rounded-full">
                                   {m.title.split(":")[0]}
                                 </span>
                                 <div className="flex items-center gap-2">
@@ -244,7 +244,7 @@ export default function FounderFundingPage() {
                               )}>
                                 {m.title.split(":")[1]?.trim() || m.title}
                               </h4>
-                              <p className="text-[10px] text-foreground/40 mt-1 leading-normal font-sans">
+                              <p className="text-[11px] text-foreground/40 mt-1 leading-normal font-sans">
                                 {m.description}
                               </p>
                             </button>
@@ -263,10 +263,10 @@ export default function FounderFundingPage() {
                       {/* Verifiable Proof Link with Live Validation */}
                       <div className="space-y-1.5">
                         <div className="flex justify-between items-center">
-                          <label className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Verifiable Proof Link *</label>
+                          <label className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Verifiable Proof Link *</label>
                           {proofLink.trim() && (
                             <span className={cn(
-                              "text-[9px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full flex items-center gap-1",
+                              "text-[11px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full flex items-center gap-1",
                               isProofLinkValid
                                 ? "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20"
                                 : "text-amber-400 bg-amber-500/10 border border-amber-500/20"
@@ -301,8 +301,8 @@ export default function FounderFundingPage() {
                       {/* Summary of Deliverables */}
                       <div className="space-y-1.5">
                         <div className="flex justify-between items-center">
-                          <label className="text-[10px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Summary of Deliverables *</label>
-                          <span className="text-[9px] font-mono text-foreground/30">{workSummary.length}/500</span>
+                          <label className="text-[11px] text-foreground/50 font-semibold uppercase tracking-wider font-mono">Summary of Deliverables *</label>
+                          <span className="text-[11px] font-mono text-foreground/30">{workSummary.length}/500</span>
                         </div>
                         <Textarea
                           maxLength={500}
@@ -371,53 +371,53 @@ export default function FounderFundingPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-6 border-y border-border/5">
         {/* Total Pool */}
         <div className="space-y-1.5">
-          <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-foreground/35">Total Pool Target</span>
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-foreground/35">Total Pool Target</span>
           <div className="text-2xl sm:text-3xl font-serif font-light text-foreground">
             ${totalFunding.toLocaleString()}
           </div>
-          <p className="text-[10px] font-mono text-foreground/35">100% of target</p>
+          <p className="text-[11px] font-mono text-foreground/35">100% of target</p>
         </div>
 
         {/* Released */}
         <div className="space-y-1.5">
-          <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-foreground/35">Released to Date</span>
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-foreground/35">Released to Date</span>
           <div className="text-2xl sm:text-3xl font-serif font-light text-brand-accent">
             ${releasedAmount.toLocaleString()}
           </div>
-          <p className="text-[10px] font-mono text-foreground/35">
+          <p className="text-[11px] font-mono text-foreground/35">
             {((releasedAmount / totalFunding) * 100).toFixed(0)}% Disbursed
           </p>
         </div>
 
         {/* Pending Verification */}
         <div className="space-y-1.5">
-          <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-foreground/35">Pending Release</span>
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-foreground/35">Pending Release</span>
           <div className="text-2xl sm:text-3xl font-serif font-light text-[#C88E72]">
             ${pendingAmount.toLocaleString()}
           </div>
-          <p className="text-[10px] font-mono text-foreground/35">Awaiting committee</p>
+          <p className="text-[11px] font-mono text-foreground/35">Awaiting committee</p>
         </div>
 
         {/* Locked in Escrow */}
         <div className="space-y-1.5">
-          <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-foreground/35">Locked in Escrow</span>
+          <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-foreground/35">Locked in Escrow</span>
           <div className="text-2xl sm:text-3xl font-serif font-light text-foreground/70">
             ${lockedAmount.toLocaleString()}
           </div>
-          <p className="text-[10px] font-mono text-foreground/35">Matures upcoming</p>
+          <p className="text-[11px] font-mono text-foreground/35">Matures upcoming</p>
         </div>
       </div>
 
       {/* Escrow Pool Progress Bar */}
       <div className="py-4 space-y-3">
-        <div className="flex justify-between items-center text-[10px] font-mono font-bold tracking-widest uppercase text-foreground/40">
+        <div className="flex justify-between items-center text-[11px] font-mono font-bold tracking-widest uppercase text-foreground/40">
           <span>Escrow Release Progress</span>
           <span className="text-foreground/70 text-xs font-semibold font-sans">
             ${releasedAmount.toLocaleString()} / ${totalFunding.toLocaleString()} Released
           </span>
         </div>
         <Progress value={(releasedAmount / totalFunding) * 100} className="h-2 bg-foreground/5" />
-        <div className="flex items-center justify-between text-[9px] text-foreground/30 pt-0.5 font-mono tracking-wider">
+        <div className="flex items-center justify-between text-[11px] text-foreground/30 pt-0.5 font-mono tracking-wider">
           <span>START</span>
           <span className="text-brand-accent font-semibold">{((releasedAmount / totalFunding) * 100).toFixed(1)}% SECURED RELEASED</span>
           <span>GOAL</span>
@@ -481,7 +481,7 @@ export default function FounderFundingPage() {
                         <span className="font-mono text-xs font-semibold text-foreground/50">{m.amount}</span>
                         <Badge
                           className={cn(
-                            "text-[8px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full border",
+                            "text-[11px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full border",
                             isReleased
                               ? "bg-brand-accent/10 text-brand-accent border-brand-accent/20"
                               : isPending
@@ -501,7 +501,7 @@ export default function FounderFundingPage() {
                     {/* Submissions & Deliverables logs */}
                     {(isReleased || isPending) && (
                       <div className="space-y-2.5 text-xs pt-1">
-                        <div className="flex flex-wrap items-center justify-between gap-1.5 text-foreground/40 font-mono text-[9px] tracking-wide">
+                        <div className="flex flex-wrap items-center justify-between gap-1.5 text-foreground/40 font-mono text-[11px] tracking-wide">
                           <span>
                             {isReleased ? "APPROVED & DISBURSED" : "SUBMITTED FOR VALIDATION"}
                           </span>
@@ -516,12 +516,12 @@ export default function FounderFundingPage() {
                         )}
                         {m.proofLink && (
                           <div className="flex items-center gap-1.5 pt-0.5">
-                            <span className="text-[9px] font-mono text-foreground/35 uppercase tracking-widest">PROOF:</span>
+                            <span className="text-[11px] font-mono text-foreground/35 uppercase tracking-widest">PROOF:</span>
                             <a
                               href={m.proofLink}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-brand-accent hover:underline flex items-center gap-1 font-mono text-[10px] truncate"
+                              className="text-brand-accent hover:underline flex items-center gap-1 font-mono text-[11px] truncate"
                             >
                               {m.proofLink} <ExternalLink className="h-3 w-3" />
                             </a>
@@ -550,7 +550,7 @@ export default function FounderFundingPage() {
                 </div>
                 <div className="min-w-0">
                   <div className="text-sm font-semibold text-foreground">Sarah Chen</div>
-                  <div className="text-[9px] text-brand-accent font-semibold tracking-wider font-mono uppercase">Lead Reviewer - Horizon Capital</div>
+                  <div className="text-[11px] text-brand-accent font-semibold tracking-wider font-mono uppercase">Lead Reviewer - Horizon Capital</div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -559,7 +559,7 @@ export default function FounderFundingPage() {
                 </div>
                 <div className="min-w-0">
                   <div className="text-sm font-semibold text-foreground">Liam Vance</div>
-                  <div className="text-[9px] text-[#F472B6] font-semibold tracking-wider font-mono uppercase">Reviewer - Vance Capital</div>
+                  <div className="text-[11px] text-[#F472B6] font-semibold tracking-wider font-mono uppercase">Reviewer - Vance Capital</div>
                 </div>
               </div>
 
