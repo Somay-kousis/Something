@@ -262,7 +262,7 @@ function DualSection() {
       <div className="flex items-center justify-center py-14 gap-4">
         <span className="text-xs font-medium tracking-tight" style={{ color: "#E3C27A" }}>Nothing</span>
         <span className="h-px w-16 bg-gradient-to-r from-[#E3C27A]/30 via-[#F472B6]/20 to-[#34D399]/30" />
-        <span className="text-[10px] uppercase tracking-[0.2em] text-white/15 border border-white/6 rounded-full px-4 py-1">becomes</span>
+        <span className="text-[11px] uppercase tracking-[0.2em] text-white/15 border border-white/6 rounded-full px-4 py-1">becomes</span>
         <span className="h-px w-16 bg-gradient-to-r from-[#34D399]/30 via-[#F472B6]/20 to-[#E3C27A]/30" />
         <span className="text-xs font-medium tracking-tight" style={{ color: "#34D399" }}>Something</span>
       </div>
@@ -504,7 +504,7 @@ function FundingSection() {
                     {m.name}
                   </span>
                   {m.txHash && (
-                    <span className="text-[10px] font-mono text-white/15 hover:text-white/30 transition-colors">
+                    <span className="text-[11px] font-mono text-white/15 hover:text-white/30 transition-colors">
                       {m.txHash}
                     </span>
                   )}
@@ -512,7 +512,7 @@ function FundingSection() {
                     <motion.span
                       initial={{ opacity: 0, x: -5 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="text-[10px] text-white/20 font-mono"
+                      className="text-[11px] text-white/20 font-mono"
                     >
                       {m.details}
                     </motion.span>
@@ -522,7 +522,7 @@ function FundingSection() {
               <div className="flex items-center gap-6">
                 <span
                   className={cn(
-                    "text-[10px] font-mono tracking-wide uppercase px-2.5 py-0.5 rounded border transition-colors duration-300",
+                    "text-[11px] font-mono tracking-wide uppercase px-2.5 py-0.5 rounded border transition-colors duration-300",
                     m.status === "Released" && "text-emerald-400/80 bg-emerald-500/5 border-emerald-500/10",
                     m.status === "In progress" && "text-indigo-400/80 bg-indigo-500/5 border-indigo-500/10",
                     m.status === "Pending" && "text-white/20 bg-white/5 border-white/5"
@@ -549,7 +549,7 @@ function FundingSection() {
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ delay: 0.9 }}
-        className="mt-10 text-center text-[10px] text-white/10 tracking-widest uppercase font-mono"
+        className="mt-10 text-center text-[11px] text-white/10 tracking-widest uppercase font-mono"
       >
         multi-sig escrow · milestone verification · public receipts
       </motion.p>
@@ -572,13 +572,13 @@ function Footer() {
           </div>
           <div className="flex gap-12 text-[13px]">
             <div className="space-y-2">
-              <p className="text-white/10 text-[10px] uppercase tracking-[0.2em] mb-3">Product</p>
+              <p className="text-white/10 text-[11px] uppercase tracking-[0.2em] mb-3">Product</p>
               <a href="#duo" className="block text-white/20 hover:text-white/50 transition-colors">Nothing & Something</a>
               <a href="#how" className="block text-white/20 hover:text-white/50 transition-colors">How it works</a>
               <a href="#funding" className="block text-white/20 hover:text-white/50 transition-colors">Funding</a>
             </div>
             <div className="space-y-2">
-              <p className="text-white/10 text-[10px] uppercase tracking-[0.2em] mb-3">Legal</p>
+              <p className="text-white/10 text-[11px] uppercase tracking-[0.2em] mb-3">Legal</p>
               <a href="/terms" className="block text-white/20 hover:text-white/50 transition-colors">Terms</a>
               <a href="/terms" className="block text-white/20 hover:text-white/50 transition-colors">Privacy</a>
             </div>
