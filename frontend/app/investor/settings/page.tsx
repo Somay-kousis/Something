@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useAvatar } from "@/components/avatar-context"
 import { AvatarUploader } from "@/components/avatar-uploader"
 import axios from "axios"
@@ -8,33 +8,106 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
-import { Bell, Shield, CreditCard, Trash2, ChevronRight } from "lucide-react"
+import { Bell, Shield, CreditCard, Trash2, ChevronRight, Palette, Check, Wallet } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-type Tab = "notifications" | "privacy" | "account" | "danger"
+type Tab = "notifications" | "privacy" | "account" | "billing" | "danger"
 
-const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
+const TABS: { key: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { key: "notifications", label: "Notifications",    icon: Bell       },
   { key: "privacy",       label: "Privacy",          icon: Shield     },
   { key: "account",       label: "Account",          icon: CreditCard },
+  { key: "billing",       label: "Plans & Billing",  icon: Wallet     },
   { key: "danger",        label: "Danger Zone",      icon: Trash2     },
 ]
+
+const ACCENTS = {
+  emerald: {
+    name: "Console Sage",
+    text: "text-[#8EA38E]",
+    bg: "bg-[#8EA38E]",
+    border: "border-[#8EA38E]/25",
+    color: "#8EA38E",
+  },
+  indigo: {
+    name: "Tactile Chalk",
+    text: "text-[#E2DFD5]",
+    bg: "bg-[#E2DFD5]",
+    border: "border-[#E2DFD5]/25",
+    color: "#E2DFD5",
+  },
+  violet: {
+    name: "Anodized Steel",
+    text: "text-[#8293A4]",
+    bg: "bg-[#8293A4]",
+    border: "border-[#8293A4]/25",
+    color: "#8293A4",
+  },
+  amber: {
+    name: "Earthy Copper",
+    text: "text-[#C88E72]",
+    bg: "bg-[#C88E72]",
+    border: "border-[#C88E72]/25",
+    color: "#C88E72",
+  },
+}
 
 export default function InvestorSettingsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("notifications")
   const { avatarUrl, setAvatarUrl, userName, setUserName } = useAvatar()
+  const [accentKey, setAccentKey] = useState<keyof typeof ACCENTS>("emerald")
 
   const uploadAvatar = async (file: File) => {
     try {
       const formData = new FormData()
       formData.append("avatar", file)
-      const response = await axios.post<{ url: string }>("#/api/investor/avatar", formData, {
+      const response = await axios.post<{ url: string }>("/api/investor/avatar", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       setAvatarUrl(response.data.url)
+      // Save details to investor profile data
+      const stored = localStorage.getItem("investor_profile_data")
+      const parsed = stored ? JSON.parse(stored) : {}
+      parsed.avatarUrl = response.data.url
+      localStorage.setItem("investor_profile_data", JSON.stringify(parsed))
+      window.dispatchEvent(new CustomEvent("investor-profile-update"))
     } catch (err) {
       console.error("Error uploading avatar:", err)
+      // Fallback local file URL for demo purposes
+      const dummyUrl = URL.createObjectURL(file)
+      setAvatarUrl(dummyUrl)
+      const stored = localStorage.getItem("investor_profile_data")
+      const parsed = stored ? JSON.parse(stored) : {}
+      parsed.avatarUrl = dummyUrl
+      localStorage.setItem("investor_profile_data", JSON.stringify(parsed))
+      window.dispatchEvent(new CustomEvent("investor-profile-update"))
     }
+  }
+
+  // Sync Accent key from local storage on mount
+  useEffect(() => {
+    const savedAccent = localStorage.getItem("founder_settings_accent") as keyof typeof ACCENTS
+    if (savedAccent && ACCENTS[savedAccent]) {
+      setAccentKey(savedAccent)
+    }
+
+    const savedGhost = localStorage.getItem("investor_ghost_mode") === "true"
+    setGhostMode(savedGhost)
+
+    const handleGhostChange = (e: Event) => {
+      const ce = e as CustomEvent<{ ghost: boolean }>
+      if (ce.detail) setGhostMode(ce.detail.ghost)
+    }
+    window.addEventListener("ghost-mode-change", handleGhostChange)
+    return () => {
+      window.removeEventListener("ghost-mode-change", handleGhostChange)
+    }
+  }, [])
+
+  const handleAccentChange = (key: keyof typeof ACCENTS) => {
+    setAccentKey(key)
+    localStorage.setItem("founder_settings_accent", key)
+    window.dispatchEvent(new CustomEvent("founder-accent-update", { detail: { accent: key } }))
   }
 
   // Notifications state
@@ -48,20 +121,41 @@ export default function InvestorSettingsPage() {
   const [profileVisibility, setProfileVisibility] = useState("public")
   const [showEmail,         setShowEmail]         = useState(false)
   const [allowMessages,     setAllowMessages]     = useState(true)
+  const [ghostMode,         setGhostMode]         = useState(false)
 
   // Account state
   const [email,           setEmail]           = useState("alex@edgevisionlabs.com")
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword,     setNewPassword]     = useState("")
+  // Plans & Billing state
+  const [selectedPlan, setSelectedPlan] = useState("free")
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const plan = localStorage.getItem("selected_plan") || "free"
+      setSelectedPlan(plan)
+    }
+  }, [])
+
+  const handlePlanUpgrade = (plan: string) => {
+    setSelectedPlan(plan)
+    localStorage.setItem("selected_plan", plan)
+    window.dispatchEvent(new CustomEvent("selected-plan-change"))
+    alert(`Success: Switched to the "${plan.toUpperCase()}" package.`)
+  }
 
   const handleUpdateNotifications = () => {
     console.log("Update notifications:", { emailNotifications, pushNotifications, weeklyDigest, fundingUpdates, teamUpdates })
   }
   const handleUpdatePrivacy = () => {
-    console.log("Update privacy:", { profileVisibility, showEmail, allowMessages })
+    console.log("Update privacy:", { profileVisibility, showEmail, allowMessages, ghostMode })
+    localStorage.setItem("investor_ghost_mode", String(ghostMode))
+    window.dispatchEvent(new CustomEvent("ghost-mode-change", { detail: { ghost: ghostMode } }))
   }
   const handleUpdateEmail = () => {
     console.log("Update email:", { email })
+    localStorage.setItem("demo_email", email)
+    window.dispatchEvent(new CustomEvent("investor-profile-update"))
   }
   const handleUpdatePassword = () => {
     console.log("Update password:", { currentPassword, newPassword })
@@ -72,11 +166,13 @@ export default function InvestorSettingsPage() {
     }
   }
 
+  const activeAccent = ACCENTS[accentKey] || ACCENTS.emerald
+
   return (
     <div className="mx-auto max-w-[900px] pb-16">
       {/* Page header */}
       <div className="space-y-1 pt-2 mb-10">
-        <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground flex items-center gap-2">
+        <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-muted-foreground flex items-center gap-2">
           <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: "var(--brand-accent)" }} />
           Investor Settings
         </p>
@@ -88,30 +184,69 @@ export default function InvestorSettingsPage() {
         </p>
       </div>
 
-      <div className="flex gap-8">
+      <div className="flex flex-col md:flex-row gap-8">
         {/* Left sidebar tabs */}
-        <div className="w-48 shrink-0 space-y-1">
-          {TABS.map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              id={`tab-${key}`}
-              onClick={() => setActiveTab(key)}
-              className={cn(
-                "w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-lg text-left transition-all",
-                activeTab === key
-                  ? "bg-accent font-medium text-foreground"
-                  : "text-foreground/50 hover:text-foreground hover:bg-accent/50",
-                key === "danger" && activeTab === key && "text-rose-500",
-                key === "danger" && activeTab !== key && "text-rose-500/50 hover:text-rose-500"
-              )}
-            >
-              <Icon className="h-3.5 w-3.5 shrink-0" />
-              {label}
-              {activeTab === key && (
-                <ChevronRight className="h-3 w-3 ml-auto text-muted-foreground" />
-              )}
-            </button>
-          ))}
+        <div className="w-full md:w-48 shrink-0 space-y-6">
+          <div className="space-y-1">
+            {TABS.map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                id={`tab-${key}`}
+                onClick={() => setActiveTab(key)}
+                className={cn(
+                  "w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-lg text-left transition-all cursor-pointer",
+                  activeTab === key
+                    ? "bg-accent font-medium text-foreground"
+                    : "text-foreground/50 hover:text-foreground hover:bg-accent/50",
+                  key === "danger" && activeTab === key && "text-rose-500",
+                  key === "danger" && activeTab !== key && "text-rose-500/50 hover:text-rose-500"
+                )}
+              >
+                <Icon className="h-3.5 w-3.5 shrink-0" />
+                {label}
+                {activeTab === key && (
+                  <ChevronRight className="h-3 w-3 ml-auto text-muted-foreground" />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Palette Accent Selection (brought parity with founder settings) */}
+          <div className="border-t border-border/10 pt-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <Palette className="h-4 w-4 text-foreground/40" />
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-foreground/50">Palette Accent</span>
+            </div>
+
+            <div className="grid grid-cols-4 gap-2">
+              {(Object.keys(ACCENTS) as Array<keyof typeof ACCENTS>).map((key) => {
+                const accent = ACCENTS[key]
+                const isSelected = accentKey === key
+                return (
+                  <button
+                    key={key}
+                    onClick={() => handleAccentChange(key)}
+                    className={cn(
+                      "h-8 w-8 rounded-full border grid place-items-center transition-all duration-300 relative cursor-pointer hover:scale-105 active:scale-95",
+                      isSelected
+                        ? "border-border ring-2 ring-offset-2 ring-offset-background"
+                        : "border-border/20 bg-transparent"
+                    )}
+                    style={isSelected ? { borderColor: accent.color } : undefined}
+                    title={accent.name}
+                  >
+                    <div className="h-4.5 w-4.5 rounded-full" style={{ backgroundColor: accent.color }} />
+                    {isSelected && (
+                      <Check className="h-3 w-3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 stroke-[3]" style={{ color: "#000" }} />
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+            <p className="text-[11px] text-foreground/30 leading-normal font-mono uppercase tracking-wider">
+              Selected: <span className="text-foreground/70">{activeAccent.name}</span>
+            </p>
+          </div>
         </div>
 
         {/* Right content panel */}
@@ -183,7 +318,7 @@ export default function InvestorSettingsPage() {
               />
 
               <div className="space-y-2">
-                <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Profile visibility</p>
+                <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">Profile visibility</p>
                 <div className="flex gap-2" id="profile-visibility-group">
                   {[
                     { value: "public",  label: "Public"       },
@@ -195,7 +330,7 @@ export default function InvestorSettingsPage() {
                       id={`profile-visibility-${option.value}`}
                       onClick={() => setProfileVisibility(option.value)}
                       className={cn(
-                        "text-xs rounded-full px-4 py-2 border transition-all font-medium",
+                        "text-xs rounded-full px-4 py-2 border transition-all font-medium cursor-pointer",
                         profileVisibility === option.value
                           ? "border-[var(--brand-accent)] bg-[var(--brand-accent)]/10 text-foreground"
                           : "border-border/60 text-foreground/50 hover:text-foreground hover:bg-accent"
@@ -205,10 +340,18 @@ export default function InvestorSettingsPage() {
                     </button>
                   ))}
                 </div>
-                <p className="text-[10px] text-muted-foreground font-mono">Public profiles are discoverable by all users.</p>
+                <p className="text-[11px] text-muted-foreground font-mono">Public profiles are discoverable by all users.</p>
               </div>
 
+              {/* Ghost Mode stealth browsing control */}
               <div className="border border-border rounded-xl overflow-hidden">
+                <SettingRow
+                  id="ghost-mode-privacy"
+                  label="Ghost Mode (Stealth Browsing)"
+                  desc="Browse startup ideas and founder briefs completely anonymously. Founders will not see you in their viewer metrics."
+                  checked={ghostMode}
+                  onCheckedChange={setGhostMode}
+                />
                 <SettingRow
                   id="show-email"
                   label="Show email address"
@@ -245,7 +388,7 @@ export default function InvestorSettingsPage() {
                 desc="Update your email address and change your password."
               />
               <div className="space-y-3">
-                <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Profile photo</p>
+                <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">Profile photo</p>
                 <div className="p-4 rounded-xl border border-border/60 bg-accent/20 flex items-center justify-between">
                   <AvatarUploader
                     name={userName}
@@ -260,17 +403,26 @@ export default function InvestorSettingsPage() {
               </div>
 
               <div className="space-y-3">
-                <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Investor Name</p>
+                <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">Investor Name</p>
                 <Input
                   id="username-input"
                   type="text"
                   value={userName}
-                  onChange={e => setUserName(e.target.value)}
+                  onChange={e => {
+                    setUserName(e.target.value)
+                    localStorage.setItem("demo_name", e.target.value)
+                    // Also save to profile JSON
+                    const stored = localStorage.getItem("investor_profile_data")
+                    const parsed = stored ? JSON.parse(stored) : {}
+                    parsed.name = e.target.value
+                    localStorage.setItem("investor_profile_data", JSON.stringify(parsed))
+                    window.dispatchEvent(new CustomEvent("investor-profile-update"))
+                  }}
                   className="bg-accent/30 border-border/60 text-foreground"
                 />
               </div>
               <div className="space-y-3">
-                <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Email address</p>
+                <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">Email address</p>
                 <div className="flex gap-2">
                   <Input
                     id="email-input"
@@ -291,7 +443,7 @@ export default function InvestorSettingsPage() {
               </div>
 
               <div className="space-y-3">
-                <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Change password</p>
+                <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground">Change password</p>
                 <div className="grid gap-2 sm:grid-cols-2">
                   <Input
                     id="current-password-input"
@@ -322,13 +474,103 @@ export default function InvestorSettingsPage() {
               </div>
 
               <div className="pt-2 border-t border-border" id="account-status">
-                <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-3">Account status</p>
+                <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground mb-3">Account status</p>
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-xs font-mono">
                     Verified
                   </Badge>
                   <span className="text-xs text-muted-foreground font-mono">· Joined December 2023</span>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Plans & Billing ── */}
+          {activeTab === "billing" && (
+            <div className="space-y-6" id="billing-section">
+              <SectionTitle
+                icon={Wallet}
+                title="Plans & Billing"
+                desc="Manage your subscription, compare membership tiers, and choose your access level."
+              />
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                {[
+                  {
+                    key: "free",
+                    name: "Free Tier",
+                    price: "$0",
+                    tagline: "Basic browsing & community metrics.",
+                    features: ["Explore startup projects", "Follow problem boards", "View verified investor profiles"],
+                    color: "#8EA38E"
+                  },
+                  {
+                    key: "something",
+                    name: "Something Plan",
+                    price: "$49/mo",
+                    tagline: "Standard escrow & matching features.",
+                    features: ["Mutual NDA gating", "Category chats organization", "Escrow verification access", "Standard match algorithms"],
+                    color: "#E3C27A"
+                  },
+                  {
+                    key: "nothing",
+                    name: "Nothing Plan",
+                    price: "$199/mo",
+                    tagline: "Full AI simulation & deep diligence.",
+                    features: ["Diligence AI terminal access", "Assume Nothing AI stress-testing", "Unlimited pitch documents reviews", "Priority operator matching"],
+                    color: "#C88E72"
+                  }
+                ].map((plan) => {
+                  const isCurrent = selectedPlan === plan.key
+                  return (
+                    <div
+                      key={plan.key}
+                      className={cn(
+                        "rounded-xl border p-5 flex flex-col justify-between transition-all duration-300 relative bg-background/25 backdrop-blur-xl",
+                        isCurrent ? "border-foreground/45 shadow" : "border-border/30 hover:border-border/60 hover:bg-accent/10"
+                      )}
+                    >
+                      {isCurrent && (
+                        <div className="absolute -top-2.5 left-4 px-2 py-0.5 rounded bg-foreground text-background text-[11px] uppercase tracking-wider font-mono font-bold">
+                          Active Plan
+                        </div>
+                      )}
+                      <div className="space-y-3">
+                        <div className="flex items-baseline justify-between">
+                          <h4 className="text-xs font-bold" style={{ color: plan.color }}>{plan.name}</h4>
+                          <span className="text-xs font-bold font-mono">{plan.price}</span>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground leading-normal font-sans">{plan.tagline}</p>
+                        
+                        <div className="border-t border-border/10 pt-3">
+                          <ul className="space-y-1.5 text-[11px] text-foreground/75 leading-relaxed font-sans">
+                            {plan.features.map((f, i) => (
+                              <li key={i} className="flex items-center gap-1.5">
+                                <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ backgroundColor: plan.color }} />
+                                <span>{f}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 pt-2">
+                        <Button
+                          disabled={isCurrent}
+                          onClick={() => handlePlanUpgrade(plan.key)}
+                          className={cn(
+                            "w-full text-[11px] font-bold uppercase tracking-wider font-mono h-8 rounded-lg cursor-pointer transition",
+                            isCurrent
+                              ? "bg-accent/40 text-muted-foreground border border-border/40"
+                              : "bg-foreground text-background hover:bg-foreground/90"
+                          )}
+                        >
+                          {isCurrent ? "Current Plan" : `Select ${plan.name.split(" ")[0]}`}
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           )}
@@ -373,7 +615,7 @@ function SectionTitle({
   desc,
   danger = false,
 }: {
-  icon: React.ElementType
+  icon: React.ComponentType<{ className?: string }>
   title: string
   desc: string
   danger?: boolean
@@ -415,14 +657,14 @@ function SettingRow({
     >
       <div className="min-w-0">
         <div className="text-sm font-medium text-foreground">{label}</div>
-        {desc && <div className="text-[11px] text-muted-foreground mt-0.5 font-mono">{desc}</div>}
+        {desc && <div className="text-[11px] text-muted-foreground mt-0.5 font-mono leading-relaxed">{desc}</div>}
       </div>
       <Switch
         checked={checked}
         onCheckedChange={onCheckedChange}
         aria-label={label}
         id={`${id}-switch`}
-        className="shrink-0"
+        className="shrink-0 data-[state=checked]:bg-[var(--brand-accent)]"
       />
     </div>
   )
