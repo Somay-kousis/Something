@@ -1,9 +1,14 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, FileText, ExternalLink, ShieldCheck } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { ArrowLeft, FileText, ExternalLink, ShieldCheck, Lock, CheckCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Project = {
@@ -49,7 +54,7 @@ const MOCK: Project[] = [
     id: "p2",
     name: "Climate Hardware v1",
     domains: ["Climate hardware"],
-    desc: "Modular capture component; open test data with independent validation.",
+    desc: "Modular carbon capture component; open test data with independent validation.",
     stage: "Pre‑seed",
     launchedAt: null,
     trustPoints: 74,
@@ -63,16 +68,235 @@ const MOCK: Project[] = [
       { type: "link", label: "Data Room",      href: "#" },
     ],
   },
+  {
+    id: "p3",
+    name: "Local‑first Creator Analytics",
+    domains: ["Creator infra", "Local‑first", "Privacy"],
+    desc: "Privacy‑first analytics with CRDT sync across devices.",
+    stage: "Angel",
+    launchedAt: null,
+    trustPoints: 65,
+    location: "Remote",
+    investmentNeeded: 12000,
+    fundsGained: 8000,
+    fundsSpent: 2000,
+    founders: [{ id: "f-sam", name: "Sam P.", role: "Founder & Creator" }],
+    uploads: [
+      { type: "deck", label: "Creator Analytics.pdf", href: "#" },
+      { type: "link", label: "GitHub Repo",           href: "#" },
+    ],
+  },
+  {
+    id: "p4",
+    name: "Neurotech IDE",
+    domains: ["Bio tooling"],
+    desc: "Local‑only IDE and toolchain for neural interfaces.",
+    stage: "Pre‑seed",
+    launchedAt: null,
+    trustPoints: 58,
+    location: "London",
+    investmentNeeded: 25000,
+    fundsGained: 10000,
+    fundsSpent: 1000,
+    founders: [{ id: "f-hugo", name: "Hugo M.", role: "Neuroengineer" }],
+    uploads: [
+      { type: "deck", label: "Neurotech IDE Brief.pdf", href: "#" },
+    ],
+  },
+  {
+    id: "p5",
+    name: "DePIN Sensor Mesh",
+    domains: ["DePIN", "Edge AI"],
+    desc: "Community-powered sensor mesh with provable data lineage.",
+    stage: "Seed",
+    launchedAt: null,
+    trustPoints: 88,
+    location: "Singapore",
+    investmentNeeded: 60000,
+    fundsGained: 30000,
+    fundsSpent: 12000,
+    founders: [
+      { id: "f-zara", name: "Zara Y.", role: "Founder, Hardware" },
+      { id: "f-ken", name: "Kenji S.", role: "Network Protocols" }
+    ],
+    uploads: [
+      { type: "deck", label: "Mesh Pitch.pdf",      href: "#" },
+      { type: "link", label: "Explorer Dashboard",   href: "#" },
+    ],
+  }
 ]
 
-export default function ProjectBriefPage({ params }: { params: { id: string } }) {
-  const p = MOCK.find((x) => x.id === params.id)
-  if (!p) return notFound()
+export default function ProjectBriefPage() {
+  const router = useRouter()
+  const params = useParams()
+  const id = params.id as string
+
+  const p = MOCK.find((x) => x.id === id)
+
+  // NDA state
+  const [ndaSigned, setNdaSigned] = useState(false)
+  const [isSigningModalOpen, setIsSigningModalOpen] = useState(false)
+  const [legalName, setLegalName] = useState("")
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
+
+  useEffect(() => {
+    if (!id) return
+    const isSigned = localStorage.getItem(`nda_signed_${id}`) === "true"
+    setNdaSigned(isSigned)
+  }, [id])
+
+  if (!p) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <h2 className="text-xl font-semibold mb-2">Project not found</h2>
+        <Button onClick={() => router.push("/investor/search")} variant="outline">
+          Back to search
+        </Button>
+      </div>
+    )
+  }
+
+  const [selectedFounder, setSelectedFounder] = useState<{ name: string; role: string; bio?: string } | null>(null)
+
+  const handleStartChat = (founderName: string) => {
+    const isGhost = localStorage.getItem("investor_ghost_mode") === "true"
+
+    const storedThreads = localStorage.getItem("investor_threads")
+    let threads = []
+    if (storedThreads) {
+      try {
+        threads = JSON.parse(storedThreads)
+      } catch {
+        threads = []
+      }
+    }
+    
+    const cleanId = "th-" + founderName.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
+    
+    // Add to investor_threads
+    const exists = threads.some((t: any) => t.id === cleanId)
+    if (!exists) {
+      const newThread = {
+        id: cleanId,
+        name: `${founderName} • ${p.name}`,
+        lastMessagePreview: isGhost ? `[stealth match] Message sent from Ghost Investor` : `New conversation regarding ${p.name}...`,
+        unreadCount: 0,
+        participants: [{ id: cleanId.replace("th-", ""), name: founderName, avatarInitials: founderName.split(" ").map((n) => n[0]).join(""), isOnline: true }],
+        lastActive: new Date().toISOString(),
+        isOnline: true,
+        isGhostMode: isGhost,
+      }
+      const updated = [newThread, ...threads]
+      localStorage.setItem("investor_threads", JSON.stringify(updated))
+    }
+
+    // Add to founder_chat_threads and messages
+    const founderStored = localStorage.getItem("founder_chat_threads")
+    let founderThreads = []
+    if (founderStored) {
+      try { founderThreads = JSON.parse(founderStored) } catch { founderThreads = [] }
+    }
+    
+    const founderExists = founderThreads.some((t: any) => t.id === cleanId)
+    if (!founderExists) {
+      const newFounderThread = {
+        id: cleanId,
+        name: isGhost ? "Ghost Investor" : `${localStorage.getItem("demo_name") || "Alex Rivera"} • Horizon Ventures`,
+        preview: `New conversation regarding ${p.name}...`,
+        unread: 1,
+        category: "requests",
+        participants: [founderName, isGhost ? "Ghost Investor" : (localStorage.getItem("demo_name") || "Alex Rivera")],
+        lastActive: "Just now",
+        isOnline: true,
+        isGhostMode: isGhost,
+        realInvestorName: localStorage.getItem("demo_name") || "Alex Rivera",
+        realFirmName: "Horizon Ventures"
+      }
+      const updatedFounder = [newFounderThread, ...founderThreads]
+      localStorage.setItem("founder_chat_threads", JSON.stringify(updatedFounder))
+      
+      // Initialize messages
+      const founderMsgs = localStorage.getItem("founder_chat_messages")
+      let msgsDb: Record<string, any> = {}
+      if (founderMsgs) {
+        try { msgsDb = JSON.parse(founderMsgs) } catch { msgsDb = {} }
+      }
+      msgsDb[cleanId] = [
+        {
+          id: `m-init-${Date.now()}`,
+          from: "them",
+          text: `Hi ${founderName}, I'm interested in your project brief for ${p.name}.`,
+          when: "Just now",
+          timestamp: Date.now(),
+          seen: false,
+          delivered: true
+        }
+      ]
+      localStorage.setItem("founder_chat_messages", JSON.stringify(msgsDb))
+      
+      // Sync investor messages
+      localStorage.setItem(`investor_msgs_${cleanId}`, JSON.stringify([
+        {
+          id: `m-init-${Date.now()}`,
+          sender: { id: cleanId.replace("th-", ""), name: founderName },
+          text: `Hi ${founderName}, I'm interested in your project brief for ${p.name}.`,
+          createdAt: new Date().toISOString(),
+          deliveryStatus: "delivered"
+        }
+      ]))
+    }
+    
+    router.push(`/investor/chats?activeId=${cleanId}`)
+  }
+
+  const handleCommitFunds = () => {
+    const stored = localStorage.getItem("investor_portfolio")
+    let portfolioList = []
+    if (stored) {
+      try {
+        portfolioList = JSON.parse(stored)
+      } catch {
+        portfolioList = []
+      }
+    }
+    
+    const exists = portfolioList.some((item: any) => item.id === p.id)
+    if (!exists) {
+      const newPortfolioItem = {
+        id: p.id,
+        name: p.name,
+        stage: p.stage,
+        location: p.location,
+        trustPoints: p.trustPoints,
+        committed: p.investmentNeeded,
+        released: p.fundsGained,
+        perf: "Good",
+        next: "Milestone 1: Alpha Spec Verification",
+        founders: p.founders.map(f => ({ id: f.id, name: f.name, role: f.role }))
+      }
+      const updated = [...portfolioList, newPortfolioItem]
+      localStorage.setItem("investor_portfolio", JSON.stringify(updated))
+    }
+    
+    alert(`Successfully committed $${p.investmentNeeded.toLocaleString()} to ${p.name} Escrow Pool. Redirecting to investments...`)
+    router.push("/investor/investments")
+  }
+
+  const handleRequestUpdate = () => {
+    alert("Simulated: Update request dispatched to the founders.")
+  }
 
   const tp       = clamp(p.trustPoints, 1, 100)
   const delta    = tp - 75
   const deltaStr = delta === 0 ? "0" : delta > 0 ? `+${delta}` : `${delta}`
   const progress = Math.max(0, Math.min(100, Math.round((p.fundsSpent / Math.max(1, p.fundsGained)) * 100)))
+
+  const handleAffixSignature = () => {
+    if (!legalName.trim() || !agreedToTerms) return
+    localStorage.setItem(`nda_signed_${p.id}`, "true")
+    setNdaSigned(true)
+    setIsSigningModalOpen(false)
+  }
 
   return (
     <div className="mx-auto max-w-[1100px] space-y-8 pb-16">
@@ -80,14 +304,12 @@ export default function ProjectBriefPage({ params }: { params: { id: string } })
       {/* Back button */}
       <div className="pt-2">
         <Button
-          asChild
+          onClick={() => router.push("/investor/search")}
           variant="ghost"
-          className="h-8 rounded-lg text-foreground/60 hover:text-foreground hover:bg-accent -ml-2 text-sm"
+          className="h-8 rounded-lg text-foreground/60 hover:text-foreground hover:bg-accent -ml-2 text-sm cursor-pointer"
         >
-          <Link href="/investor/search">
-            <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
-            Back to search
-          </Link>
+          <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
+          Back to search
         </Button>
       </div>
 
@@ -154,50 +376,88 @@ export default function ProjectBriefPage({ params }: { params: { id: string } })
         </div>
       </div>
 
-      {/* ── Uploads ── */}
-      <div>
-        <p className="text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-3">Founder Uploads</p>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {p.uploads.map((u, i) => {
-            if (u.type === "deck" || u.type === "link") {
-              return (
-                <div key={i} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background p-4 hover:bg-accent/20 transition-colors">
-                  <div className="flex items-center gap-2 text-sm text-foreground/70 min-w-0">
-                    {u.type === "deck"
-                      ? <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      : <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" />
-                    }
-                    <span className="truncate">{u.label}</span>
+      {/* ── Uploads (Gated behind Mutual NDA) ── */}
+      <div className="relative">
+        <div className="flex justify-between items-center mb-3">
+          <p className="text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground">Founder Uploads</p>
+          <div className="flex items-center gap-1.5 text-[10px] font-mono">
+            {ndaSigned ? (
+              <span className="text-emerald-400 flex items-center gap-1">
+                <CheckCircle className="h-3 w-3" /> NDA Signed & Sealed
+              </span>
+            ) : (
+              <span className="text-amber-500 flex items-center gap-1">
+                <Lock className="h-3 w-3" /> Mutual NDA Required
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Uploads list container */}
+        <div className="relative rounded-xl border border-border bg-background/40 overflow-hidden">
+          
+          {/* Blurred/masked overlay if NDA is not signed */}
+          {!ndaSigned && (
+            <div className="absolute inset-0 z-10 backdrop-blur-md bg-background/80 flex flex-col items-center justify-center text-center p-6 space-y-4">
+              <Lock className="h-8 w-8 text-amber-500 stroke-[1.5]" />
+              <div className="space-y-1">
+                <h4 className="text-sm font-semibold text-foreground">Secure mNDA Protected Data</h4>
+                <p className="text-xs text-muted-foreground max-w-sm leading-relaxed">
+                  Pitch decks, technical architecture rooms, and hardware sensor telemetry logs are locked under a cryptographically verified Mutual NDA.
+                </p>
+              </div>
+              <Button
+                onClick={() => setIsSigningModalOpen(true)}
+                className="bg-primary text-primary-foreground hover:opacity-95 text-xs font-semibold px-6 rounded-full cursor-pointer"
+                id="sign-nda-trigger-btn"
+              >
+                Review & Sign Mutual NDA
+              </Button>
+            </div>
+          )}
+
+          <div className={cn("p-6 grid gap-3 sm:grid-cols-2", !ndaSigned && "pointer-events-none")}>
+            {p.uploads.map((u, i) => {
+              if (u.type === "deck" || u.type === "link") {
+                return (
+                  <div key={i} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background p-4 hover:bg-accent/20 transition-colors">
+                    <div className="flex items-center gap-2 text-sm text-foreground/70 min-w-0">
+                      {u.type === "deck"
+                        ? <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        : <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      }
+                      <span className="truncate">{u.label}</span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 rounded-lg border-border/60 text-foreground/60 hover:bg-accent hover:text-foreground bg-transparent text-xs shrink-0 cursor-pointer"
+                      asChild
+                    >
+                      <Link href={u.href || "#"}>Open</Link>
+                    </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-7 rounded-lg border-border/60 text-foreground/60 hover:bg-accent hover:text-foreground bg-transparent text-xs shrink-0"
-                    asChild
-                  >
-                    <Link href={u.href || "#"}>Open</Link>
-                  </Button>
+                )
+              }
+              return (
+                <div key={i} className="rounded-xl border border-border overflow-hidden bg-accent/20">
+                  <img
+                    alt={u.label}
+                    src={u.src || "/placeholder.svg?height=120&width=200&query=project%20image"}
+                    className="h-28 w-full object-cover"
+                  />
+                  <div className="px-4 py-2.5 text-sm text-foreground/70">{u.label}</div>
                 </div>
               )
-            }
-            return (
-              <div key={i} className="rounded-xl border border-border overflow-hidden bg-accent/20">
-                <img
-                  alt={u.label}
-                  src={u.src || "/placeholder.svg?height=120&width=200&query=project%20image"}
-                  className="h-28 w-full object-cover"
-                />
-                <div className="px-4 py-2.5 text-sm text-foreground/70">{u.label}</div>
-              </div>
-            )
-          })}
+            })}
+          </div>
         </div>
       </div>
 
       {/* ── Founders ── */}
       <div>
         <p className="text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-3">Founders</p>
-        <div className="rounded-xl border border-border overflow-hidden">
+        <div className="rounded-xl border border-border overflow-hidden bg-background/25">
           {p.founders.map((f, i) => (
             <div
               key={f.id}
@@ -214,13 +474,19 @@ export default function ProjectBriefPage({ params }: { params: { id: string } })
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-8 rounded-lg border-border/60 text-foreground/60 hover:bg-accent hover:text-foreground bg-transparent text-xs"
+                  onClick={() => setSelectedFounder({
+                    name: f.name,
+                    role: f.role,
+                    bio: `${f.name} is a key contributor to this project. Use the profile view to check credentials, or click 'Start chat' to connect.`
+                  })}
+                  className="h-8 rounded-lg border-border/60 text-foreground/60 hover:bg-accent hover:text-foreground bg-transparent text-xs cursor-pointer"
                 >
                   View profile
                 </Button>
                 <Button
                   size="sm"
-                  className="h-8 rounded-lg bg-primary text-primary-foreground hover:opacity-90 text-xs"
+                  onClick={() => handleStartChat(f.name)}
+                  className="h-8 rounded-lg bg-primary text-primary-foreground hover:opacity-90 text-xs cursor-pointer"
                 >
                   Start chat
                 </Button>
@@ -234,19 +500,27 @@ export default function ProjectBriefPage({ params }: { params: { id: string } })
       <div>
         <p className="text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-3">Actions</p>
         <div className="flex flex-wrap items-center gap-3">
-          <Button className="rounded-lg bg-primary text-primary-foreground hover:opacity-90 font-medium">
+          <Button 
+            onClick={handleCommitFunds}
+            className="rounded-lg bg-primary text-primary-foreground hover:opacity-90 font-medium cursor-pointer"
+          >
             Commit funds
           </Button>
           <Button
             variant="outline"
-            className="rounded-lg border-border/60 text-foreground/60 hover:bg-accent hover:text-foreground bg-transparent"
+            onClick={() => {
+              if (!ndaSigned) setIsSigningModalOpen(true)
+            }}
+            disabled={ndaSigned}
+            className="rounded-lg border-border/60 text-foreground/60 hover:bg-accent hover:text-foreground bg-transparent cursor-pointer"
           >
             <ShieldCheck className="mr-2 h-4 w-4" />
-            Request NDA
+            {ndaSigned ? "NDA Signed" : "Request/Sign NDA"}
           </Button>
           <Button
             variant="outline"
-            className="rounded-lg border-border/60 text-foreground/60 hover:bg-accent hover:text-foreground bg-transparent"
+            onClick={handleRequestUpdate}
+            className="rounded-lg border-border/60 text-foreground/60 hover:bg-accent hover:text-foreground bg-transparent cursor-pointer"
           >
             Request update
           </Button>
@@ -258,6 +532,128 @@ export default function ProjectBriefPage({ params }: { params: { id: string } })
       <div className="text-xs text-muted-foreground font-mono">
         Verified projects display an additional badge after Something review.
       </div>
+
+      {/* Mutual NDA Signing Dialog */}
+      {isSigningModalOpen && (
+        <Dialog open={isSigningModalOpen} onOpenChange={setIsSigningModalOpen}>
+          <DialogContent className="w-full max-w-lg bg-popover text-popover-foreground border border-border shadow-2xl p-6 rounded-xl">
+            <DialogHeader className="space-y-1.5">
+              <DialogTitle className="font-serif font-light text-xl text-foreground flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-[var(--brand-accent)]" />
+                Mutual Non-Disclosure Agreement
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground font-mono">
+                Project Ref: mNDA-{p.id.toUpperCase()}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="my-4 bg-accent/20 border border-border/40 p-4 rounded-lg text-xs leading-relaxed text-zinc-400 space-y-3 max-h-[220px] overflow-y-auto font-mono">
+              <p><strong>MUTUAL NON-DISCLOSURE AGREEMENT (mNDA)</strong></p>
+              <p>
+                This Mutual Non-Disclosure Agreement (the &quot;Agreement&quot;) is entered into between the project representative of <strong>{p.name}</strong> (&quot;Disclosing Party&quot;) and the signed verified investor (&quot;Receiving Party&quot;).
+              </p>
+              <p>
+                1. <strong>Purpose.</strong> The parties wish to explore a potential business relationship, in connection with which either party may disclose proprietary and confidential information.
+              </p>
+              <p>
+                2. <strong>Confidentiality.</strong> The Receiving Party shall protect and preserve the confidentiality of the Disclosing Party&apos;s data, including patent claims, financial telemetry, milestone releases, and deck materials.
+              </p>
+              <p>
+                3. <strong>Restrictions.</strong> Receiving Party shall not distribute, copy, reverse engineer, or sell any disclosed specifications without explicit consent.
+              </p>
+            </div>
+
+            <div className="space-y-4 pt-2">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
+                  Legal Name (Digital Signature)
+                </label>
+                <Input
+                  placeholder="Enter your full legal name..."
+                  value={legalName}
+                  onChange={(e) => setLegalName(e.target.value)}
+                  className="bg-accent/20 border-border text-xs"
+                  id="nda-legal-name-input"
+                />
+              </div>
+
+              <div className="flex items-start gap-2.5">
+                <input
+                  type="checkbox"
+                  id="agree-checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  className="mt-1 shrink-0 rounded border-border bg-accent/20 focus:ring-[var(--brand-accent)] accent-[var(--brand-accent)]"
+                />
+                <label htmlFor="agree-checkbox" className="text-[11px] text-muted-foreground leading-relaxed cursor-pointer select-none">
+                  I agree to the terms of this mutual NDA and represent that I am a verified investor.
+                </label>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4 border-t border-border/5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsSigningModalOpen(false)}
+                className="h-8 text-xs rounded-lg border-border/60"
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleAffixSignature}
+                disabled={!legalName.trim() || !agreedToTerms}
+                className="h-8 text-xs rounded-lg bg-primary text-primary-foreground hover:opacity-95"
+                id="nda-submit-btn"
+              >
+                Affix Digital Signature
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Founder Profile Dialog */}
+      {selectedFounder && (
+        <Dialog open={!!selectedFounder} onOpenChange={(open) => !open && setSelectedFounder(null)}>
+          <DialogContent className="w-full max-w-md bg-[#101113] text-white border-white/5 p-6 rounded-xl">
+            <DialogHeader className="space-y-1.5">
+              <DialogTitle className="font-serif font-light text-xl text-white">
+                {selectedFounder.name}
+              </DialogTitle>
+              <DialogDescription className="text-xs text-white/50 font-mono">
+                {selectedFounder.role}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 text-sm leading-relaxed text-white/70 font-sans">
+              {selectedFounder.bio}
+            </div>
+            <div className="flex justify-end gap-2 pt-4 border-t border-white/5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedFounder(null)}
+                className="h-8 text-xs rounded-lg border-white/10 text-white bg-transparent hover:bg-white/5"
+              >
+                Close
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  const name = selectedFounder.name
+                  setSelectedFounder(null)
+                  handleStartChat(name)
+                }}
+                className="h-8 text-xs rounded-lg bg-primary text-primary-foreground hover:opacity-95"
+              >
+                Start Chat
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
     </div>
   )
 }
