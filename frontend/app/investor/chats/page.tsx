@@ -1,113 +1,308 @@
-"use client";
+"use client"
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import axios from "axios";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Send, ChevronLeft, Clock, CheckCheck } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-// --- Data Structures for Backend ---
+import React, { useEffect, useMemo, useRef, useState } from "react"
+import axios from "axios"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Search, Send, ChevronLeft, Clock, CheckCheck, MessageSquare, Loader2 } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 type User = {
-  id: string;
-  name: string;
-  avatarInitials: string;
-  isOnline: boolean;
-};
-
-type Thread = {
-  id: string;
-  name: string;
-  lastMessagePreview: string;
-  unreadCount: number;
-  participants: User[];
-  lastActive: string;
-  isOnline?: boolean;
-};
-
-type Message = {
-  id: string;
-  text: string;
-  createdAt: string;
-  sender: Pick<User, "id" | "name">;
-  deliveryStatus: "sending" | "sent" | "delivered" | "seen";
-};
-
-const CURRENT_USER_ID = "user_self_01";
-
-// --- Helpers ---
-function formatTime(isoString: string): string {
-  const date = new Date(isoString);
-  const now = new Date();
-  const diffSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-  if (diffSeconds < 60) return "now";
-  if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)}m`;
-  if (diffSeconds < 86400) return `${Math.floor(diffSeconds / 3600)}h`;
-  return `${Math.floor(diffSeconds / 86400)}d`;
+  id: string
+  name: string
+  avatarInitials: string
+  isOnline: boolean
 }
 
-// --- Main Component ---
+type Thread = {
+  id: string
+  name: string
+  lastMessagePreview: string
+  unreadCount: number
+  participants: User[]
+  lastActive: string
+  isOnline?: boolean
+  isGhostMode?: boolean
+}
+
+type Message = {
+  id: string
+  text: string
+  createdAt: string
+  sender: Pick<User, "id" | "name">
+  deliveryStatus: "sending" | "sent" | "delivered" | "seen"
+}
+
+const CURRENT_USER_ID = "user_self_01"
+
+// Initial mock conversations database
+const DEFAULT_THREADS: Thread[] = [
+  {
+    id: "th-sarah",
+    name: "Sarah Chen • Horizon Ventures",
+    lastMessagePreview: "Milestone 2 payout is pending review, I've asked Liam for eyes too.",
+    unreadCount: 1,
+    participants: [{ id: "sarah", name: "Sarah Chen", avatarInitials: "SC", isOnline: true }],
+    lastActive: new Date(Date.now() - 600000).toISOString(),
+    isOnline: true,
+  },
+  {
+    id: "th-liam",
+    name: "Liam Vance • Vance Capital",
+    lastMessagePreview: "Checked your alpha build. Impressive work on peer-to-peer sync.",
+    unreadCount: 0,
+    participants: [{ id: "liam", name: "Liam Vance", avatarInitials: "LV", isOnline: false }],
+    lastActive: new Date(Date.now() - 3600000).toISOString(),
+    isOnline: false,
+  },
+  {
+    id: "th-alex",
+    name: "Alex Rivera • Edge Vision",
+    lastMessagePreview: "Just pushed the local-first SQLite migrations. Ready to merge?",
+    unreadCount: 0,
+    participants: [{ id: "alex", name: "Alex Rivera", avatarInitials: "AR", isOnline: true }],
+    lastActive: new Date(Date.now() - 120000).toISOString(),
+    isOnline: true,
+  }
+]
+
+const DEFAULT_MESSAGES: Record<string, Message[]> = {
+  "th-sarah": [
+    {
+      id: "m-s-1",
+      text: "Hi! I saw you submitted Milestone 2 details for the sync engine.",
+      createdAt: new Date(Date.now() - 7200000).toISOString(),
+      sender: { id: "sarah", name: "Sarah Chen" },
+      deliveryStatus: "seen"
+    },
+    {
+      id: "m-s-2",
+      text: "Yes, the prototype is live and synchronizing local nodes successfully.",
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+      sender: { id: CURRENT_USER_ID, name: "You" },
+      deliveryStatus: "seen"
+    },
+    {
+      id: "m-s-3",
+      text: "Milestone 2 payout is pending review, I've asked Liam for eyes too.",
+      createdAt: new Date(Date.now() - 600000).toISOString(),
+      sender: { id: "sarah", name: "Sarah Chen" },
+      deliveryStatus: "delivered"
+    }
+  ],
+  "th-liam": [
+    {
+      id: "m-l-1",
+      text: "Checked your alpha build. Impressive work on peer-to-peer sync.",
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+      sender: { id: "liam", name: "Liam Vance" },
+      deliveryStatus: "seen"
+    }
+  ],
+  "th-alex": [
+    {
+      id: "m-a-1",
+      text: "Just pushed the local-first SQLite migrations. Ready to merge?",
+      createdAt: new Date(Date.now() - 120000).toISOString(),
+      sender: { id: "alex", name: "Alex Rivera" },
+      deliveryStatus: "seen"
+    }
+  ]
+}
+
+function formatTime(isoString: string): string {
+  const date = new Date(isoString)
+  const now = new Date()
+  const diffSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+
+  if (diffSeconds < 60) return "now"
+  if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)}m`
+  if (diffSeconds < 86400) return `${Math.floor(diffSeconds / 3600)}h`
+  return `${Math.floor(diffSeconds / 86400)}d`
+}
+
 export default function InvestorChatsPage() {
-  const [threads, setThreads] = useState<Thread[]>([]);
-  const [messagesByThread, setMessagesByThread] = useState<Record<string, Message[]>>({});
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
-  const [text, setText] = useState("");
-  const [isLoadingThreads, setIsLoadingThreads] = useState(true);
-  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [threads, setThreads] = useState<Thread[]>([])
+  const [messagesByThread, setMessagesByThread] = useState<Record<string, Message[]>>({})
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const [query, setQuery] = useState("")
+  const [text, setText] = useState("")
+  const [isLoadingThreads, setIsLoadingThreads] = useState(true)
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const listRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null)
+  const inputRef = useRef<HTMLTextAreaElement | null>(null)
 
-  // --- Fetch Threads ---
+  // Load threads
   useEffect(() => {
     const fetchThreads = async () => {
-      setIsLoadingThreads(true);
-      setError(null);
+      setIsLoadingThreads(true)
+      setError(null)
       try {
-        const response = await axios.get<Thread[]>("/api/chats"); // <-- backend endpoint
-        setThreads(response.data);
-
-        if (response.data.length > 0 && !activeId) {
-          setActiveId(response.data[0].id);
+        const response = await axios.get<Thread[]>("/api/chats")
+        setThreads(response.data)
+        if (response.data.length > 0) {
+          const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null
+          const qActiveId = params?.get("activeId")
+          setActiveId(prev => qActiveId || prev || response.data[0].id)
         }
       } catch (err) {
-        console.error("Failed to fetch threads:", err);
-        setError("Could not load conversations.");
+        console.warn("Failed to fetch API chats, loading from localstorage fallback:", err)
+        const storedThreads = localStorage.getItem("investor_threads")
+        if (storedThreads) {
+          try {
+            const parsed = JSON.parse(storedThreads)
+            setThreads(parsed)
+            const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null
+            const qActiveId = params?.get("activeId")
+            if (parsed.length > 0) setActiveId(prev => qActiveId || prev || parsed[0].id)
+          } catch {
+            setThreads(DEFAULT_THREADS)
+            const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null
+            const qActiveId = params?.get("activeId")
+            setActiveId(prev => qActiveId || prev || DEFAULT_THREADS[0].id)
+          }
+        } else {
+          setThreads(DEFAULT_THREADS)
+          localStorage.setItem("investor_threads", JSON.stringify(DEFAULT_THREADS))
+          const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null
+          const qActiveId = params?.get("activeId")
+          setActiveId(prev => qActiveId || prev || DEFAULT_THREADS[0].id)
+        }
       } finally {
-        setIsLoadingThreads(false);
+        setIsLoadingThreads(false)
       }
-    };
-    fetchThreads();
-  }, [activeId]);
+    }
+    fetchThreads()
+  }, [])
 
-  // --- Fetch Messages ---
+  // Clear unreads for selected thread
   useEffect(() => {
-    if (!activeId || messagesByThread[activeId]) return;
+    if (!activeId || threads.length === 0) return
+
+    const thread = threads.find(t => t.id === activeId)
+    if (thread && thread.unreadCount > 0) {
+      const updated = threads.map(t => (t.id === activeId ? { ...t, unreadCount: 0 } : t))
+      setThreads(updated)
+      localStorage.setItem("investor_threads", JSON.stringify(updated))
+    }
+  }, [activeId, threads])
+
+  // Load messages
+  useEffect(() => {
+    if (!activeId) return
 
     const fetchMessages = async () => {
-      setIsLoadingMessages(true);
+      setIsLoadingMessages(true)
       try {
-        const response = await axios.get<Message[]>(`/api/chats/${activeId}/messages`);
-        setMessagesByThread(prev => ({ ...prev, [activeId]: response.data }));
+        const response = await axios.get<Message[]>(`/api/chats/${activeId}/messages`)
+        setMessagesByThread(prev => ({ ...prev, [activeId]: response.data }))
       } catch (err) {
-        console.error(`Failed to fetch messages for thread ${activeId}:`, err);
+        console.warn(`Failed to fetch API messages for thread ${activeId}, using local fallback:`, err)
+        const localMsgKey = `investor_msgs_${activeId}`
+        const storedMsgs = localStorage.getItem(localMsgKey)
+        if (storedMsgs) {
+          try {
+            setMessagesByThread(prev => ({ ...prev, [activeId]: JSON.parse(storedMsgs) }))
+          } catch {
+            setMessagesByThread(prev => ({ ...prev, [activeId]: DEFAULT_MESSAGES[activeId] || [] }))
+          }
+        } else {
+          const defaults = DEFAULT_MESSAGES[activeId] || []
+          setMessagesByThread(prev => ({ ...prev, [activeId]: defaults }))
+          localStorage.setItem(localMsgKey, JSON.stringify(defaults))
+        }
       } finally {
-        setIsLoadingMessages(false);
+        setIsLoadingMessages(false)
       }
-    };
+    }
 
-    fetchMessages();
-  }, [activeId, messagesByThread]);
+    fetchMessages()
+  }, [activeId])
 
-  // --- Send Message ---
+  const handleRevealIdentity = () => {
+    if (!activeId) return
+    
+    // 1. Update investor threads
+    const updatedThreads = threads.map(t => {
+      if (t.id === activeId) {
+        return { ...t, isGhostMode: false }
+      }
+      return t
+    })
+    setThreads(updatedThreads)
+    localStorage.setItem("investor_threads", JSON.stringify(updatedThreads))
+    
+    // 2. Update founder threads
+    const founderStored = localStorage.getItem("founder_chat_threads")
+    if (founderStored) {
+      try {
+        const fThreads = JSON.parse(founderStored)
+        const updatedFThreads = fThreads.map((t: any) => {
+          if (t.id === activeId) {
+            return {
+              ...t,
+              isGhostMode: false,
+              name: `${localStorage.getItem("demo_name") || "Alex Rivera"} • Horizon Ventures`,
+              participants: [t.participants[0], localStorage.getItem("demo_name") || "Alex Rivera"]
+            }
+          }
+          return t
+        })
+        localStorage.setItem("founder_chat_threads", JSON.stringify(updatedFThreads))
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    
+    // 3. Add system message to investor message store
+    const systemMsg: Message = {
+      id: `sys-${Date.now()}`,
+      sender: { id: "system", name: "System" },
+      text: `📢 You revealed your identity: ${localStorage.getItem("demo_name") || "Alex Rivera"} (Horizon Ventures)`,
+      createdAt: new Date().toISOString(),
+      deliveryStatus: "seen"
+    }
+    
+    const currentMsgs = messagesByThread[activeId] ?? []
+    const updatedMessages = [...currentMsgs, systemMsg]
+    setMessagesByThread(prev => ({
+      ...prev,
+      [activeId]: updatedMessages,
+    }))
+    localStorage.setItem(`investor_msgs_${activeId}`, JSON.stringify(updatedMessages))
+    
+    // 4. Add system message to founder's message store
+    const founderMsgs = localStorage.getItem("founder_chat_messages")
+    if (founderMsgs) {
+      try {
+        const msgsDb = JSON.parse(founderMsgs)
+        const fSystemMsg = {
+          id: `sys-${Date.now()}`,
+          from: "them",
+          text: `📢 Investor revealed their identity: ${localStorage.getItem("demo_name") || "Alex Rivera"} (Horizon Ventures)`,
+          when: "Just now",
+          timestamp: Date.now(),
+          seen: false,
+          delivered: true
+        }
+        msgsDb[activeId] = [...(msgsDb[activeId] ?? []), fSystemMsg]
+        localStorage.setItem("founder_chat_messages", JSON.stringify(msgsDb))
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    
+    alert("Identity revealed! The founder can now see your name and profile details.")
+    window.dispatchEvent(new CustomEvent("founder-chat-sync"))
+  }
+
+  // Send message
   const onSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!activeThread || text.trim().length === 0) return;
+    e.preventDefault()
+    if (!activeThread || text.trim().length === 0) return
 
     const optimisticMessage: Message = {
       id: `temp_${Date.now()}`,
@@ -115,55 +310,84 @@ export default function InvestorChatsPage() {
       createdAt: new Date().toISOString(),
       sender: { id: CURRENT_USER_ID, name: "You" },
       deliveryStatus: "sending",
-    };
+    }
 
+    const updatedMessages = [...(messagesByThread[activeThread.id] ?? []), optimisticMessage]
     setMessagesByThread(prev => ({
       ...prev,
-      [activeThread.id]: [...(prev[activeThread.id] ?? []), optimisticMessage],
-    }));
-    setText("");
+      [activeThread.id]: updatedMessages,
+    }))
+    
+    // Save to localstorage for fallback consistency
+    localStorage.setItem(`investor_msgs_${activeThread.id}`, JSON.stringify(updatedMessages))
+
+    // Update last active in threads list
+    const updatedThreads = threads.map(t => {
+      if (t.id === activeThread.id) {
+        return {
+          ...t,
+          lastMessagePreview: optimisticMessage.text,
+          lastActive: optimisticMessage.createdAt,
+          unreadCount: 0
+        }
+      }
+      return t
+    })
+    setThreads(updatedThreads)
+    localStorage.setItem("investor_threads", JSON.stringify(updatedThreads))
+
+    setText("")
 
     try {
-      const response = await axios.post<Message>(`/api/chats/${activeThread.id}/messages`, { text: optimisticMessage.text });
-      const savedMessage = response.data;
+      const response = await axios.post<Message>(`/api/chats/${activeThread.id}/messages`, { text: optimisticMessage.text })
+      const savedMessage = response.data
 
+      const finalizedMessages = updatedMessages.map(m => (m.id === optimisticMessage.id ? savedMessage : m))
       setMessagesByThread(prev => ({
         ...prev,
-        [activeThread.id]: prev[activeThread.id].map(m => (m.id === optimisticMessage.id ? savedMessage : m)),
-      }));
+        [activeThread.id]: finalizedMessages,
+      }))
+      localStorage.setItem(`investor_msgs_${activeThread.id}`, JSON.stringify(finalizedMessages))
     } catch (err) {
-      console.error("Failed to send message:", err);
+      console.warn("Failed API post message, finalizing locally:", err)
+      const confirmedMessage: Message = {
+        ...optimisticMessage,
+        id: `mock_sent_${Date.now()}`,
+        deliveryStatus: "delivered"
+      }
+      const finalizedMessages = updatedMessages.map(m => (m.id === optimisticMessage.id ? confirmedMessage : m))
       setMessagesByThread(prev => ({
         ...prev,
-        [activeThread.id]: prev[activeThread.id].filter(m => m.id !== optimisticMessage.id),
-      }));
+        [activeThread.id]: finalizedMessages,
+      }))
+      localStorage.setItem(`investor_msgs_${activeThread.id}`, JSON.stringify(finalizedMessages))
     }
-  };
+  }
 
   const filteredThreads = useMemo(() => {
-    if (!query.trim()) return threads;
-    const q = query.toLowerCase();
-    return threads.filter(t => t.name.toLowerCase().includes(q) || t.lastMessagePreview.toLowerCase().includes(q));
-  }, [query, threads]);
+    if (!query.trim()) return threads
+    const q = query.toLowerCase()
+    return threads.filter(t => t.name.toLowerCase().includes(q) || t.lastMessagePreview.toLowerCase().includes(q))
+  }, [query, threads])
 
-  const activeThread = filteredThreads.find(t => t.id === activeId);
-  const activeMessages = activeThread ? messagesByThread[activeThread.id] ?? [] : [];
+  const activeThread = filteredThreads.find(t => t.id === activeId)
+  const activeMessages = activeThread ? messagesByThread[activeThread.id] ?? [] : []
 
   useEffect(() => {
     if (listRef.current) {
-      listRef.current.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
+      listRef.current.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" })
     }
-  }, [activeId, activeMessages.length]);
+  }, [activeId, activeMessages.length])
 
-  const showOnlyListOnMobile = !activeThread;
-  const showOnlyChatOnMobile = !!activeThread;
+  const showOnlyListOnMobile = !activeThread
+  const showOnlyChatOnMobile = !!activeThread
 
   return (
     <div className="mx-auto w-full max-w-[1200px]">
       <div className="grid lg:grid-cols-[320px_minmax(0,1fr)] gap-4 lg:gap-6">
         {/* Threads list */}
         <section className={cn("lg:block", showOnlyChatOnMobile ? "hidden" : "block")}>
-          <div className="rounded-xl bg-background p-3 sm:p-4">
+          <div className="rounded-xl bg-background/25 border border-border/[0.03] backdrop-blur-xl p-3 sm:p-4">
             <div className="flex items-center gap-2 mb-4">
               <div className="relative flex-1">
                 <Search className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/40" />
@@ -171,7 +395,7 @@ export default function InvestorChatsPage() {
                   placeholder="Search conversations..."
                   value={query}
                   onChange={e => setQuery(e.target.value)}
-                  className="h-9 w-full pl-8 bg-accent/30 border-transparent text-foreground placeholder:text-foreground/40 focus:ring-1 focus:ring-[var(--brand-accent)]/30"
+                  className="h-9 w-full pl-8 bg-accent/30 border-transparent text-foreground placeholder:text-foreground/40 focus:ring-1 focus:ring-[var(--brand-accent)]/30 text-xs rounded-lg"
                 />
               </div>
             </div>
@@ -179,8 +403,6 @@ export default function InvestorChatsPage() {
             <div className="space-y-0.5">
               {isLoadingThreads ? (
                 [...Array(3)].map((_, i) => <Skeleton key={i} className="h-[90px] w-full rounded-lg bg-accent/30" />)
-              ) : error ? (
-                <div className="p-4 text-center text-sm text-red-400">{error}</div>
               ) : filteredThreads.length === 0 ? (
                 <div className="p-4 text-center">
                   <div className="text-sm text-muted-foreground">No conversations found</div>
@@ -191,28 +413,28 @@ export default function InvestorChatsPage() {
                     key={t.id}
                     onClick={() => setActiveId(t.id)}
                     className={cn(
-                      "w-full rounded-lg px-3 py-3 text-left transition-all duration-200 group",
-                      t.id === activeId ? "bg-accent/50 shadow-sm" : "hover:bg-accent active:bg-accent/40",
+                      "w-full rounded-lg px-3 py-3 text-left transition-all duration-200 group border border-transparent",
+                      t.id === activeId ? "bg-accent/50 border-border/10 shadow-sm" : "hover:bg-accent/40 active:bg-accent/30",
                     )}
                   >
                     <div className="flex items-center gap-3">
                       <div className="relative">
-                        <div className="grid size-10 place-items-center rounded-full text-xs font-medium bg-accent/30">
+                        <div className="grid size-10 place-items-center rounded-full text-xs font-mono font-bold bg-accent/40 text-foreground">
                           {t.name.split(" ").map(n => n[0]).join("").substring(0, 2)}
                         </div>
-                        {t.isOnline && <div className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full bg-green-400 border-2 border-background" />}
+                        {t.isOnline && <div className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full bg-emerald-500 border-2 border-background" />}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="truncate text-sm font-medium text-foreground/90">{t.name}</span>
+                          <span className="truncate text-xs font-semibold text-foreground/90">{t.name}</span>
                           <div className="flex items-center gap-1.5 ml-2">
                             {t.unreadCount > 0 && (
-                              <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-medium bg-primary text-primary-foreground rounded-full">{t.unreadCount}</span>
+                              <span className="flex items-center justify-center min-w-[16px] h-[16px] px-1 text-[11px] font-bold bg-[var(--brand-accent)] text-background rounded-full">{t.unreadCount}</span>
                             )}
-                            <span className="text-[10px] text-foreground/50 whitespace-nowrap">{formatTime(t.lastActive)}</span>
+                            <span className="text-[11px] font-mono text-foreground/40 whitespace-nowrap">{formatTime(t.lastActive)}</span>
                           </div>
                         </div>
-                        <p className="truncate text-xs text-muted-foreground">{t.lastMessagePreview}</p>
+                        <p className="truncate text-[11px] text-muted-foreground">{t.lastMessagePreview}</p>
                       </div>
                     </div>
                   </button>
@@ -224,34 +446,60 @@ export default function InvestorChatsPage() {
 
         {/* Chat view */}
         <section className={cn("lg:block", showOnlyListOnMobile ? "hidden" : "block")}>
-          <div className="rounded-xl bg-background overflow-hidden flex flex-col h-[600px] lg:h-[700px]">
+          <div className="rounded-xl bg-background/25 border border-border/[0.03] backdrop-blur-xl overflow-hidden flex flex-col h-[600px] lg:h-[700px]">
             {/* Header */}
-            <div className="flex h-14 items-center gap-3 px-3 sm:px-4 border-b border-border/40">
+            <div className="flex h-14 items-center gap-3 px-3 sm:px-4 border-b border-border/40 bg-sidebar/10">
               <button className="lg:hidden" onClick={() => setActiveId(null)}><ChevronLeft className="h-5 w-5" /></button>
               {activeThread ? (
-                <div className="truncate text-sm font-medium leading-tight">{activeThread.name}</div>
+                <div className="truncate text-xs font-semibold uppercase tracking-wider font-mono text-foreground/80 flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-accent)]" />
+                  {activeThread.name}
+                </div>
               ) : (
-                <div className="px-2 text-sm text-foreground/70">Select a conversation</div>
+                <div className="px-2 text-sm text-foreground/75 font-mono uppercase tracking-wider text-xs">Sync Channel</div>
               )}
             </div>
 
+            {/* Ghost Mode Status Banner */}
+            {activeThread && activeThread.isGhostMode && (
+              <div className="bg-amber-500/10 border-b border-amber-500/15 px-4 py-2 flex items-center justify-between text-xs text-amber-400 font-mono shrink-0">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                  Ghost Mode Active — anonymized to the founder.
+                </span>
+                <Button 
+                  onClick={handleRevealIdentity}
+                  className="h-6 rounded bg-amber-500 text-black border-transparent font-medium hover:bg-amber-400 text-[11px] px-2.5 cursor-pointer flex items-center justify-center shrink-0"
+                >
+                  Reveal Identity
+                </Button>
+              </div>
+            )}
+
             {/* Messages area */}
-            <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-4 sm:px-4 space-y-4">
+            <div ref={listRef} className="flex-1 overflow-y-auto px-4 py-6 space-y-4 bg-background/10">
               {isLoadingMessages ? (
                 <div className="grid h-full place-items-center">
-                  <div className="animate-spin size-5 border-2 border-border border-t-foreground/60 rounded-full" />
+                  <Loader2 className="animate-spin size-6 text-foreground/40" />
+                </div>
+              ) : activeMessages.length === 0 ? (
+                <div className="grid h-full place-items-center text-center">
+                  <div className="space-y-1.5">
+                    <MessageSquare className="h-8 w-8 text-muted-foreground/35 mx-auto" />
+                    <p className="text-xs text-muted-foreground font-mono uppercase tracking-widest">No messages yet</p>
+                  </div>
                 </div>
               ) : (
                 activeMessages.map((m, i) => {
-                  const isYou = m.sender.id === CURRENT_USER_ID;
-                  const lastMessage = i === activeMessages.length - 1;
+                  const isYou = m.sender.id === CURRENT_USER_ID
+                  const lastMessage = i === activeMessages.length - 1
                   return (
                     <div key={m.id} className={cn("flex w-full", isYou ? "justify-end" : "justify-start")}>
                       <div className="max-w-[85%] sm:max-w-[78%]">
-                        <div className={cn("rounded-2xl px-3 py-2.5 text-sm", isYou ? "bg-primary text-primary-foreground rounded-br-md" : "bg-accent text-foreground rounded-bl-md")}>
+                        <div className={cn("rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-sm", isYou ? "bg-primary text-primary-foreground rounded-br-md" : "bg-accent text-foreground rounded-bl-md")}>
                           <p>{m.text}</p>
                         </div>
-                        <div className={cn("flex items-center gap-1 mt-1 text-[10px]", isYou ? "justify-end text-foreground/50" : "text-foreground/50")}>
+                        <div className={cn("flex items-center gap-1 mt-1.5 text-[11px] font-mono", isYou ? "justify-end text-foreground/45" : "text-foreground/45")}>
                           <span>{formatTime(m.createdAt)}</span>
                           {isYou && lastMessage && (
                             m.deliveryStatus === "seen" ? <CheckCheck className="h-3 w-3 text-blue-400" /> :
@@ -261,13 +509,13 @@ export default function InvestorChatsPage() {
                         </div>
                       </div>
                     </div>
-                  );
+                  )
                 })
               )}
             </div>
 
             {/* Input area */}
-            <form onSubmit={onSend} className="flex items-end gap-2 p-3 border-t border-border/40">
+            <form onSubmit={onSend} className="flex items-end gap-2 p-3 border-t border-border/40 bg-sidebar/5">
               <textarea
                 ref={inputRef}
                 placeholder={activeThread ? "Type a message..." : "Select a conversation to start"}
@@ -275,10 +523,10 @@ export default function InvestorChatsPage() {
                 value={text}
                 onChange={e => setText(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) onSend(e); }}
-                className="w-full min-h-[40px] max-h-[120px] py-2.5 px-3 rounded-2xl bg-accent/30 border-transparent text-foreground placeholder:text-foreground/40 focus:ring-1 focus:ring-[var(--brand-accent)]/30 resize-none"
+                className="w-full min-h-[40px] max-h-[120px] py-2.5 px-3 rounded-2xl bg-accent/30 border-transparent text-xs text-foreground placeholder:text-foreground/40 focus:ring-1 focus:ring-[var(--brand-accent)]/30 resize-none focus:outline-none"
                 rows={1}
               />
-              <Button type="submit" size="icon" disabled={!activeThread || text.trim().length === 0} className="size-10 rounded-full flex-shrink-0 bg-primary text-primary-foreground enabled:hover:opacity-90 disabled:opacity-30">
+              <Button type="submit" size="icon" disabled={!activeThread || text.trim().length === 0} className="size-10 rounded-full flex-shrink-0 bg-primary text-primary-foreground enabled:hover:opacity-90 disabled:opacity-30 cursor-pointer">
                 <Send className="h-4 w-4" />
               </Button>
             </form>
@@ -286,5 +534,5 @@ export default function InvestorChatsPage() {
         </section>
       </div>
     </div>
-  );
+  )
 }
