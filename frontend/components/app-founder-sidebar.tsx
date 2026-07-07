@@ -86,21 +86,13 @@ export function AppFounderSidebar() {
               <DropdownMenuTrigger asChild>
                 <button className="flex w-full items-center justify-between rounded-lg p-1 text-sm font-medium text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-all cursor-pointer">
                   <div className="flex items-center gap-2.5">
-                    <Avatar className="h-8 w-8 border border-white/10 shrink-0">
-                      {avatarUrl ? (
-                        avatarUrl.startsWith("linear-gradient") ? (
-                          <AvatarImage src="" alt="" className="hidden" />
-                        ) : (
-                          <AvatarImage src={avatarUrl} alt={userName} className="object-cover" />
-                        )
-                      ) : null}
-                      <AvatarFallback
-                        className="text-sidebar-foreground text-[11px] font-bold font-mono uppercase bg-sidebar-accent"
-                        style={{ background: avatarUrl && avatarUrl.startsWith("linear-gradient") ? avatarUrl : undefined }}
-                      >
-                        {getInitials(userName)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className="size-8 rounded-lg shrink-0 overflow-hidden bg-black flex items-center justify-center border border-white/15">
+                      <img
+                        src="/TheThing.png"
+                        alt="Something Logo"
+                        className="size-8 object-contain invert mix-blend-screen"
+                      />
+                    </div>
                     <div className="flex flex-col items-start justify-center group-data-[collapsible=icon]:hidden truncate">
                        <span className="text-[13px] font-semibold tracking-tight text-sidebar-foreground/95 leading-tight truncate max-w-[130px]">{userName}</span>
                        <span className="text-[11px] font-mono text-sidebar-foreground/40 tracking-widest uppercase leading-tight mt-0.5">Founder Node</span>

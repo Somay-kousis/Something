@@ -15,10 +15,12 @@ import {
   Scale,
   FileSearch,
   RefreshCw,
+  Info,
 } from "lucide-react"
 import MutinyResults from "@/components/mutiny-results"
 import { queryMutiny, type MutinyResponse, type MutinyMode } from "@/lib/mock-mutiny"
 import { cn } from "@/lib/utils"
+import { toast } from "@/components/ui/use-toast"
 
 interface AuditPoint {
   label: string
@@ -96,15 +98,47 @@ const ACCENTS = {
   },
 }
 
+function getSimulationSteps(m: MutinyMode) {
+  switch (m) {
+    case "support":
+      return [
+        "Initializing conviction core weights...",
+        "Analyzing emotional resonance profiles...",
+        "Synthesizing belief resonance metrics..."
+      ]
+    case "critic":
+      return [
+        "Initializing skeptic critique cores...",
+        "Analyzing user friction coefficients...",
+        "Mapping user retention vulnerabilities..."
+      ]
+    case "feature":
+      return [
+        "Initializing systems architectural specs...",
+        "Testing SQLite/CRDT database local replication thresholds...",
+        "Auditing hosting/infrastructure cost matrices..."
+      ]
+    case "match":
+      return [
+        "Initializing WIPO & USPTO registry sweeps...",
+        "Auditing matching cohort patent claims...",
+        "Searching active founder & VC match alignments..."
+      ]
+    default:
+      return ["Running simulation audit..."]
+  }
+}
+
 interface ChatMessage {
   id: string
   role: "user" | "assistant"
   content: string
   timestamp: string
-  mode?: MutinyMode
-  results?: MutinyResponse | null
-  isSimulating?: boolean
-  scanLines?: string[]
+  activeMode: MutinyMode
+  cachedResults: { [key in MutinyMode]?: MutinyResponse | null }
+  isSimulatingMode: { [key in MutinyMode]?: boolean }
+  scanLinesMode: { [key in MutinyMode]?: string[] }
+  uploadedFile?: { name: string; size: number } | null
 }
 
 export default function FounderMutinyPage() {
@@ -115,18 +149,14 @@ export default function FounderMutinyPage() {
   const [userName, setUserName] = useState("Alex Rivera")
   const [accentKey, setAccentKey] = useState<keyof typeof ACCENTS>("emerald")
   const [expandedThoughts, setExpandedThoughts] = useState<{ [key: string]: boolean }>({})
+  const [showGlossary, setShowGlossary] = useState(false)
+  const [showCreatureTip, setShowCreatureTip] = useState(true)
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; size: number } | null>(null)
 
   const feedEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const activeAccent = ACCENTS[accentKey]
-
-  const SIMULATION_STEPS = [
-    "Initializing conviction core weights...",
-    "Querying WIPO & VC cohort indexes...",
-    "Assessing database replication thresholds & CRDT limits...",
-    "Analyzing doubt friction coefficients...",
-    "Synthesizing belief resonance profiles..."
-  ]
 
   const PRESET_PROMPTS = [
     {
@@ -179,8 +209,148 @@ export default function FounderMutinyPage() {
     }
   }, [concept])
 
+  useEffect(() => {
+    if (showCreatureTip) {
+      const timer = setTimeout(() => {
+        setShowCreatureTip(false)
+      }, 7000)
+      return () => clearTimeout(timer)
+    }
+  }, [showCreatureTip, mode])
+
   const toggleThoughts = (id: string) => {
     setExpandedThoughts((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const extension = file.name.split(".").pop()?.toLowerCase()
+    if (extension === "zip") {
+      toast({
+        title: "Upload Blocked",
+        description: "ZIP archives are not allowed. Please upload only PDF or Word documents.",
+        variant: "destructive",
+      })
+      if (fileInputRef.current) fileInputRef.current.value = ""
+      return
+    }
+
+    if (extension !== "pdf" && extension !== "doc" && extension !== "docx") {
+      toast({
+        title: "Invalid File Type",
+        description: "Only PDF (.pdf) and Word documents (.doc, .docx) are supported.",
+        variant: "destructive",
+      })
+      if (fileInputRef.current) fileInputRef.current.value = ""
+      return
+    }
+
+    setUploadedFile({
+      name: file.name,
+      size: file.size,
+    })
+  }
+
+  const handleSelectMode = async (newMode: MutinyMode) => {
+    setMode(newMode)
+    setShowCreatureTip(true)
+
+    const assistantMessages = messages.filter((m) => m.role === "assistant")
+    if (assistantMessages.length === 0) return
+
+    const lastMsg = assistantMessages[assistantMessages.length - 1]
+
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === lastMsg.id ? { ...m, activeMode: newMode } : m
+      )
+    )
+
+    if (lastMsg.cachedResults[newMode] || lastMsg.isSimulatingMode[newMode]) {
+      return
+    }
+
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === lastMsg.id
+          ? {
+              ...m,
+              isSimulatingMode: {
+                ...m.isSimulatingMode,
+                [newMode]: true
+              },
+              scanLinesMode: {
+                ...m.scanLinesMode,
+                [newMode]: []
+              }
+            }
+          : m
+      )
+    )
+
+    const activeSteps = getSimulationSteps(newMode)
+    for (let i = 0; i < activeSteps.length; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === lastMsg.id
+            ? {
+                ...msg,
+                scanLinesMode: {
+                  ...msg.scanLinesMode,
+                  [newMode]: [...(msg.scanLinesMode[newMode] || []), activeSteps[i]]
+                }
+              }
+            : msg
+        )
+      )
+    }
+
+    try {
+      const userMsgIdx = messages.findIndex((m) => m.id === lastMsg.id) - 1
+      const promptText = userMsgIdx >= 0 ? messages[userMsgIdx].content : ""
+      if (!promptText) return
+
+      const res = await queryMutiny(promptText, newMode)
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === lastMsg.id
+            ? {
+                ...msg,
+                isSimulatingMode: {
+                  ...msg.isSimulatingMode,
+                  [newMode]: false
+                },
+                cachedResults: {
+                  ...msg.cachedResults,
+                  [newMode]: res
+                }
+              }
+            : msg
+        )
+      )
+    } catch (err) {
+      console.error(err)
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === lastMsg.id
+            ? {
+                ...msg,
+                isSimulatingMode: {
+                  ...msg.isSimulatingMode,
+                  [newMode]: false
+                },
+                cachedResults: {
+                  ...msg.cachedResults,
+                  [newMode]: { rationale: "Simulation connection error." }
+                }
+              }
+            : msg
+        )
+      )
+    }
   }
 
   const handleStartSimulation = async (presetText?: string) => {
@@ -196,28 +366,41 @@ export default function FounderMutinyPage() {
       id: `user-${Date.now()}`,
       role: "user",
       content: textToSubmit,
+      uploadedFile: uploadedFile,
       timestamp: timeString,
     }
+
+    // Reset current file input state
+    setUploadedFile(null)
+    if (fileInputRef.current) fileInputRef.current.value = ""
 
     const assistantId = `assistant-${Date.now()}`
     const assistantMsg: ChatMessage = {
       id: assistantId,
       role: "assistant",
       content: "",
-      mode: mode,
-      isSimulating: true,
-      scanLines: [],
+      activeMode: mode,
+      cachedResults: {},
+      isSimulatingMode: { [mode]: true },
+      scanLinesMode: { [mode]: [] },
       timestamp: timeString,
     }
 
     setMessages((prev) => [...prev, userMsg, assistantMsg])
 
-    for (let i = 0; i < SIMULATION_STEPS.length; i++) {
+    const activeSteps = getSimulationSteps(mode)
+    for (let i = 0; i < activeSteps.length; i++) {
       await new Promise((resolve) => setTimeout(resolve, 200))
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === assistantId
-            ? { ...msg, scanLines: [...(msg.scanLines || []), SIMULATION_STEPS[i]] }
+            ? {
+                ...msg,
+                scanLinesMode: {
+                  ...msg.scanLinesMode,
+                  [mode]: [...(msg.scanLinesMode[mode] || []), activeSteps[i]]
+                }
+              }
             : msg
         )
       )
@@ -230,8 +413,14 @@ export default function FounderMutinyPage() {
           msg.id === assistantId
             ? {
                 ...msg,
-                isSimulating: false,
-                results: res,
+                isSimulatingMode: {
+                  ...msg.isSimulatingMode,
+                  [mode]: false
+                },
+                cachedResults: {
+                  ...msg.cachedResults,
+                  [mode]: res
+                }
               }
             : msg
         )
@@ -243,8 +432,14 @@ export default function FounderMutinyPage() {
           msg.id === assistantId
             ? {
                 ...msg,
-                isSimulating: false,
-                results: { rationale: "Simulation connection error." },
+                isSimulatingMode: {
+                  ...msg.isSimulatingMode,
+                  [mode]: false
+                },
+                cachedResults: {
+                  ...msg.cachedResults,
+                  [mode]: { rationale: "Simulation connection error." }
+                }
               }
             : msg
         )
@@ -263,9 +458,33 @@ export default function FounderMutinyPage() {
       .toUpperCase()
   }
 
+  const getModeExplanation = (m: MutinyMode) => {
+    switch (m) {
+      case "support":
+        return "I'm in Something (Belief) mode! I'll find the core strengths, resonance triggers, and growth solutions for your idea."
+      case "critic":
+        return "I'm in Nothing (Doubt) mode! I'll identify friction points, churn risks, and monetization challenges."
+      case "feature":
+        return "I'm in Viability specs mode! I'll check UX complexity, SQLite/CRDT local feasibility, and hosting cost projections."
+      case "match":
+        return "I'm in IP overlaps mode! I'll help you find builders with similar ideas, complementary skills, or matching cohort projects to build with."
+      default:
+        return ""
+    }
+  }
+
   return (
-    <div className="w-full h-[calc(100vh-8rem)] pt-6 pb-24 px-6 xl:px-12 flex flex-col min-h-0 relative overflow-hidden text-foreground">
+    <div className="flex-1 h-[calc(100vh-3.5rem)] min-h-0 flex flex-col p-4 lg:p-6 overflow-hidden relative text-foreground">
       
+      {/* Hidden file input */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept=".pdf,.doc,.docx"
+        className="hidden"
+        onChange={handleFileUpload}
+      />
+
       {/* Background Starfield & Gravitational Grid */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-40">
         <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -289,9 +508,9 @@ export default function FounderMutinyPage() {
       <div className="pointer-events-none absolute bottom-12 right-1/4 w-[600px] h-[600px] rounded-full bg-blue-500/[0.03] blur-[150px] z-0" />
 
       {/* Elegant Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-border/10 shrink-0 pt-1 relative z-10">
-        <div className="flex flex-col gap-1.5">
-          <h2 className="text-2xl lg:text-3xl font-serif font-light tracking-tight text-foreground leading-tight">Nothing & Something</h2>
+      <div className="flex items-center justify-between pb-3 border-b border-border/10 shrink-0 pt-0.5 relative z-10">
+        <div className="flex flex-col gap-0.5">
+          <h2 className="text-xl lg:text-2xl font-serif font-light tracking-tight text-foreground leading-tight">Nothing & Something</h2>
           <p className="text-foreground/75 dark:text-foreground/50 text-sm font-sans font-light leading-relaxed">
             Stress-test milestone and conviction nodes against doubt critique rulesets.
           </p>
@@ -301,88 +520,116 @@ export default function FounderMutinyPage() {
             variant="outline"
             size="sm"
             onClick={() => setMessages([])}
-            className="h-9 rounded-lg border-border hover:bg-accent text-sm font-semibold cursor-pointer text-foreground/80 hover:text-foreground transition-all shrink-0 flex items-center gap-2"
+            className="h-8 rounded-lg border-border hover:bg-accent text-xs font-semibold cursor-pointer text-foreground/80 hover:text-foreground transition-all shrink-0 flex items-center gap-1.5"
           >
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw className="h-3.5 w-3.5" />
             Reset Session
           </Button>
         )}
       </div>
 
       {/* Core Split Workspace Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 flex-1 min-h-0 mt-8 relative z-10">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8 flex-1 min-h-0 mt-4 relative z-10">
         
-        {/* Left Column: Analytics Reports (2/5) */}
-        <div className="lg:col-span-2 flex flex-col min-h-0 pr-2 overflow-y-auto scrollbar-thin space-y-8 select-text">
+        {/* Left Column: Interactive Mode Panels (2/5) */}
+        <div className="lg:col-span-2 flex flex-col min-h-0 pr-1 overflow-y-auto scrollbar-thin space-y-4 select-text">
           
-          {/* Card 1: Assume Nothing Report */}
-          <div className="rounded-2xl border border-[#C88E72]/30 dark:border-[#C88E72]/15 bg-[#C88E72]/[0.02] dark:bg-[#C88E72]/[0.005] p-6 lg:p-8 space-y-6 shadow-md transition-all hover:border-[#C88E72]/45">
-            <div className="flex items-center justify-between border-b border-[#C88E72]/20 dark:border-[#C88E72]/10 pb-4">
-              <div className="space-y-1.5">
-                <span className="text-xs font-mono uppercase tracking-widest text-[#C88E72] flex items-center gap-2 font-bold">
-                  <ShieldAlert className="h-4 w-4" />
-                  Assume Nothing Report
-                </span>
-                <h4 className="text-sm font-semibold text-foreground/90 leading-tight">Assumption Failure Analytics</h4>
-              </div>
-              <span className="text-xs font-mono text-foreground/50 uppercase tracking-wider">Cohort 2026.06</span>
-            </div>
-            <p className="text-sm text-foreground/80 dark:text-muted-foreground leading-relaxed font-sans font-light">
-              Anonymized failure categories flagged by the skeptic agent across 1,240 submissions this month. Study these to refine your assumptions.
-            </p>
-            
-            <div className="space-y-5 pt-2">
-              {[
-                { name: "Market Formation Friction", pct: 42, color: "#C88E72", desc: "Common assumption: customers will change legacy habits immediately." },
-                { name: "Unrealistic Unit Economics", pct: 28, color: "#8EA38E", desc: "Common assumption: customer acquisition cost will remain low at scale." },
-                { name: "Technical Dependency Lock-in", pct: 15, color: "#8293A4", desc: "Common assumption: core third-party APIs or protocols will remain open." },
-                { name: "Team Competency Dispersion", pct: 10, color: "#E2DFD5", desc: "Common assumption: prototype builders can easily scale to manage departments." }
-              ].map((stat) => (
-                <div key={stat.name} className="space-y-2">
-                  <div className="flex justify-between items-baseline text-xs font-mono">
-                    <span className="font-semibold text-foreground/90">{stat.name}</span>
-                    <span className="font-bold text-foreground/80">{stat.pct}%</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-border/40 dark:bg-border/20 overflow-hidden">
-                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${stat.pct}%`, backgroundColor: stat.color }} />
-                  </div>
-                  <span className="text-xs text-foreground/65 dark:text-muted-foreground font-sans block leading-relaxed font-light">{stat.desc}</span>
-                </div>
-              ))}
-            </div>
+          <div className="text-xs font-mono uppercase tracking-widest text-foreground/45 font-bold px-1 pt-0.5">
+            Audit Perspectives
           </div>
 
-          {/* Card 2: Conviction Rulesets */}
-          <div className="rounded-2xl border border-border/20 dark:border-border/10 bg-card/25 backdrop-blur-xl p-6 lg:p-8 space-y-6 shadow-md transition-all hover:border-border/30">
-            <div className="flex items-center justify-between border-b border-border/20 dark:border-border/10 pb-4">
-              <div className="space-y-1.5">
-                <span className="text-xs font-mono uppercase tracking-widest text-brand-accent flex items-center gap-2 font-bold">
-                  <BrainCircuit className="h-4 w-4" />
-                  Conviction Rulesets
-                </span>
-                <h4 className="text-sm font-semibold text-foreground/90 leading-tight">Cohort Evaluation Metrics</h4>
-              </div>
-              <span className="text-xs font-mono text-foreground/50 uppercase tracking-wider">ACTIVE SPEC</span>
-            </div>
-            <p className="text-sm text-foreground/80 dark:text-muted-foreground leading-relaxed font-sans font-light">
-              Skeptic AI parameters used to stress-test ideas before releasing escrow milestones:
-            </p>
-            
-            <div className="space-y-4 pt-1">
-              {[
-                { name: "Conviction Resonance Threshold", value: "70%", desc: "Minimum threshold required for automated contract approval." },
-                { name: "IP Overlap Sensitivity Index", value: "High", desc: "Similarity index matching cohort patent filings." },
-                { name: "Unit Margin Feasibility Target", value: ">25%", desc: "Minimum target margins after CAC amortization." },
-              ].map((rule) => (
-                <div key={rule.name} className="space-y-1.5 border-l border-brand-accent/30 pl-4">
-                  <div className="flex justify-between items-baseline text-xs font-mono">
-                    <span className="font-semibold text-foreground/90">{rule.name}</span>
-                    <span className="font-bold text-brand-accent">{rule.value}</span>
-                  </div>
-                  <span className="text-xs text-foreground/70 dark:text-muted-foreground font-sans block leading-relaxed font-light">{rule.desc}</span>
+          {[
+            {
+              id: "support" as MutinyMode,
+              title: "Something (Belief)",
+              desc: "Resonance & growth framework focusing on strengths, emotional hooks, and value retention.",
+              icon: ShieldCheck,
+              colorHex: "#8EA38E",
+              metric: "Resonance OK",
+            },
+            {
+              id: "critic" as MutinyMode,
+              title: "Nothing (Doubt)",
+              desc: "Skeptical review highlighting friction points, churn risks, and monetization flaws.",
+              icon: ShieldAlert,
+              colorHex: "#C88E72",
+              metric: "Doubt Triggered",
+            },
+            {
+              id: "feature" as MutinyMode,
+              title: "Viability Specs",
+              desc: "Engineering and cost feasibility details, verifying local database sync latency.",
+              icon: BrainCircuit,
+              colorHex: "#8293A4",
+              metric: "Specs Valid",
+            },
+            {
+              id: "match" as MutinyMode,
+              title: "IP Overlaps",
+              desc: "Find co-founders with similar ideas, matching skills, or overlapping patent and cohort registrations.",
+              icon: FileSearch,
+              colorHex: "#E2DFD5",
+              metric: "Patents Found",
+            },
+          ].map((item) => {
+            const IconComponent = item.icon
+            const isActive = mode === item.id
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleSelectMode(item.id)}
+                className={cn(
+                  "w-full rounded-xl border text-left p-4 space-y-2.5 transition-all duration-200 cursor-pointer bg-card/10 select-none shadow-sm relative overflow-hidden group",
+                  isActive
+                    ? "bg-foreground/[0.02] shadow-md ring-1 ring-[var(--brand-accent)]/20"
+                    : "border-border/15 hover:border-border/30 hover:bg-card/15"
+                )}
+                style={{
+                  borderColor: isActive ? item.colorHex : undefined,
+                }}
+              >
+                {/* Active side indicator */}
+                {isActive && (
+                  <span
+                    className="absolute left-0 top-0 bottom-0 w-1"
+                    style={{ backgroundColor: item.colorHex }}
+                  />
+                )}
+
+                <div className="flex items-center justify-between">
+                  <span
+                    className="text-xs sm:text-[13px] font-mono uppercase tracking-widest flex items-center gap-1.5 font-semibold transition"
+                    style={{ color: isActive ? item.colorHex : "rgba(255,255,255,0.4)" }}
+                  >
+                    <IconComponent className="h-3.5 w-3.5" />
+                    {item.title}
+                  </span>
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-foreground/5 text-foreground/50 border border-border/10">
+                    {item.metric}
+                  </span>
                 </div>
-              ))}
-            </div>
+
+                <p className="text-[13px] sm:text-sm text-foreground/75 dark:text-muted-foreground leading-relaxed font-sans font-light">
+                  {item.desc}
+                </p>
+              </button>
+            )
+          })}
+
+          {/* Collapsible Glossary Section inside left panel */}
+          <div className="rounded-xl border border-border/10 bg-card/5 p-4 space-y-2 shadow-inner mt-auto">
+            <button
+              onClick={() => setShowGlossary(!showGlossary)}
+              className="flex items-center gap-1.5 text-xs font-mono text-brand-accent hover:text-brand-accent/80 transition cursor-pointer select-none bg-transparent border-0 p-0"
+            >
+              <Info className="h-3.5 w-3.5" />
+              <span>{showGlossary ? "Hide Glossary Details" : "How does the audit work?"}</span>
+            </button>
+            {showGlossary && (
+              <p className="text-xs text-foreground/60 leading-relaxed font-sans font-light mt-1.5">
+                Submit your idea in the chat input. Click any card above to view the dynamic AI audit report from that perspective. The results are loaded on demand and cached locally.
+              </p>
+            )}
           </div>
 
         </div>
@@ -391,41 +638,41 @@ export default function FounderMutinyPage() {
         <div className="lg:col-span-3 flex flex-col min-h-0 h-full relative">
           
           {/* Scrollable conversation window */}
-          <div className="flex-1 overflow-y-auto pr-2 space-y-6 scrollbar-thin min-h-0 select-text">
+          <div className="flex-1 overflow-y-auto pr-1 space-y-4 scrollbar-thin min-h-0 select-text">
             {messages.length === 0 ? (
               
               /* Welcome Screen inside Chat area */
-              <div className="space-y-8 py-10 max-w-3xl mx-auto text-center">
-                <div className="flex flex-col items-center justify-center space-y-4">
-                  <div className="size-14 rounded-full border border-border/20 bg-foreground/[0.02] flex items-center justify-center shadow-md">
-                    <BrainCircuit className="h-6 w-6 text-foreground/50" />
+              <div className="space-y-6 py-4 max-w-2xl mx-auto text-center">
+                <div className="flex flex-col items-center justify-center space-y-3">
+                  <div className="size-10 rounded-full border border-border/20 bg-foreground/[0.02] flex items-center justify-center shadow-sm">
+                    <BrainCircuit className="h-5 w-5 text-foreground/50" />
                   </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xl sm:text-2xl font-serif font-light text-foreground tracking-tight">How can I challenge your idea?</h3>
-                    <p className="text-foreground/70 dark:text-foreground/50 text-sm max-w-md mx-auto leading-relaxed font-sans font-light">
+                  <div className="space-y-1">
+                    <h3 className="text-lg sm:text-xl font-serif font-light text-foreground tracking-tight">How can I challenge your idea?</h3>
+                    <p className="text-foreground/70 dark:text-foreground/50 text-xs sm:text-sm max-w-md mx-auto leading-relaxed font-sans font-light">
                       Type a concept below to audit its co-founder matches, investor alignments, or potential friction points.
                     </p>
                   </div>
                 </div>
 
                 {/* Preset Prompt Cards */}
-                <div className="grid gap-4 sm:grid-cols-3 pt-4">
+                <div className="grid gap-3 sm:grid-cols-3 pt-2">
                   {PRESET_PROMPTS.map((item, i) => {
                     const PromptIcon = item.icon
                     return (
                       <motion.button
                         key={i}
                         onClick={() => handleStartSimulation(item.prompt)}
-                        whileHover={{ scale: 1.02, y: -2 }}
-                        whileTap={{ scale: 0.98 }}
+                        whileHover={{ scale: 1.01, y: -1 }}
+                        whileTap={{ scale: 0.99 }}
                         className={cn(
-                          "flex flex-col items-start p-4 rounded-xl border text-left transition-all w-full cursor-pointer bg-card/10 border-border/20 hover:border-border/40 hover:bg-card/25 group shadow-sm",
+                          "flex flex-col items-start p-3.5 rounded-lg border text-left transition-all w-full cursor-pointer bg-card/10 border-border/20 hover:border-border/40 hover:bg-card/25 group shadow-sm",
                           item.color
                         )}
                       >
-                        <PromptIcon className="h-5 w-5 mb-3 opacity-60 group-hover:opacity-100 transition" />
-                        <span className="text-xs font-bold font-mono uppercase tracking-wider text-foreground/95">{item.title}</span>
-                        <p className="text-xs text-foreground/65 dark:text-foreground/45 mt-2 leading-relaxed font-sans font-light line-clamp-3">
+                        <PromptIcon className="h-4.5 w-4.5 mb-2 opacity-60 group-hover:opacity-100 transition" />
+                        <span className="text-xs sm:text-sm font-semibold font-mono uppercase tracking-wider text-foreground/95">{item.title}</span>
+                        <p className="text-xs text-foreground/75 dark:text-foreground/50 mt-1.5 leading-relaxed font-sans font-light line-clamp-3">
                           {item.prompt}
                         </p>
                       </motion.button>
@@ -434,15 +681,15 @@ export default function FounderMutinyPage() {
                 </div>
 
                 {/* Simulation Telemetry Console */}
-                <div className="mt-8 rounded-xl border border-border/20 bg-card/10 p-5 space-y-4 shadow-sm text-left">
-                  <div className="flex items-center justify-between border-b border-border/20 pb-3 text-xs font-mono uppercase tracking-wider text-foreground/50 font-bold">
+                <div className="mt-4 rounded-lg border border-border/20 bg-card/10 p-4 space-y-3 shadow-sm text-left">
+                  <div className="flex items-center justify-between border-b border-border/20 pb-2 text-xs font-mono uppercase tracking-wider text-foreground/50 font-bold">
                     <span>Simulation Telemetry Log</span>
-                    <span className="text-emerald-500 animate-pulse flex items-center gap-1.5 font-semibold text-[10px]">
-                      <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block"></span>
+                    <span className="text-emerald-500 animate-pulse flex items-center gap-1 font-semibold text-[10px]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block"></span>
                       LIVE STREAM
                     </span>
                   </div>
-                  <div className="font-mono text-xs text-foreground/75 dark:text-foreground/45 space-y-2 leading-relaxed">
+                  <div className="font-mono text-xs text-foreground/75 dark:text-foreground/45 space-y-1.5 leading-relaxed">
                     <div className="flex justify-between">
                       <span>[19:42:01] P2P Sync Node: Resonance 78% (Passed)</span>
                       <span className="text-emerald-500 font-semibold">Resonance OK</span>
@@ -462,7 +709,7 @@ export default function FounderMutinyPage() {
             ) : (
               
               /* Messages Viewport */
-              <div className="space-y-8 py-2">
+              <div className="space-y-6 py-1">
                 <AnimatePresence initial={false}>
                   {messages.map((msg) => {
                     const isUser = msg.role === "user"
@@ -471,38 +718,45 @@ export default function FounderMutinyPage() {
                     return (
                       <motion.div
                         key={msg.id}
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.25, ease: "easeOut" }}
-                        className={cn("flex gap-4 w-full", isUser ? "justify-end" : "justify-start")}
+                        className={cn("flex gap-3 w-full", isUser ? "justify-end" : "justify-start")}
                       >
                         {!isUser && (
-                          <div className="size-8 rounded-full border border-border/20 bg-card/20 flex items-center justify-center shrink-0 mt-1">
-                            <BrainCircuit className="h-4 w-4 text-foreground/40" />
+                          <div className="size-7 rounded-full border border-border/20 bg-card/20 flex items-center justify-center shrink-0 mt-0.5">
+                            <BrainCircuit className="h-3.5 w-3.5 text-foreground/40" />
                           </div>
                         )}
 
-                        <div className={cn("max-w-[85%] space-y-4", isUser ? "text-right" : "text-left")}>
+                        <div className={cn("max-w-[85%] space-y-3", isUser ? "text-right" : "text-left")}>
                           
                           {isUser ? (
                             /* User Bubble */
-                            <div className="inline-block rounded-2xl bg-muted/15 border border-border/25 px-5 py-3 text-sm sm:text-base text-foreground/90 font-sans font-light leading-relaxed text-left shadow-sm">
+                            <div className="inline-block rounded-2xl bg-muted/15 border border-border/25 px-4 py-2.5 text-sm sm:text-base text-foreground/90 font-sans font-light leading-relaxed text-left shadow-sm">
+                              {msg.uploadedFile && (
+                                <div className="flex items-center gap-1.5 bg-foreground/10 border border-border/15 rounded-lg px-2.5 py-1.5 text-xs text-foreground/80 mb-2 font-mono">
+                                  <span>📄 {msg.uploadedFile.name}</span>
+                                </div>
+                              )}
                               {msg.content}
                             </div>
                           ) : (
                             
                             /* Assistant Bubble */
-                            <div className="w-full space-y-4">
+                            <div className="w-full space-y-3">
                               
                               {/* Case 1: Simulation loader */}
-                              {msg.isSimulating ? (
-                                <div className="w-full rounded-xl border border-border/20 bg-background/20 p-5 font-mono text-xs space-y-3 shadow-inner">
-                                  <div className="flex items-center gap-2.5 text-foreground/50">
-                                    <Loader2 className="h-4 w-4 animate-spin text-brand-accent" />
-                                    <span className="text-xs uppercase tracking-wider font-bold">Thinking...</span>
+                              {msg.isSimulatingMode[msg.activeMode] ? (
+                                <div className="w-full rounded-xl border border-border/20 bg-background/20 p-4 font-mono text-xs space-y-2.5 shadow-inner">
+                                  <div className="flex items-center gap-2 text-foreground/50">
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin text-brand-accent" />
+                                    <span className="text-xs uppercase tracking-wider font-bold">
+                                      Auditing {msg.activeMode === "support" ? "Belief" : msg.activeMode === "critic" ? "Doubt" : msg.activeMode === "feature" ? "Viability" : "IP Overlaps"}...
+                                    </span>
                                   </div>
-                                  <div className="space-y-1 pl-3 border-l border-brand-accent/30 text-foreground/45">
-                                    {msg.scanLines?.map((line, idx) => (
+                                  <div className="space-y-0.5 pl-2.5 border-l border-brand-accent/30 text-foreground/45">
+                                    {msg.scanLinesMode[msg.activeMode]?.map((line, idx) => (
                                       <div key={idx} className="break-all">&gt; {line}</div>
                                     ))}
                                   </div>
@@ -510,21 +764,21 @@ export default function FounderMutinyPage() {
                               ) : (
                                 
                                 /* Case 2: Analysis Results */
-                                <div className="space-y-4 w-full">
+                                <div className="space-y-3 w-full">
                                   
                                   {/* DeepSeek Collapsible Thought Block */}
-                                  <div className="border-b border-border/10 pb-3">
+                                  <div className="border-b border-border/10 pb-2">
                                     <button
                                       onClick={() => toggleThoughts(msg.id)}
-                                      className="flex items-center gap-2 text-xs font-mono text-foreground/50 hover:text-foreground/70 transition cursor-pointer select-none bg-transparent border-0 p-0"
+                                      className="flex items-center gap-1.5 text-xs font-mono text-foreground/50 hover:text-foreground/70 transition cursor-pointer select-none bg-transparent border-0 p-0"
                                     >
-                                      <div className={cn("size-2 rounded-full", isExpanded ? "bg-foreground/40" : "bg-brand-accent")} />
+                                      <div className={cn("size-1.5 rounded-full", isExpanded ? "bg-foreground/40" : "bg-brand-accent")} />
                                       <span>{isExpanded ? "Hide thinking process" : "Show thinking process"}</span>
                                     </button>
                                     
-                                    {isExpanded && msg.scanLines && (
-                                      <div className="mt-3 p-4 bg-muted/5 rounded-xl border border-border/10 font-mono text-xs text-foreground/60 space-y-1.5">
-                                        {msg.scanLines.map((line, idx) => (
+                                    {isExpanded && msg.scanLinesMode[msg.activeMode] && (
+                                      <div className="mt-2 p-3 bg-muted/5 rounded-xl border border-border/10 font-mono text-xs text-foreground/60 space-y-1">
+                                        {msg.scanLinesMode[msg.activeMode].map((line, idx) => (
                                           <div key={idx} className="break-all">&gt; {line}</div>
                                         ))}
                                       </div>
@@ -532,32 +786,63 @@ export default function FounderMutinyPage() {
                                   </div>
 
                                   {/* Duality Prose Copy */}
-                                  {msg.results && (
-                                    <div className="text-sm sm:text-base text-foreground/90 leading-relaxed font-sans space-y-4 font-light">
-                                      {msg.mode === "critic" ? (
-                                        <div className="space-y-3">
-                                          <div className="text-xs font-bold font-mono uppercase tracking-wider text-[#C88E72] flex items-center gap-2">
-                                            <ShieldAlert className="h-4 w-4" /> Critique Analysis (Nothing)
+                                  {msg.cachedResults[msg.activeMode] && (
+                                    <div className="text-sm sm:text-base text-foreground/90 leading-relaxed font-sans space-y-3 font-light">
+                                      {msg.activeMode === "critic" && (
+                                        <div className="space-y-2.5">
+                                          <div className="text-xs font-bold font-mono uppercase tracking-wider text-[#C88E72] flex items-center gap-1.5">
+                                            <ShieldAlert className="h-3.5 w-3.5" /> Critique Analysis (Nothing)
                                           </div>
-                                          <div className="pl-4 border-l border-[#C88E72]/30 space-y-3">
-                                            {parseRationale(msg.results.rationale || "").points.map((pt, idx) => (
-                                              <div key={idx} className="space-y-1">
-                                                <span className="font-semibold text-foreground text-sm font-sans">{pt.label}</span>
-                                                <p className="text-foreground/75 text-sm font-light leading-relaxed">{pt.text}</p>
+                                          <div className="pl-3.5 border-l border-[#C88E72]/30 space-y-2.5">
+                                            {parseRationale(msg.cachedResults.critic?.rationale || "").points.map((pt, idx) => (
+                                              <div key={idx} className="space-y-0.5">
+                                                <span className="font-semibold text-foreground text-xs sm:text-sm font-sans">{pt.label}</span>
+                                                <p className="text-foreground/75 text-xs sm:text-sm font-light leading-relaxed">{pt.text}</p>
                                               </div>
                                             ))}
                                           </div>
                                         </div>
-                                      ) : (
-                                        <div className="space-y-3">
-                                          <div className="text-xs font-bold font-mono uppercase tracking-wider text-brand-accent flex items-center gap-2">
-                                            <ShieldCheck className="h-4 w-4" /> Resonance Framework (Something)
+                                      )}
+                                      {msg.activeMode === "support" && (
+                                        <div className="space-y-2.5">
+                                          <div className="text-xs font-bold font-mono uppercase tracking-wider text-brand-accent flex items-center gap-1.5">
+                                            <ShieldCheck className="h-3.5 w-3.5" /> Resonance Framework (Something)
                                           </div>
-                                          <div className="pl-4 border-l border-brand-accent/30 space-y-3">
-                                            {parseRationale(msg.results.rationale || "").points.map((pt, idx) => (
-                                              <div key={idx} className="space-y-1">
-                                                <span className="font-semibold text-foreground text-sm font-sans">{pt.label}</span>
-                                                <p className="text-foreground/75 text-sm font-light leading-relaxed">{pt.text}</p>
+                                          <div className="pl-3.5 border-l border-brand-accent/30 space-y-2.5">
+                                            {parseRationale(msg.cachedResults.support?.rationale || "").points.map((pt, idx) => (
+                                              <div key={idx} className="space-y-0.5">
+                                                <span className="font-semibold text-foreground text-xs sm:text-sm font-sans">{pt.label}</span>
+                                                <p className="text-foreground/75 text-xs sm:text-sm font-light leading-relaxed">{pt.text}</p>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                      {msg.activeMode === "feature" && (
+                                        <div className="space-y-2.5">
+                                          <div className="text-xs font-bold font-mono uppercase tracking-wider text-violet-400 flex items-center gap-1.5">
+                                            <BrainCircuit className="h-3.5 w-3.5" /> Viability Specifications
+                                          </div>
+                                          <div className="pl-3.5 border-l border-violet-400/30 space-y-2.5">
+                                            {parseRationale(msg.cachedResults.feature?.rationale || "").points.map((pt, idx) => (
+                                              <div key={idx} className="space-y-0.5">
+                                                <span className="font-semibold text-foreground text-xs sm:text-sm font-sans">{pt.label}</span>
+                                                <p className="text-foreground/75 text-xs sm:text-sm font-light leading-relaxed">{pt.text}</p>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                      {msg.activeMode === "match" && (
+                                        <div className="space-y-2.5">
+                                          <div className="text-xs font-bold font-mono uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
+                                            <FileSearch className="h-3.5 w-3.5" /> IP & Alignment Overlaps
+                                          </div>
+                                          <div className="pl-3.5 border-l border-indigo-400/30 space-y-2.5">
+                                            {parseRationale(msg.cachedResults.match?.rationale || "").points.map((pt, idx) => (
+                                              <div key={idx} className="space-y-0.5">
+                                                <span className="font-semibold text-foreground text-xs sm:text-sm font-sans">{pt.label}</span>
+                                                <p className="text-foreground/75 text-xs sm:text-sm font-light leading-relaxed">{pt.text}</p>
                                               </div>
                                             ))}
                                           </div>
@@ -567,8 +852,8 @@ export default function FounderMutinyPage() {
                                   )}
 
                                   {/* Results Overlaps & Lists */}
-                                  {msg.results && (
-                                    <MutinyResults data={msg.results} accentKey={accentKey} />
+                                  {msg.cachedResults[msg.activeMode] && (
+                                    <MutinyResults data={msg.cachedResults[msg.activeMode]!} accentKey={accentKey} />
                                   )}
 
                                 </div>
@@ -580,7 +865,7 @@ export default function FounderMutinyPage() {
                         </div>
 
                         {isUser && (
-                          <div className="size-8 rounded-full border border-border/20 shrink-0 bg-card/25 flex items-center justify-center text-xs font-mono font-bold text-foreground/60 shadow mt-1">
+                          <div className="size-7 rounded-full border border-border/20 shrink-0 bg-card/25 flex items-center justify-center text-xs font-mono font-bold text-foreground/60 shadow mt-0.5">
                             {getInitials(userName)}
                           </div>
                         )}
@@ -594,11 +879,25 @@ export default function FounderMutinyPage() {
           </div>
 
           {/* Floating Chat Input Capsule */}
-          <div className="w-full pt-4 pb-2 shrink-0 z-20">
+          <div className="w-full pt-3 pb-1 shrink-0 z-20">
             <div className={cn(
-              "bg-background/85 border border-border/20 rounded-xl p-3 flex flex-col gap-2 transition focus-within:border-border/40 focus-within:bg-background shadow-lg",
+              "bg-background/85 border border-border/20 rounded-xl p-2.5 flex flex-col gap-1.5 transition focus-within:border-border/40 focus-within:bg-background shadow-lg",
               activeAccent.ring
             )}>
+              
+              {/* File Pill Preview */}
+              {uploadedFile && (
+                <div className="flex items-center gap-2 bg-foreground/5 border border-border/10 rounded-md px-2.5 py-1 text-xs text-foreground/80 w-fit select-none mb-1 shadow-sm font-mono">
+                  <span>📄 {uploadedFile.name} ({(uploadedFile.size / 1024).toFixed(1)} KB)</span>
+                  <button
+                    onClick={() => setUploadedFile(null)}
+                    className="text-foreground/40 hover:text-foreground/70 font-bold ml-1.5 cursor-pointer bg-transparent border-0 p-0"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
               <Textarea
                 ref={textareaRef}
                 rows={1}
@@ -614,34 +913,26 @@ export default function FounderMutinyPage() {
                 }}
               />
               
-              <div className="flex items-center justify-between px-1 pt-2 border-t border-border/10">
-                <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between px-1 pt-1.5 border-t border-border/10">
+                <div className="flex items-center gap-2.5">
                   <button
                     type="button"
-                    className="p-1 rounded text-foreground/40 hover:text-foreground/70 transition cursor-pointer bg-transparent border-0"
-                    title="Attach asset file"
-                    onClick={() => alert("Simulated asset upload connected.")}
+                    className="p-1 rounded text-foreground/45 hover:text-foreground/75 transition cursor-pointer bg-transparent border-0"
+                    title="Attach PDF or Word document"
+                    onClick={() => fileInputRef.current?.click()}
                   >
                     <Paperclip className="h-4 w-4" />
                   </button>
-
-                  <select
-                    value={mode}
-                    onChange={(e) => setMode(e.target.value as MutinyMode)}
-                    className="bg-background border border-border/20 rounded-md text-xs px-2.5 py-1 text-foreground/80 hover:text-foreground focus:text-foreground focus:outline-none focus:border-border/30 font-sans tracking-wide cursor-pointer"
-                  >
-                    <option value="support">Something (Belief)</option>
-                    <option value="critic">Nothing (Doubt)</option>
-                    <option value="feature">Viability specs</option>
-                    <option value="match">IP overlaps</option>
-                  </select>
+                  <span className="text-xs font-mono text-foreground/35 tracking-wider uppercase">
+                    Active Mode: {mode === "support" ? "Belief" : mode === "critic" ? "Doubt" : mode === "feature" ? "Viability" : "IP Overlaps"}
+                  </span>
                 </div>
 
                 <button
                   onClick={() => handleStartSimulation()}
                   disabled={!concept.trim() || isSimulatingGlobal}
                   className={cn(
-                    "size-8 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer shadow-md",
+                    "size-7 rounded-full flex items-center justify-center transition active:scale-95 cursor-pointer shadow-md",
                     concept.trim().length > 0 && !isSimulatingGlobal
                       ? activeAccent.btnBg
                       : "bg-foreground/5 text-foreground/35 border border-border/10 cursor-not-allowed"
@@ -649,14 +940,49 @@ export default function FounderMutinyPage() {
                   aria-label="Submit"
                 >
                   {isSimulatingGlobal ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   ) : (
-                    <ArrowUp className="h-4 w-4 stroke-[2.5]" />
+                    <ArrowUp className="h-3.5 w-3.5 stroke-[2.5]" />
                   )}
                 </button>
               </div>
             </div>
           </div>
+
+          {/* Floating Creature Tooltip */}
+          <AnimatePresence>
+            {showCreatureTip && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute bottom-[76px] left-3 z-50 flex items-start gap-3 bg-background/95 border border-[#C88E72]/20 rounded-xl p-3 shadow-2xl max-w-[280px] backdrop-blur-md"
+              >
+                <div className="size-8 rounded-lg shrink-0 overflow-hidden bg-black flex items-center justify-center border border-border/10">
+                  <img
+                    src="/TheThing.png"
+                    alt="The Thing"
+                    className="size-8 object-contain invert mix-blend-screen"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold font-mono uppercase tracking-wider text-[#C88E72]">The Thing</span>
+                    <button
+                      onClick={() => setShowCreatureTip(false)}
+                      className="text-foreground/45 hover:text-foreground/75 text-xs font-bold leading-none cursor-pointer bg-transparent border-0 p-0 ml-4"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <p className="text-xs text-foreground/85 dark:text-muted-foreground leading-relaxed font-sans font-light">
+                    {getModeExplanation(mode)}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
         </div>
 
