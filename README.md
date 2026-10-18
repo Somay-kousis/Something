@@ -8,6 +8,15 @@ div align="center">
   <p style="font-size: 10.5px; font-family: monospace; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-top: 6px; margin-bottom: 30px;">ideas find their people • capital finds its purpose</p>
 </div>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6.svg" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Node.js-backend-339933.svg" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Next.js-15-000000.svg" alt="Next.js" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB.svg" alt="React" />
+  <img src="https://img.shields.io/badge/MongoDB-Mongoose%208-47A248.svg" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/Tailwind%20CSS-4-06B6D4.svg" alt="Tailwind CSS" />
+</p>
+
 ---
 
 ## 1. Ideology & The Dual-Agent Model
@@ -57,16 +66,8 @@ Something implements a multi-stage, orchestrator-driven matching pipeline to con
 
 ```mermaid
 graph TD
-    %% Styling Definitions
-    classDef refine fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#451a03;
-    classDef snn fill:#f0fbf6,stroke:#10b981,stroke-width:2px,color:#064e3b;
-    classDef agentic fill:#f4f0ff,stroke:#6366f1,stroke-width:2px,color:#1e1b4b;
-    classDef filter fill:#f1f5f9,stroke:#64748b,stroke-width:1px,color:#0f172a;
-    classDef orch fill:#fff1f2,stroke:#f43f5e,stroke-width:2px,color:#4c0519;
-
     %% --- CENTRAL ORCHESTRATION ---
     Orch[Central Orchestrator & State Machine<br><i>Manages state transitions, memory routing, & loop logic</i>]
-    class Orch orch;
 
     %% --- STEP 0: INPUT ---
     Start([User Posts Raw Idea / Voice Note / Essay]) --> Step1
@@ -76,7 +77,6 @@ graph TD
         Step1[Step 1: Normalization Agent<br><i>Fast/Flash LLM rewrites raw input into a standard schema</i>]
         Step1 --> Schema[Standardized Universal Profile<br>1. Core Problem & Industry<br>2. What I Have - Tech/Distribution/Skills<br>3. What I Need - Missing Puzzle Pieces]
     end
-    class Step1,Schema refine;
 
     Schema --> Orch
 
@@ -91,19 +91,15 @@ graph TD
         %% Cross Attention Bridge
         Step2_Sim <--> |"Cross-Attention Layer<br>(Contextual Weight Adjustments)"| Step2_Comp
     end
-    class Step2_Sim,Step2_Comp snn;
 
     Step2_Sim --> Shortlist_Sim[Top 15 Similar Peers]
     Step2_Comp --> Shortlist_Comp[Top 15 Complementary Partners]
-    class Shortlist_Sim,Shortlist_Comp filter;
 
     %% --- STEP 3: HARD METADATA FILTERING ---
     Shortlist_Sim --> Gate[Step 3: Metadata Gatekeeper<br><i>Filter out non-negotiables: Stage, Location, Language, Commitment</i>]
     Shortlist_Comp --> Gate
-    class Gate filter;
 
     Gate --> Finalists[Top 3 to 5 Highly Aligned Candidates]
-    class Finalists filter;
 
     Finalists --> Orch
 
@@ -114,20 +110,16 @@ graph TD
         JointAttn["Joint Attention Space<br><i>Deep Feature Interleaving<br>(User Profile ⊗ Candidate Profiles)</i>"]
         Step4 <--> JointAttn
     end
-    class Step4,JointAttn agentic;
 
     Step4 --> Check{Is Match Truly Synergistic?}
-    class Check agentic;
 
     %% --- FEEDBACK LOOPS ---
     %% Loop A: Internal Critique Rejection
     Check -- "No (False Positive)" --> Replan[Log Critique & Adjust Dynamic Embedding Weights]
-    class Replan filter;
     Replan --> Orch
 
     %% Loop B: Successful Match & Execution
     Check -- Yes --> Step5[Step 5: Outreach & Memory Logging<br><i>Generate custom briefing explaining the exact synergy</i>]
-    class Step5 agentic;
 
     Step5 --> End([Notify Users: 'We found your missing puzzle piece!'])
 
